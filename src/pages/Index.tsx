@@ -1,5 +1,3 @@
-
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -76,7 +74,9 @@ const Index = () => {
     { name: "NEA", shortName: "NEA", logo: "/lovable-uploads/7b8efdde-0e0c-4ecf-88d8-c71778eba024.png" },
     { name: "RRE Ventures", shortName: "RRE" },
     { name: "FirstMark Capital", shortName: "FirstMark", logo: "/lovable-uploads/6b399693-2602-4ef3-8c21-5b3413a1b16d.png" },
-    { name: "Lerer Hippeau", shortName: "Lerer Hippeau", logo: "/lovable-uploads/92c7be6d-607a-4121-8a90-3824891c5875.png" }
+    { name: "Lerer Hippeau", shortName: "Lerer Hippeau", logo: "/lovable-uploads/92c7be6d-607a-4121-8a90-3824891c5875.png" },
+    { name: "Antler", shortName: "Antler", logo: "/lovable-uploads/f4d2292b-9cde-46b0-8bda-d2e749bc53fb.png" },
+    { name: "Hustle Fund", shortName: "Hustle Fund", logo: "/lovable-uploads/71f4076b-d0a2-41b2-9ca5-2be9ff767129.png" }
   ];
 
   const getCategoryColor = (category: string) => {
@@ -547,4 +547,3 @@ const Index = () => {
 };
 
 export default Index;
-
