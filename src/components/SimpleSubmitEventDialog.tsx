@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Link } from "lucide-react";
 import { submitEventToStorage, SubmitEventData } from "@/lib/eventStorage";
+import { scrapeEventData } from "@/lib/eventScraper";
 
 interface SimpleSubmitData {
   eventUrl: string;
@@ -27,26 +28,38 @@ export const SimpleSubmitEventDialog = () => {
     setIsSubmitting(true);
     
     try {
-      // Create event data with minimal info and defaults for admin to fill
+      toast({
+        title: "Scraping Event Data...",
+        description: "Extracting event information from the URL. This may take a moment.",
+      });
+
+      // Scrape event data from the URL
+      const scrapedData = await scrapeEventData(data.eventUrl);
+
+      // Create event data with scraped info
       const fullEventData: SubmitEventData = {
-        eventTitle: "Event Title (To be updated by admin)",
-        eventDescription: "Event description will be updated by admin after review",
+        eventTitle: scrapedData.title || "Event Title (To be updated by admin)",
+        eventDescription: scrapedData.description || "Event description will be updated by admin after review",
         eventUrl: data.eventUrl,
-        date: new Date().toISOString().split('T')[0], // Today's date as placeholder
-        time: "18:00", // Default time
-        location: "Location TBD",
-        category: "Networking", // Default category
-        price: "TBD",
-        hostOrganization: "Host TBD",
-        expectedAttendees: 50, // Default
-        imageUrl: "",
+        date: scrapedData.date || new Date().toISOString().split('T')[0],
+        time: scrapedData.time || "18:00",
+        location: scrapedData.location || "Location TBD",
+        category: scrapedData.category || "Networking",
+        price: scrapedData.price || "TBD",
+        hostOrganization: scrapedData.hostOrganization || "Host TBD",
+        expectedAttendees: scrapedData.expectedAttendees || 50,
+        imageUrl: scrapedData.imageUrl || "",
       };
 
       await submitEventToStorage(fullEventData);
 
+      const hasScrapedData = scrapedData.title && scrapedData.title !== "Event Title (To be updated by admin)";
+
       toast({
         title: "Event Submitted Successfully!",
-        description: "Thank you for submitting your event. An admin will review and add all the details within 24-48 hours.",
+        description: hasScrapedData 
+          ? "Event information has been automatically extracted and submitted for review!"
+          : "Event URL submitted. Admin will manually add details since auto-scraping was limited.",
       });
 
       form.reset();
@@ -75,7 +88,7 @@ export const SimpleSubmitEventDialog = () => {
         <DialogHeader>
           <DialogTitle>Submit Your NYC B2B Event</DialogTitle>
           <DialogDescription>
-            Just paste your event URL below. Our admins will handle all the details!
+            Just paste your event URL below. We'll automatically extract the event details!
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -110,13 +123,14 @@ export const SimpleSubmitEventDialog = () => {
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">
-                <strong>That's it!</strong> Just paste your event URL and we'll take care of the rest. Our admins will:
+                <strong>✨ Auto-Magic Event Processing!</strong> Our system will automatically:
               </p>
               <ul className="text-sm text-blue-700 mt-2 ml-4 space-y-1">
-                <li>• Extract the event title, description, and details</li>
-                <li>• Add proper categorization and pricing info</li>
-                <li>• Set the correct date, time, and location</li>
-                <li>• Publish it for the NYC B2B community to see</li>
+                <li>• Extract the event title and description</li>
+                <li>• Find date, time, and location details</li>
+                <li>• Grab the event image</li>
+                <li>• Identify the host organization</li>
+                <li>• Categorize the event type</li>
               </ul>
             </div>
 
@@ -135,7 +149,7 @@ export const SimpleSubmitEventDialog = () => {
                 disabled={isSubmitting}
                 className="nyc-gradient hover:opacity-90 text-white"
               >
-                {isSubmitting ? "Submitting..." : "Submit Event"}
+                {isSubmitting ? "Processing..." : "Submit & Auto-Extract"}
               </Button>
             </div>
           </form>

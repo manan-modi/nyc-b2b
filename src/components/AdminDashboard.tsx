@@ -8,6 +8,7 @@ import { Check, X, Calendar, MapPin, Users, ExternalLink, Clock, LogOut, ArrowUp
 import { fetchAllEvents, updateEventStatus, updateEventOrder, Event } from "@/lib/eventStorage";
 import { logout } from "@/lib/auth";
 import { EditEventDialog } from "./EditEventDialog";
+import { FirecrawlApiKeyDialog } from "./FirecrawlApiKeyDialog";
 
 const AdminDashboard = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -155,14 +156,17 @@ const AdminDashboard = () => {
               Review and manage submitted events, control display order
             </p>
           </div>
-          <Button
-            variant="outline"
-            onClick={handleLogout}
-            className="flex items-center gap-2"
-          >
-            <LogOut className="h-4 w-4" />
-            Logout
-          </Button>
+          <div className="flex gap-3">
+            <FirecrawlApiKeyDialog />
+            <Button
+              variant="outline"
+              onClick={handleLogout}
+              className="flex items-center gap-2"
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
