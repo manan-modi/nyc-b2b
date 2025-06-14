@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -323,16 +324,38 @@ const Index = () => {
             >
               Loved by <span className="nyc-gradient-text">10X founders</span> in NYC
               {showHearts && (
-                <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute inset-0 pointer-events-none overflow-visible">
+                  {/* Fountain burst hearts */}
+                  {[...Array(12)].map((_, i) => {
+                    const angle = (i * 30) - 150; // Spread from -150° to +150°
+                    const distance = 60 + (i % 3) * 20; // Varying distances
+                    const delay = i * 50; // Staggered animation
+                    
+                    return (
+                      <Heart
+                        key={i}
+                        className={`absolute w-5 h-5 text-green-500 fill-current opacity-90`}
+                        style={{
+                          left: '50%',
+                          top: '50%',
+                          transform: `translate(-50%, -50%)`,
+                          animation: `heartFountain 1.5s ease-out ${delay}ms forwards`,
+                          '--angle': `${angle}deg`,
+                          '--distance': `${distance}px`,
+                        } as React.CSSProperties & { [key: string]: string }}
+                      />
+                    );
+                  })}
+                  
+                  {/* Center burst hearts */}
                   {[...Array(6)].map((_, i) => (
                     <Heart
-                      key={i}
-                      className={`absolute w-6 h-6 text-green-500 animate-bounce fill-current opacity-80`}
+                      key={`center-${i}`}
+                      className={`absolute w-4 h-4 text-pink-500 fill-current opacity-80`}
                       style={{
-                        left: `${20 + i * 15}%`,
-                        top: `${10 + (i % 2) * 20}%`,
-                        animationDelay: `${i * 100}ms`,
-                        animationDuration: '1s'
+                        left: `${45 + i * 2}%`,
+                        top: `${45 + (i % 2) * 10}%`,
+                        animation: `heartPulse 0.8s ease-in-out ${i * 100}ms infinite alternate`,
                       }}
                     />
                   ))}
@@ -585,6 +608,39 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      {/* Custom CSS for heart animations */}
+      <style jsx>{`
+        @keyframes heartFountain {
+          0% {
+            transform: translate(-50%, -50%) rotate(var(--angle)) translateY(0) scale(0);
+            opacity: 0;
+          }
+          20% {
+            opacity: 1;
+            transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-10px) scale(0.8);
+          }
+          60% {
+            opacity: 1;
+            transform: translate(-50%, -50%) rotate(var(--angle)) translateY(calc(var(--distance) * -0.8)) scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: translate(-50%, -50%) rotate(var(--angle)) translateY(calc(var(--distance) * -1)) scale(0.4);
+          }
+        }
+        
+        @keyframes heartPulse {
+          0% {
+            transform: scale(0.8);
+            opacity: 0.6;
+          }
+          100% {
+            transform: scale(1.2);
+            opacity: 1;
+          }
+        }
+      `}</style>
     </div>
   );
 };
