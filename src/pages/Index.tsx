@@ -158,6 +158,33 @@ const Index = () => {
     return images[category] || "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=200&fit=crop&crop=center";
   };
 
+  const communityImages = [
+    {
+      src: "/lovable-uploads/f82fd6b5-0adc-4821-b6ef-8e916e338872.png",
+      alt: "NYC B2B Community Event Panel Discussion"
+    },
+    {
+      src: "/lovable-uploads/8b97f66d-cf71-45a4-aa34-a4a0a47d6512.png", 
+      alt: "NYC B2B Founders Networking Event"
+    },
+    {
+      src: "/lovable-uploads/869b893b-cd8a-43f2-a2fd-931d8465dd47.png",
+      alt: "Pre-Seed and Seed Founders Mixer Panel"
+    },
+    {
+      src: "/lovable-uploads/95f0e7bb-d022-430b-b63c-d9e545a744f7.png",
+      alt: "NYC B2B Community Audience Engagement"
+    },
+    {
+      src: "/lovable-uploads/6cb02953-a4e4-4452-b5d9-e547c63eabbf.png",
+      alt: "NYC B2B Networking and Conversations"
+    },
+    {
+      src: "/lovable-uploads/b6001725-cfda-49a7-9a37-31277a327cf5.png",
+      alt: "NYC B2B Community Members Networking"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-yellow-50/30">
       {/* Navigation */}
@@ -346,19 +373,6 @@ const Index = () => {
                       />
                     );
                   })}
-                  
-                  {/* Center burst hearts */}
-                  {[...Array(6)].map((_, i) => (
-                    <Heart
-                      key={`center-${i}`}
-                      className={`absolute w-4 h-4 text-pink-500 fill-current opacity-80`}
-                      style={{
-                        left: `${45 + i * 2}%`,
-                        top: `${45 + (i % 2) * 10}%`,
-                        animation: `heartPulse 0.8s ease-in-out ${i * 100}ms infinite alternate`,
-                      }}
-                    />
-                  ))}
                 </div>
               )}
             </h2>
@@ -507,13 +521,59 @@ const Index = () => {
               </div>
 
               {/* See All Events Button */}
-              <div className="text-center">
+              <div className="text-center mb-16 sm:mb-20">
                 <Link to="/events">
                   <Button size="lg" variant="outline" className="border-2 border-green-200 text-green-700 hover:bg-green-50 rounded-xl px-6 sm:px-8 py-3 sm:py-4 hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-lg text-sm sm:text-base">
                     See All Events
                     <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                   </Button>
                 </Link>
+              </div>
+
+              {/* Inside NYC B2B Section */}
+              <div className="text-center mb-12 sm:mb-16">
+                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6 tracking-tight">
+                  Inside <span className="nyc-gradient-text">NYC B2B</span>
+                </h3>
+                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto font-light leading-relaxed mb-8 sm:mb-12">
+                  Get a behind-the-scenes look at our vibrant community events and the amazing founders who make it all happen.
+                </p>
+                
+                <div className="relative">
+                  <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
+                  <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
+                  
+                  <Carousel
+                    plugins={[
+                      Autoplay({
+                        delay: 3000,
+                        stopOnInteraction: false,
+                        stopOnMouseEnter: true,
+                      }),
+                    ]}
+                    opts={{
+                      align: "start",
+                      loop: true,
+                      slidesToScroll: 1,
+                    }}
+                    className="w-full max-w-6xl mx-auto"
+                  >
+                    <CarouselContent className="-ml-2 sm:-ml-4">
+                      {communityImages.map((image, index) => (
+                        <CarouselItem key={index} className="pl-2 sm:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
+                          <div className="group relative overflow-hidden rounded-2xl bg-gray-100 aspect-[4/3] hover:shadow-xl transition-all duration-300">
+                            <img 
+                              src={image.src} 
+                              alt={image.alt}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                  </CarouselContent>
+                </div>
               </div>
             </>
           )}
@@ -610,7 +670,7 @@ const Index = () => {
       </footer>
 
       {/* Custom CSS for heart animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes heartFountain {
           0% {
             transform: translate(-50%, -50%) rotate(var(--angle)) translateY(0) scale(0);
@@ -627,17 +687,6 @@ const Index = () => {
           100% {
             opacity: 0;
             transform: translate(-50%, -50%) rotate(var(--angle)) translateY(calc(var(--distance) * -1)) scale(0.4);
-          }
-        }
-        
-        @keyframes heartPulse {
-          0% {
-            transform: scale(0.8);
-            opacity: 0.6;
-          }
-          100% {
-            transform: scale(1.2);
-            opacity: 1;
           }
         }
       `}</style>
