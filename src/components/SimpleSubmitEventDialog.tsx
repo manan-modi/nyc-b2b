@@ -53,13 +53,13 @@ export const SimpleSubmitEventDialog = () => {
 
       await submitEventToStorage(fullEventData);
 
-      const hasScrapedData = scrapedData.title && scrapedData.title !== "Event Title (To be updated by admin)";
+      const hasScrapedData = scrapedData.title && scrapedData.title !== "Event Title (Please update)";
 
       toast({
         title: "Event Submitted Successfully!",
         description: hasScrapedData 
           ? "Event information has been automatically extracted and submitted for review!"
-          : "Event URL submitted. Admin will manually add details since auto-scraping was limited.",
+          : "Event URL submitted. Some details may need manual review as auto-scraping had limited success.",
       });
 
       form.reset();

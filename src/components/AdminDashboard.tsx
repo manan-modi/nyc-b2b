@@ -8,7 +8,6 @@ import { Check, X, Calendar, MapPin, Users, ExternalLink, Clock, LogOut, ArrowUp
 import { fetchAllEvents, updateEventStatus, updateEventOrder, Event } from "@/lib/eventStorage";
 import { logout } from "@/lib/auth";
 import { EditEventDialog } from "./EditEventDialog";
-import { FirecrawlApiKeyDialog } from "./FirecrawlApiKeyDialog";
 
 const AdminDashboard = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -144,8 +143,6 @@ const AdminDashboard = () => {
     );
   }
 
-  const approvedEvents = events.filter(e => e.fields.Status === 'Approved');
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -155,9 +152,11 @@ const AdminDashboard = () => {
             <p className="text-gray-600">
               Review and manage submitted events, control display order
             </p>
+            <p className="text-sm text-green-600 mt-1">
+              ✨ Auto-scraping enabled! Event details are automatically extracted from URLs.
+            </p>
           </div>
           <div className="flex gap-3">
-            <FirecrawlApiKeyDialog />
             <Button
               variant="outline"
               onClick={handleLogout}
