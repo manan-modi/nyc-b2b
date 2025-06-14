@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +9,7 @@ import { Calendar, MapPin, Users, Search, ExternalLink, Clock } from "lucide-rea
 import { SimpleSubmitEventDialog } from "./SimpleSubmitEventDialog";
 import { fetchApprovedEvents, Event } from "@/lib/eventStorage";
 import { toast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 const EventsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -107,6 +109,36 @@ const EventsPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Navigation - matching homepage */}
+      <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            <Link to="/" className="flex items-center space-x-4">
+              <div className="relative">
+                <img 
+                  src="/lovable-uploads/00d2fcf3-063b-4181-8a1d-a84bd811f817.png"
+                  alt="NYC B2B Logo"
+                  className="h-12 w-12 object-contain"
+                />
+              </div>
+              <div>
+                <span className="text-xl font-bold nyc-gradient-text">NYC B2B</span>
+                <div className="text-xs text-gray-500 font-medium">Powered by community</div>
+              </div>
+            </Link>
+            <div className="hidden md:flex items-center space-x-8">
+              <Link to="/events" className="text-green-600 font-semibold transition-all duration-200 hover:scale-105">Events</Link>
+              <Link to="/blog" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">Blog</Link>
+              <Link to="/about" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">About</Link>
+              <Link to="/admin" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">Admin</Link>
+              <Button size="sm" className="nyc-gradient hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 text-white">
+                Join Community
+              </Button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex justify-between items-start mb-8">

@@ -1,16 +1,36 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import { ArrowRight, Calendar, MapPin, Users, BookOpen, MessageCircle, Mail, TrendingUp, Star, ChevronRight, Target, Globe } from "lucide-react";
+import { ArrowRight, Calendar, MapPin, Users, MessageCircle, Mail, TrendingUp, ChevronRight, Globe, Clock, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
+import { fetchApprovedEvents, Event } from "@/lib/eventStorage";
 
 const Index = () => {
   const [email, setEmail] = useState("");
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadEvents();
+  }, []);
+
+  const loadEvents = async () => {
+    try {
+      const data = await fetchApprovedEvents();
+      // Get first 6 events for homepage display
+      setEvents(data.slice(0, 6));
+    } catch (error) {
+      console.error('Failed to load events:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleEmailSignup = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,40 +49,10 @@ const Index = () => {
     setEmail("");
   };
 
-  const featuredEvents = [
-    {
-      title: "NYC Tech Meetup",
-      date: "Dec 18, 2024",
-      location: "WeWork SoHo",
-      attendees: "250+",
-      category: "Networking",
-      status: "Featured",
-      price: "Free"
-    },
-    {
-      title: "FinTech Founders Dinner",
-      date: "Dec 20, 2024",
-      location: "Midtown East",
-      attendees: "50+",
-      category: "Finance",
-      status: "Premium",
-      price: "$85"
-    },
-    {
-      title: "AI Startup Showcase",
-      date: "Dec 22, 2024",
-      location: "Brooklyn Navy Yard",
-      attendees: "180+",
-      category: "AI/ML",
-      status: "New",
-      price: "Free"
-    }
-  ];
-
   const stats = [
     { number: "5,000+", label: "Community Members", icon: Users, growth: "+12%" },
     { number: "200+", label: "Events This Year", icon: Calendar, growth: "+45%" },
-    { number: "150+", label: "Articles Published", icon: BookOpen, growth: "+23%" },
+    { number: "150+", label: "Articles Published", icon: Users, growth: "+23%" },
     { number: "100+", label: "Partner Companies", icon: TrendingUp, growth: "+67%" }
   ];
 
@@ -80,6 +70,56 @@ const Index = () => {
     { name: "FirstMark Capital", shortName: "FirstMark" },
     { name: "Lerer Hippeau", shortName: "Lerer Hippeau" }
   ];
+
+  const getCategoryColor = (category: string) => {
+    const colors = {
+      "Networking": "bg-blue-100 text-blue-700",
+      "Finance": "bg-green-100 text-green-700",
+      "AI/ML": "bg-purple-100 text-purple-700",
+      "Workshop": "bg-orange-100 text-orange-700",
+      "Community": "bg-pink-100 text-pink-700",
+      "Blockchain": "bg-yellow-100 text-yellow-700",
+      "SaaS": "bg-indigo-100 text-indigo-700",
+      "Marketing": "bg-red-100 text-red-700",
+      "Sales": "bg-teal-100 text-teal-700"
+    };
+    return colors[category] || "bg-gray-100 text-gray-700";
+  };
+
+  const formatDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
+  const formatTime = (timeString: string) => {
+    try {
+      return new Date(`1970-01-01T${timeString}`).toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch {
+      return timeString;
+    }
+  };
+
+  const getDefaultImage = (category: string) => {
+    const images = {
+      "Networking": "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=200&fit=crop&crop=center",
+      "Finance": "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=200&fit=crop&crop=center",
+      "AI/ML": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=200&fit=crop&crop=center",
+      "Workshop": "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=200&fit=crop&crop=center",
+      "Community": "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=400&h=200&fit=crop&crop=center",
+      "Blockchain": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400&h=200&fit=crop&crop=center"
+    };
+    return images[category] || "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=200&fit=crop&crop=center";
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-yellow-50/30">
@@ -187,7 +227,6 @@ const Index = () => {
             <div className="mb-8">
               <p className="text-lg font-semibold text-gray-700 mb-8">Founders backed by</p>
               <div className="relative">
-                {/* Blur gradients on edges */}
                 <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
                 <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
                 
@@ -266,143 +305,78 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            {featuredEvents.map((event, index) => (
-              <Card key={index} className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:scale-105 overflow-hidden">
-                <CardHeader className="pb-4">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex gap-2">
-                      <Badge className={`${
-                        event.status === 'Featured' ? 'nyc-gradient text-white' :
-                        event.status === 'Premium' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' :
-                        'bg-gradient-to-r from-green-400 to-green-500 text-white'
-                      } border-0 shadow-sm`}>
-                        {event.status}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        {event.category}
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading events...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+              {events.map((event) => (
+                <Card key={event.id} className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:scale-105 overflow-hidden">
+                  <div className="aspect-[2/1] relative overflow-hidden bg-gray-100">
+                    <img 
+                      src={event.fields['Image URL'] || getDefaultImage(event.fields.Category)} 
+                      alt={event.fields['Event Title']}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute top-3 left-3">
+                      <Badge className={getCategoryColor(event.fields.Category)}>
+                        {event.fields.Category}
                       </Badge>
                     </div>
-                    <div className="text-right">
-                      <div className="text-sm font-bold text-gray-900">{event.price}</div>
-                      <div className="text-xs text-gray-500">{event.date}</div>
+                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1">
+                      <div className="text-sm font-semibold text-gray-900">{formatDate(event.fields.Date)}</div>
                     </div>
                   </div>
-                  <CardTitle className="text-xl group-hover:text-green-600 transition-colors duration-200">{event.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3 text-sm text-gray-600 mb-6">
-                    <div className="flex items-center gap-3">
-                      <MapPin className="h-4 w-4 text-gray-400" />
-                      <span className="font-medium">{event.location}</span>
+                  
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                      <Clock className="h-4 w-4" />
+                      {formatTime(event.fields.Time)}
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Users className="h-4 w-4 text-gray-400" />
-                      <span className="font-medium">{event.attendees} attendees</span>
+                    <CardTitle className="text-xl leading-tight group-hover:text-blue-600 transition-colors">
+                      {event.fields['Event Title']}
+                    </CardTitle>
+                    <CardDescription className="text-gray-600 line-clamp-2">
+                      {event.fields['Event Description']}
+                    </CardDescription>
+                  </CardHeader>
+                  
+                  <CardContent className="pt-0">
+                    <div className="space-y-3 mb-4">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <MapPin className="h-4 w-4" />
+                        {event.fields.Location}
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <Users className="h-4 w-4" />
+                          {event.fields['Expected Attendees']} expected attendees
+                        </div>
+                        <div className="font-semibold text-green-600">{event.fields.Price}</div>
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Hosted by {event.fields['Host Organization']}
+                      </div>
                     </div>
-                  </div>
-                  <Button className="w-full nyc-gradient hover:opacity-90 rounded-xl group-hover:scale-105 transition-all duration-200 shadow-lg text-white">
-                    Register Now
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    
+                    <Button className="w-full nyc-gradient hover:opacity-90 rounded-xl group-hover:scale-105 transition-all duration-200 shadow-lg text-white" asChild>
+                      <a href={event.fields['Event URL']} target="_blank" rel="noopener noreferrer">
+                        Register Now
+                        <ExternalLink className="ml-2 h-4 w-4" />
+                      </a>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
 
           <div className="text-center">
             <Link to="/events">
               <Button size="lg" variant="outline" className="border-2 border-green-200 text-green-700 hover:bg-green-50 rounded-xl px-8 py-4 hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-lg">
                 View All Events
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Resources Section */}
-      <section id="blog" className="py-24 px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-yellow-50/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
-            <div className="flex justify-center items-center gap-3 mb-6">
-              <div className="p-3 bg-gradient-to-br from-green-50 to-yellow-50 rounded-xl">
-                <BookOpen className="h-8 w-8 text-green-600" />
-              </div>
-              <h2 className="text-5xl font-bold text-gray-900 tracking-tight">Resources & Insights</h2>
-            </div>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
-              Stay ahead with curated content, founder stories, and market insights from NYC's B2B ecosystem. 
-              Learn from those who've scaled successfully.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:scale-105 overflow-hidden">
-              <CardHeader className="pb-4">
-                <Badge className="w-fit nyc-gradient text-white border-0 shadow-sm mb-4">
-                  <Star className="h-3 w-3 mr-1" />
-                  Founder Story
-                </Badge>
-                <CardTitle className="text-xl group-hover:text-green-600 transition-colors duration-200">
-                  From Idea to $10M ARR
-                </CardTitle>
-                <CardDescription className="leading-relaxed">
-                  How Sarah built her fintech startup from her Brooklyn apartment to serving 50,000+ customers
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="ghost" className="p-0 text-green-600 hover:text-green-700 group-hover:translate-x-1 transition-all duration-200">
-                  Read Story <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:scale-105 overflow-hidden">
-              <CardHeader className="pb-4">
-                <Badge className="w-fit bg-gradient-to-r from-green-400 to-yellow-400 text-white border-0 shadow-sm mb-4">
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  Market Report
-                </Badge>
-                <CardTitle className="text-xl group-hover:text-yellow-600 transition-colors duration-200">
-                  NYC Tech Funding Q4 2024
-                </CardTitle>
-                <CardDescription className="leading-relaxed">
-                  Latest trends and investment patterns in NYC's startup scene with $2.1B+ deployed
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="ghost" className="p-0 text-yellow-600 hover:text-yellow-700 group-hover:translate-x-1 transition-all duration-200">
-                  View Report <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:scale-105 overflow-hidden">
-              <CardHeader className="pb-4">
-                <Badge className="w-fit bg-gradient-to-r from-yellow-400 to-green-500 text-white border-0 shadow-sm mb-4">
-                  <Target className="h-3 w-3 mr-1" />
-                  Guide
-                </Badge>
-                <CardTitle className="text-xl group-hover:text-green-600 transition-colors duration-200">
-                  Hiring in NYC Startups
-                </CardTitle>
-                <CardDescription className="leading-relaxed">
-                  Best practices for building your team in the competitive NYC market with proven frameworks
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="ghost" className="p-0 text-green-600 hover:text-green-700 group-hover:translate-x-1 transition-all duration-200">
-                  Read Guide <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="text-center">
-            <Link to="/blog">
-              <Button size="lg" variant="outline" className="border-2 border-green-200 text-green-700 hover:bg-green-50 rounded-xl px-8 py-4 hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-lg">
-                Read All Articles
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>

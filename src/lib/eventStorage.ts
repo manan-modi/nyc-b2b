@@ -15,6 +15,8 @@ export interface Event {
     'Status': 'Pending Review' | 'Approved' | 'Rejected';
     'Submitted At': string;
     'Image URL'?: string;
+    'Display Order'?: number;
+    'Featured'?: boolean;
   };
 }
 
@@ -74,6 +76,8 @@ export const submitEventToStorage = async (eventData: SubmitEventData): Promise<
       'Image URL': eventData.imageUrl || '',
       'Status': 'Pending Review',
       'Submitted At': new Date().toISOString(),
+      'Display Order': 999,
+      'Featured': false,
     },
   };
 
@@ -88,7 +92,15 @@ export const fetchApprovedEvents = async (): Promise<Event[]> => {
   const events = getEvents();
   return events
     .filter(event => event.fields.Status === 'Approved')
-    .sort((a, b) => new Date(a.fields.Date).getTime() - new Date(b.fields.Date).getTime());
+    .sort((a, b) => {
+      // Sort by display order first (lower numbers first), then by date
+      const orderA = a.fields['Display Order'] || 999;
+      const orderB = b.fields['Display Order'] || 999;
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      return new Date(a.fields.Date).getTime() - new Date(b.fields.Date).getTime();
+    });
 };
 
 export const fetchAllEvents = async (): Promise<Event[]> => {
@@ -124,6 +136,21 @@ export const updateEventDetails = async (recordId: string, updates: Partial<Even
     ...events[eventIndex].fields,
     ...updates
   };
+  saveEvents(events);
+
+  return events[eventIndex];
+};
+
+export const updateEventOrder = async (recordId: string, displayOrder: number, featured: boolean = false): Promise<Event> => {
+  const events = getEvents();
+  const eventIndex = events.findIndex(event => event.id === recordId);
+  
+  if (eventIndex === -1) {
+    throw new Error('Event not found');
+  }
+
+  events[eventIndex].fields['Display Order'] = displayOrder;
+  events[eventIndex].fields['Featured'] = featured;
   saveEvents(events);
 
   return events[eventIndex];

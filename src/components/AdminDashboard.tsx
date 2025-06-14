@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { Check, X, Calendar, MapPin, Users, ExternalLink, Clock, LogOut } from "lucide-react";
-import { fetchAllEvents, updateEventStatus, Event } from "@/lib/eventStorage";
+import { Check, X, Calendar, MapPin, Users, ExternalLink, Clock, LogOut, ArrowUp, ArrowDown, Star } from "lucide-react";
+import { fetchAllEvents, updateEventStatus, updateEventOrder, Event } from "@/lib/eventStorage";
 import { logout } from "@/lib/auth";
 import { EditEventDialog } from "./EditEventDialog";
 
@@ -12,6 +13,7 @@ const AdminDashboard = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  const [updatingOrder, setUpdatingOrder] = useState<string | null>(null);
 
   useEffect(() => {
     loadEvents();
@@ -35,7 +37,7 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     logout();
-    window.location.reload(); // This will trigger the ProtectedRoute to show login
+    window.location.reload();
   };
 
   const handleStatusUpdate = async (recordId: string, status: 'Approved' | 'Rejected') => {
@@ -43,7 +45,6 @@ const AdminDashboard = () => {
     try {
       await updateEventStatus(recordId, status);
       
-      // Update local state
       setEvents(events.map(event => 
         event.id === recordId 
           ? { ...event, fields: { ...event.fields, Status: status } }
@@ -63,6 +64,33 @@ const AdminDashboard = () => {
       });
     } finally {
       setUpdatingStatus(null);
+    }
+  };
+
+  const handleOrderUpdate = async (recordId: string, newOrder: number, featured: boolean = false) => {
+    setUpdatingOrder(recordId);
+    try {
+      await updateEventOrder(recordId, newOrder, featured);
+      
+      setEvents(events.map(event => 
+        event.id === recordId 
+          ? { ...event, fields: { ...event.fields, 'Display Order': newOrder, 'Featured': featured } }
+          : event
+      ));
+
+      toast({
+        title: "Event Order Updated",
+        description: `Event display order has been updated to ${newOrder}.`,
+      });
+    } catch (error) {
+      console.error('Failed to update event order:', error);
+      toast({
+        title: "Update Failed",
+        description: "There was an error updating the event order. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdatingOrder(null);
     }
   };
 
@@ -115,6 +143,8 @@ const AdminDashboard = () => {
     );
   }
 
+  const approvedEvents = events.filter(e => e.fields.Status === 'Approved');
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -122,7 +152,7 @@ const AdminDashboard = () => {
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Event Admin Dashboard</h1>
             <p className="text-gray-600">
-              Review and manage submitted events
+              Review and manage submitted events, control display order
             </p>
           </div>
           <Button
@@ -168,7 +198,15 @@ const AdminDashboard = () => {
               <CardHeader className="pb-4">
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle className="text-xl mb-2">{event.fields['Event Title']}</CardTitle>
+                    <div className="flex items-center gap-2 mb-2">
+                      <CardTitle className="text-xl">{event.fields['Event Title']}</CardTitle>
+                      {event.fields.Featured && (
+                        <Badge className="bg-yellow-100 text-yellow-700">
+                          <Star className="h-3 w-3 mr-1" />
+                          Featured
+                        </Badge>
+                      )}
+                    </div>
                     <CardDescription className="text-base">
                       {event.fields['Event Description']}
                     </CardDescription>
