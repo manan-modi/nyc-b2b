@@ -1,9 +1,10 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import { ArrowRight, Calendar, MapPin, Users, MessageCircle, Mail, TrendingUp, ChevronRight, Globe, Clock, ExternalLink } from "lucide-react";
+import { ArrowRight, Calendar, MapPin, Users, Mail, TrendingUp, ChevronRight, Globe, Clock, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -159,7 +160,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto text-center relative">
           <div className="animate-fade-in">
             <Badge className="mb-6 sm:mb-8 bg-gradient-to-r from-green-50 to-yellow-50 text-green-800 border-green-200/50 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold shadow-sm">
-              🚀 NYC's Premier B2B Community · 5,000+ Members
+              🚀 NYC's Premier B2B Community · 10,000+ Members
             </Badge>
             
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight tracking-tight px-2">
@@ -170,8 +171,8 @@ const Index = () => {
             </h1>
             
             <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-8 sm:mb-12 max-w-4xl mx-auto leading-relaxed font-light px-2">
-              Your gateway to NYC's most exclusive B2B events and insights. 
-              Join founders, developers, and innovators building the future of technology.
+              Your gateway to NYC's most exclusive B2B events, resources, and insights. 
+              Join nearly 10k founders, operators, and investors building the future of technology.
             </p>
             
             <div className="flex flex-col gap-4 sm:gap-6 justify-center items-center mb-12 sm:mb-16 px-4">
@@ -193,12 +194,7 @@ const Index = () => {
               </form>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
-              <Button size="lg" variant="outline" className="border-2 border-green-200 text-green-700 hover:bg-green-50 rounded-xl px-4 sm:px-6 py-2 sm:py-3 transition-all duration-200 hover:scale-105 hover:shadow-lg text-sm sm:text-base">
-                <MessageCircle className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
-                WhatsApp Community
-                <ChevronRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
-              </Button>
+            <div className="flex justify-center px-4">
               <Button size="lg" variant="outline" className="border-2 border-yellow-200 text-yellow-700 hover:bg-yellow-50 rounded-xl px-4 sm:px-6 py-2 sm:py-3 transition-all duration-200 hover:scale-105 hover:shadow-lg text-sm sm:text-base">
                 <Mail className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
                 Weekly Newsletter
@@ -374,12 +370,7 @@ const Index = () => {
             Join NYC's most connected B2B community. Get exclusive access to events and resources 
             that accelerate your career and business growth.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
-            <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100 rounded-xl px-6 sm:px-8 py-3 sm:py-4 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-200 text-sm sm:text-base">
-              <MessageCircle className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
-              Join WhatsApp Community
-              <ChevronRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
-            </Button>
+          <div className="flex justify-center">
             <Button size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white/10 rounded-xl px-6 sm:px-8 py-3 sm:py-4 backdrop-blur-sm hover:scale-105 transition-all duration-200 text-sm sm:text-base">
               <Mail className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
               Subscribe to Newsletter
@@ -416,9 +407,6 @@ const Index = () => {
                   <Globe className="h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
                 <div className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer">
-                  <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
-                </div>
-                <div className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer">
                   <Mail className="h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
               </div>
@@ -428,7 +416,6 @@ const Index = () => {
               <h3 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6">Community</h3>
               <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
                 <li><Link to="/events" className="hover:text-white transition-colors hover:translate-x-1 inline-block">Events</Link></li>
-                <li><a href="#" className="hover:text-white transition-colors hover:translate-x-1 inline-block">WhatsApp Group</a></li>
                 <li><a href="#" className="hover:text-white transition-colors hover:translate-x-1 inline-block">Newsletter</a></li>
               </ul>
             </div>
