@@ -11,7 +11,7 @@ const simpleHash = (str: string): string => {
 };
 
 // Default admin password - you can change this
-const ADMIN_PASSWORD_HASH = simpleHash('admin123');
+const ADMIN_PASSWORD_HASH = simpleHash('mananmodi19');
 const SESSION_KEY = 'admin_session';
 const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
