@@ -63,10 +63,22 @@ const EventsPage = () => {
 
   const formatDate = (dateString: string) => {
     try {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric'
-      });
+      const date = new Date(dateString);
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      if (date.toDateString() === today.toDateString()) {
+        return "Today";
+      } else if (date.toDateString() === tomorrow.toDateString()) {
+        return "Tomorrow";
+      } else {
+        return date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          weekday: 'long'
+        });
+      }
     } catch {
       return dateString;
     }
@@ -96,42 +108,57 @@ const EventsPage = () => {
     return images[category] || "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=200&fit=crop&crop=center";
   };
 
+  // Group events by date
+  const groupEventsByDate = (events: Event[]) => {
+    const groups: { [key: string]: Event[] } = {};
+    events.forEach(event => {
+      const dateKey = event.fields.Date;
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
+      groups[dateKey].push(event);
+    });
+    return groups;
+  };
+
+  const groupedEvents = groupEventsByDate(filteredEvents);
+  const sortedDates = Object.keys(groupedEvents).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading events...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading events...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Navigation - matching homepage */}
-      <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <Link to="/" className="flex items-center space-x-4">
+    <div className="min-h-screen bg-gray-900 text-white">
+      {/* Navigation */}
+      <nav className="bg-gray-900/80 backdrop-blur-xl border-b border-gray-800 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <Link to="/" className="flex items-center space-x-3">
               <div className="relative">
                 <img 
                   src="/lovable-uploads/00d2fcf3-063b-4181-8a1d-a84bd811f817.png"
                   alt="NYC B2B Logo"
-                  className="h-12 w-12 object-contain"
+                  className="h-8 w-8 object-contain"
                 />
               </div>
               <div>
-                <span className="text-xl font-bold nyc-gradient-text">NYC B2B</span>
-                <div className="text-xs text-gray-500 font-medium">Powered by community</div>
+                <span className="text-lg font-bold nyc-gradient-text">NYC B2B</span>
               </div>
             </Link>
-            <div className="hidden md:flex items-center space-x-8">
-              <Link to="/events" className="text-green-600 font-semibold transition-all duration-200 hover:scale-105">Events</Link>
-              <Link to="/blog" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">Blog</Link>
-              <Link to="/about" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">About</Link>
-              <Link to="/admin" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">Admin</Link>
-              <Button size="sm" className="nyc-gradient hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 text-white">
+            <div className="hidden md:flex items-center space-x-6">
+              <Link to="/events" className="text-green-500 font-semibold">Events</Link>
+              <Link to="/blog" className="text-gray-400 hover:text-white transition-colors">Blog</Link>
+              <Link to="/about" className="text-gray-400 hover:text-white transition-colors">About</Link>
+              <Link to="/admin" className="text-xs text-gray-500 hover:text-gray-400 transition-colors">Admin</Link>
+              <Button size="sm" className="nyc-gradient hover:opacity-90 text-white">
                 Join Community
               </Button>
             </div>
@@ -139,111 +166,131 @@ const EventsPage = () => {
         </div>
       </nav>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-4">
         {/* Header */}
-        <div className="flex justify-between items-start mb-8">
+        <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">NYC B2B Events</h1>
-            <p className="text-gray-600 text-lg">
-              Discover and attend the best startup events in New York City
+            <h1 className="text-2xl font-bold mb-1">NYC B2B Events</h1>
+            <p className="text-gray-400 text-sm">
+              Discover the best startup events in NYC
             </p>
           </div>
           <SimpleSubmitEventDialog />
         </div>
 
         {/* Filters */}
-        <div className="flex gap-4 mb-8">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+        <div className="flex gap-3 mb-6">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
             <Input
               placeholder="Search events..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 border-gray-200"
+              className="pl-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
             />
           </div>
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-48 border-gray-200">
+            <SelectTrigger className="w-36 bg-gray-800 border-gray-700 text-white">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-gray-800 border-gray-700">
               {categories.map(category => (
-                <SelectItem key={category} value={category}>
-                  {category === "all" ? "All Categories" : category}
+                <SelectItem key={category} value={category} className="text-white hover:bg-gray-700">
+                  {category === "all" ? "All" : category}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
 
-        {/* Events Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredEvents.map((event) => (
-            <Card key={event.id} className="group hover:shadow-lg transition-all duration-200 border border-gray-200 overflow-hidden">
-              <div className="aspect-[2/1] relative overflow-hidden bg-gray-100">
-                <img 
-                  src={event.fields['Image URL'] || getDefaultImage(event.fields.Category)} 
-                  alt={event.fields['Event Title']}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute top-3 left-3">
-                  <Badge className={getCategoryColor(event.fields.Category)}>
-                    {event.fields.Category}
-                  </Badge>
-                </div>
-                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1">
-                  <div className="text-sm font-semibold text-gray-900">{formatDate(event.fields.Date)}</div>
-                </div>
+        {/* Events List */}
+        <div className="space-y-6">
+          {sortedDates.map((date) => (
+            <div key={date}>
+              {/* Date Header */}
+              <div className="flex items-center mb-4">
+                <div className="w-2 h-2 bg-gray-600 rounded-full mr-3"></div>
+                <h2 className="text-lg font-semibold text-gray-300">{formatDate(date)}</h2>
               </div>
               
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                  <Clock className="h-4 w-4" />
-                  {formatTime(event.fields.Time)}
-                </div>
-                <CardTitle className="text-xl leading-tight group-hover:text-blue-600 transition-colors">
-                  {event.fields['Event Title']}
-                </CardTitle>
-                <CardDescription className="text-gray-600 line-clamp-2">
-                  {event.fields['Event Description']}
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent className="pt-0">
-                <div className="space-y-3 mb-4">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <MapPin className="h-4 w-4" />
-                    {event.fields.Location}
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <Users className="h-4 w-4" />
-                      {event.fields['Expected Attendees']} expected attendees
+              {/* Events for this date */}
+              <div className="space-y-4 ml-5">
+                {groupedEvents[date].map((event) => (
+                  <Card key={event.id} className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-all duration-200 overflow-hidden">
+                    <div className="flex">
+                      {/* Event Image */}
+                      <div className="w-20 h-20 flex-shrink-0 relative overflow-hidden rounded-l-lg">
+                        <img 
+                          src={event.fields['Image URL'] || getDefaultImage(event.fields.Category)} 
+                          alt={event.fields['Event Title']}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      
+                      {/* Event Content */}
+                      <div className="flex-1 p-4">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-sm font-medium text-green-400">
+                                {formatTime(event.fields.Time)}
+                              </span>
+                              <Badge className={`${getCategoryColor(event.fields.Category)} text-xs`}>
+                                {event.fields.Category}
+                              </Badge>
+                            </div>
+                            
+                            <h3 className="font-semibold text-white leading-tight mb-1">
+                              {event.fields['Event Title']}
+                            </h3>
+                            
+                            <div className="flex items-center gap-4 text-xs text-gray-400 mb-2">
+                              <div className="flex items-center gap-1">
+                                <MapPin className="h-3 w-3" />
+                                {event.fields.Location}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Users className="h-3 w-3" />
+                                {event.fields['Expected Attendees']}
+                              </div>
+                            </div>
+                            
+                            <p className="text-sm text-gray-400 line-clamp-2 mb-2">
+                              {event.fields['Event Description']}
+                            </p>
+                            
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-gray-500">
+                                By {event.fields['Host Organization']}
+                              </span>
+                              <span className="text-sm font-semibold text-green-400">
+                                {event.fields.Price}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <Button size="sm" className="w-full bg-gray-700 hover:bg-gray-600 text-white text-xs mt-2" asChild>
+                          <a href={event.fields['Event URL']} target="_blank" rel="noopener noreferrer">
+                            View Event
+                            <ExternalLink className="ml-1 h-3 w-3" />
+                          </a>
+                        </Button>
+                      </div>
                     </div>
-                    <div className="font-semibold text-green-600">{event.fields.Price}</div>
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    Hosted by {event.fields['Host Organization']}
-                  </div>
-                </div>
-                
-                <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white" asChild>
-                  <a href={event.fields['Event URL']} target="_blank" rel="noopener noreferrer">
-                    View Event
-                    <ExternalLink className="ml-2 h-4 w-4" />
-                  </a>
-                </Button>
-              </CardContent>
-            </Card>
+                  </Card>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
 
         {/* Empty State */}
         {filteredEvents.length === 0 && !loading && (
           <div className="text-center py-12">
-            <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No events found</h3>
-            <p className="text-gray-600">
+            <Calendar className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-white mb-2">No events found</h3>
+            <p className="text-gray-400">
               {events.length === 0 
                 ? "No events have been submitted yet. Be the first to submit an event!"
                 : "Try adjusting your search or filters"
