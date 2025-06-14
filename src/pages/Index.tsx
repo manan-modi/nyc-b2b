@@ -1,10 +1,9 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import { ArrowRight, Calendar, MapPin, Users, Mail, TrendingUp, ChevronRight, Globe, Clock, ExternalLink } from "lucide-react";
+import { ArrowRight, Calendar, MapPin, Users, Mail, TrendingUp, ChevronRight, Globe, Clock, ExternalLink, Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -15,6 +14,7 @@ const Index = () => {
   const [email, setEmail] = useState("");
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     loadEvents();
@@ -31,21 +31,34 @@ const Index = () => {
     }
   };
 
-  const handleEmailSignup = (e: React.FormEvent) => {
+  const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
       toast({
         title: "Please enter your email",
-        description: "We need your email to send you updates about NYC B2B events.",
+        description: "We need your email to subscribe you to our newsletter.",
         variant: "destructive",
       });
       return;
     }
-    toast({
-      title: "Thanks for joining!",
-      description: "You'll receive our next update with the hottest NYC B2B events.",
-    });
-    setEmail("");
+
+    try {
+      // Open Beehiiv subscription page with the email pre-filled
+      const subscriptionUrl = `https://nycb2b.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`;
+      window.open(subscriptionUrl, '_blank');
+      
+      toast({
+        title: "Redirecting to subscription!",
+        description: "Complete your subscription on the new page that opened.",
+      });
+      setEmail("");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const investors = [
@@ -132,21 +145,74 @@ const Index = () => {
                 <div className="text-xs text-gray-500 font-medium hidden sm:block">Powered by community</div>
               </div>
             </div>
-            <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
+            
+            {/* Desktop Navigation */}
+            <div className="hidden sm:flex items-center space-x-6 lg:space-x-8">
               <Link to="/events" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">Events</Link>
               <Link to="/blog" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">Blog</Link>
               <Link to="/about" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">About</Link>
               <Link to="/admin" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">Admin</Link>
-              <Button size="sm" className="nyc-gradient hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 text-white">
+              <Button size="sm" className="nyc-gradient hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 text-white" onClick={() => document.getElementById('email-signup')?.scrollIntoView({ behavior: 'smooth' })}>
                 Join Community
               </Button>
             </div>
-            <div className="md:hidden">
-              <Button size="sm" className="nyc-gradient hover:opacity-90 text-white">
-                Join
+
+            {/* Mobile Navigation */}
+            <div className="sm:hidden">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2"
+              >
+                <Menu className="h-5 w-5" />
               </Button>
             </div>
           </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="sm:hidden border-t border-gray-100 py-4 space-y-3">
+              <Link 
+                to="/events" 
+                className="block text-gray-600 hover:text-green-600 transition-colors font-medium py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Events
+              </Link>
+              <Link 
+                to="/blog" 
+                className="block text-gray-600 hover:text-green-600 transition-colors font-medium py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Blog
+              </Link>
+              <Link 
+                to="/about" 
+                className="block text-gray-600 hover:text-green-600 transition-colors font-medium py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                About
+              </Link>
+              <Link 
+                to="/admin" 
+                className="block text-xs text-gray-400 hover:text-gray-600 transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Admin
+              </Link>
+              <Button 
+                size="sm" 
+                className="nyc-gradient hover:opacity-90 text-white w-full mt-2"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  document.getElementById('email-signup')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                Join Community
+              </Button>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -175,12 +241,12 @@ const Index = () => {
               Join nearly 10k founders, operators, and investors building the future of technology.
             </p>
             
-            <div className="flex flex-col gap-4 sm:gap-6 justify-center items-center mb-12 sm:mb-16 px-4">
+            <div id="email-signup" className="flex flex-col gap-4 sm:gap-6 justify-center items-center mb-12 sm:mb-16 px-4">
               <form onSubmit={handleEmailSignup} className="flex flex-col sm:flex-row gap-3 w-full max-w-md sm:max-w-none group">
                 <div className="relative flex-1">
                   <Input
                     type="email"
-                    placeholder="Enter your work email"
+                    placeholder="Enter your email!"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full h-12 sm:h-14 border-gray-200 focus:border-green-500 rounded-xl text-base sm:text-lg px-4 sm:px-6 shadow-sm focus:shadow-lg transition-all duration-200"
@@ -195,10 +261,12 @@ const Index = () => {
             </div>
 
             <div className="flex justify-center px-4">
-              <Button size="lg" variant="outline" className="border-2 border-yellow-200 text-yellow-700 hover:bg-yellow-50 rounded-xl px-4 sm:px-6 py-2 sm:py-3 transition-all duration-200 hover:scale-105 hover:shadow-lg text-sm sm:text-base">
-                <Mail className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
-                Weekly Newsletter
-                <ChevronRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
+              <Button size="lg" variant="outline" className="border-2 border-yellow-200 text-yellow-700 hover:bg-yellow-50 rounded-xl px-4 sm:px-6 py-2 sm:py-3 transition-all duration-200 hover:scale-105 hover:shadow-lg text-sm sm:text-base" asChild>
+                <a href="https://nycb2b.beehiiv.com/subscribe" target="_blank" rel="noopener noreferrer">
+                  <Mail className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
+                  Weekly Newsletter
+                  <ChevronRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
+                </a>
               </Button>
             </div>
           </div>
@@ -371,10 +439,12 @@ const Index = () => {
             that accelerate your career and business growth.
           </p>
           <div className="flex justify-center">
-            <Button size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white/10 rounded-xl px-6 sm:px-8 py-3 sm:py-4 backdrop-blur-sm hover:scale-105 transition-all duration-200 text-sm sm:text-base">
-              <Mail className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
-              Subscribe to Newsletter
-              <ChevronRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <Button size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white/10 rounded-xl px-6 sm:px-8 py-3 sm:py-4 backdrop-blur-sm hover:scale-105 transition-all duration-200 text-sm sm:text-base" asChild>
+              <a href="https://nycb2b.beehiiv.com/subscribe" target="_blank" rel="noopener noreferrer">
+                <Mail className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
+                Subscribe to Newsletter
+                <ChevronRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
+              </a>
             </Button>
           </div>
         </div>
