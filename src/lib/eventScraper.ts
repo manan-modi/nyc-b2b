@@ -46,7 +46,10 @@ export const scrapeEventData = async (url: string): Promise<ScrapedEventData> =>
       throw new Error('Failed to scrape URL');
     }
 
-    const { markdown, html, metadata } = scrapeResult.data;
+    // Access the correct properties from the scrape result
+    const markdown = scrapeResult.markdown || '';
+    const html = scrapeResult.html || '';
+    const metadata = scrapeResult.metadata || {};
     
     // Extract event information from the scraped content
     const scrapedData = extractEventInfo(markdown, html, metadata, url);
