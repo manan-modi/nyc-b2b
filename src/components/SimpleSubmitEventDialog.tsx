@@ -29,8 +29,8 @@ export const SimpleSubmitEventDialog = () => {
     
     try {
       toast({
-        title: "Scraping Event Data...",
-        description: "Extracting event information from the URL. This may take a moment.",
+        title: "Processing Event...",
+        description: "Your event is being submitted for review.",
       });
 
       // Scrape event data from the URL
@@ -53,13 +53,9 @@ export const SimpleSubmitEventDialog = () => {
 
       await submitEventToStorage(fullEventData);
 
-      const hasScrapedData = scrapedData.title && scrapedData.title !== "Event Title (Please update)";
-
       toast({
         title: "Event Submitted Successfully!",
-        description: hasScrapedData 
-          ? "Event information has been automatically extracted and submitted for review!"
-          : "Event URL submitted. Some details may need manual review as auto-scraping had limited success.",
+        description: "Your event has been submitted and is now pending review.",
       });
 
       form.reset();
@@ -88,7 +84,7 @@ export const SimpleSubmitEventDialog = () => {
         <DialogHeader>
           <DialogTitle>Submit Your NYC B2B Event</DialogTitle>
           <DialogDescription>
-            Just paste your event URL below. We'll automatically extract the event details!
+            Share your event URL and we'll review it for inclusion in our community calendar.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -123,21 +119,13 @@ export const SimpleSubmitEventDialog = () => {
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">
-                <strong>✨ Auto-Magic Event Processing!</strong> Our system will automatically:
+                <strong>📋 Review Process:</strong> Our team will review your event submission and approve it if it fits our community guidelines.
               </p>
               <ul className="text-sm text-blue-700 mt-2 ml-4 space-y-1">
-                <li>• Extract the event title and description</li>
-                <li>• Find date, time, and location details</li>
-                <li>• Grab the event image</li>
-                <li>• Identify the host organization</li>
-                <li>• Categorize the event type</li>
+                <li>• Must be relevant to NYC B2B professionals</li>
+                <li>• Should provide clear value to attendees</li>
+                <li>• Events are typically approved within 24-48 hours</li>
               </ul>
-            </div>
-
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <p className="text-sm text-green-800">
-                <strong>Supported platforms:</strong> Lu.ma, Eventbrite, Meetup, Facebook Events, and most other event platforms work great!
-              </p>
             </div>
 
             <div className="flex justify-end gap-3 pt-4">
@@ -149,7 +137,7 @@ export const SimpleSubmitEventDialog = () => {
                 disabled={isSubmitting}
                 className="nyc-gradient hover:opacity-90 text-white"
               >
-                {isSubmitting ? "Processing..." : "Submit & Auto-Extract"}
+                {isSubmitting ? "Submitting..." : "Submit Event"}
               </Button>
             </div>
           </form>
