@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Calendar, Clock, MapPin, Users, DollarSign, Building } from "lucide-react";
-import { submitEventToAirtable, SubmitEventData } from "@/lib/airtable";
+import { submitEventToStorage, SubmitEventData } from "@/lib/eventStorage";
 
 export const EnhancedSubmitEventDialog = () => {
   const [open, setOpen] = useState(false);
@@ -36,7 +36,7 @@ export const EnhancedSubmitEventDialog = () => {
     setIsSubmitting(true);
     
     try {
-      await submitEventToAirtable(data);
+      await submitEventToStorage(data);
 
       toast({
         title: "Event Submitted Successfully!",
@@ -49,7 +49,7 @@ export const EnhancedSubmitEventDialog = () => {
       console.error('Error submitting event:', error);
       toast({
         title: "Submission Failed",
-        description: "There was an error submitting your event. Please check your connection and try again.",
+        description: "There was an error submitting your event. Please try again.",
         variant: "destructive",
       });
     } finally {

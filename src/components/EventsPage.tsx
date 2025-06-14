@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,13 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, MapPin, Users, Search, ExternalLink, Clock } from "lucide-react";
 import { EnhancedSubmitEventDialog } from "./EnhancedSubmitEventDialog";
-import { fetchApprovedEvents, AirtableEvent } from "@/lib/airtable";
+import { fetchApprovedEvents, Event } from "@/lib/eventStorage";
 import { toast } from "@/hooks/use-toast";
 
 const EventsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [events, setEvents] = useState<AirtableEvent[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
   const categories = ["all", "Networking", "Finance", "AI/ML", "Workshop", "Community", "Blockchain", "SaaS", "Marketing", "Sales"];

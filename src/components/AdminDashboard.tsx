@@ -1,14 +1,13 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { Check, X, Calendar, MapPin, Users, ExternalLink, Clock } from "lucide-react";
-import { fetchAllEvents, updateEventStatus, AirtableEvent } from "@/lib/airtable";
+import { fetchAllEvents, updateEventStatus, Event } from "@/lib/eventStorage";
 
 const AdminDashboard = () => {
-  const [events, setEvents] = useState<AirtableEvent[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
