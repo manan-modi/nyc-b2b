@@ -62,18 +62,18 @@ const Index = () => {
   };
 
   const investors = [
-    { name: "Andreessen Horowitz", shortName: "a16z" },
-    { name: "Sequoia Capital", shortName: "Sequoia" },
-    { name: "Union Square Ventures", shortName: "USV" },
-    { name: "Lightspeed Venture Partners", shortName: "Lightspeed" },
-    { name: "Accel", shortName: "Accel" },
-    { name: "Insight Partners", shortName: "Insight Partners" },
-    { name: "Bessemer Venture Partners", shortName: "Bessemer" },
+    { name: "Andreessen Horowitz", shortName: "a16z", logo: "/lovable-uploads/c07dfda6-02ec-43ac-9795-8a5c60a7c26d.png" },
+    { name: "Sequoia Capital", shortName: "Sequoia", logo: "/lovable-uploads/9cd946c6-8c29-426a-a83b-19ed3a9b3d32.png" },
+    { name: "Union Square Ventures", shortName: "USV", logo: "/lovable-uploads/f4ee446c-746c-4daf-b48d-c203acf6aac2.png" },
+    { name: "Lightspeed Venture Partners", shortName: "Lightspeed", logo: "/lovable-uploads/d5513b85-a8f8-4a40-995c-8bb012c5ed40.png" },
+    { name: "Accel", shortName: "Accel", logo: "/lovable-uploads/933e8e9f-e858-4c2f-880c-f32fbc97d95f.png" },
+    { name: "Insight Partners", shortName: "Insight Partners", logo: "/lovable-uploads/a3116963-3da8-4448-b95c-7f13981b3232.png" },
+    { name: "Bessemer Venture Partners", shortName: "Bessemer", logo: "/lovable-uploads/f7e6d198-65e3-417a-8f28-db14ed8b761d.png" },
     { name: "FJ Labs", shortName: "FJ Labs" },
-    { name: "NEA", shortName: "NEA" },
+    { name: "NEA", shortName: "NEA", logo: "/lovable-uploads/7b8efdde-0e0c-4ecf-88d8-c71778eba024.png" },
     { name: "RRE Ventures", shortName: "RRE" },
-    { name: "FirstMark Capital", shortName: "FirstMark" },
-    { name: "Lerer Hippeau", shortName: "Lerer Hippeau" }
+    { name: "FirstMark Capital", shortName: "FirstMark", logo: "/lovable-uploads/6b399693-2602-4ef3-8c21-5b3413a1b16d.png" },
+    { name: "Lerer Hippeau", shortName: "Lerer Hippeau", logo: "/lovable-uploads/92c7be6d-607a-4121-8a90-3824891c5875.png" }
   ];
 
   const getCategoryColor = (category: string) => {
@@ -309,9 +309,17 @@ const Index = () => {
                       <CarouselItem key={index} className="pl-1 sm:pl-2 md:pl-4 basis-1/2 sm:basis-1/3 lg:basis-1/4">
                         <div className="p-4 sm:p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 hover:shadow-lg transition-all duration-200 group hover:scale-105">
                           <div className="flex items-center justify-center h-12 sm:h-16">
-                            <span className="text-sm sm:text-lg font-bold text-gray-700 group-hover:text-green-600 transition-colors duration-200 text-center">
-                              {investor.shortName}
-                            </span>
+                            {investor.logo ? (
+                              <img 
+                                src={investor.logo} 
+                                alt={investor.name}
+                                className="max-h-8 sm:max-h-10 max-w-full object-contain filter group-hover:brightness-110 transition-all duration-200"
+                              />
+                            ) : (
+                              <span className="text-sm sm:text-lg font-bold text-gray-700 group-hover:text-green-600 transition-colors duration-200 text-center">
+                                {investor.shortName}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </CarouselItem>
