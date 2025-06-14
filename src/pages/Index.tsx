@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -290,16 +289,16 @@ const Index = () => {
       </section>
 
       {/* Featured Events Section */}
-      <section id="events" className="py-24 px-6 lg:px-8">
+      <section id="events" className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <div className="flex justify-center items-center gap-3 mb-6">
               <div className="p-3 bg-gradient-to-br from-green-50 to-yellow-50 rounded-xl">
                 <Calendar className="h-8 w-8 text-green-600" />
               </div>
-              <h2 className="text-5xl font-bold text-gray-900 tracking-tight">Upcoming Events</h2>
+              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 tracking-tight">Upcoming Events</h2>
             </div>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
+            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
               Connect with NYC's most innovative B2B minds at exclusive networking events and workshops. 
               Build meaningful relationships that drive your career forward.
             </p>
@@ -311,76 +310,79 @@ const Index = () => {
               <p className="text-gray-600">Loading events...</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-              {events.map((event) => (
-                <Card key={event.id} className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:scale-105 overflow-hidden">
-                  <div className="aspect-[2/1] relative overflow-hidden bg-gray-100">
-                    <img 
-                      src={event.fields['Image URL'] || getDefaultImage(event.fields.Category)} 
-                      alt={event.fields['Event Title']}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute top-3 left-3">
-                      <Badge className={getCategoryColor(event.fields.Category)}>
-                        {event.fields.Category}
-                      </Badge>
-                    </div>
-                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1">
-                      <div className="text-sm font-semibold text-gray-900">{formatDate(event.fields.Date)}</div>
-                    </div>
-                  </div>
-                  
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                      <Clock className="h-4 w-4" />
-                      {formatTime(event.fields.Time)}
-                    </div>
-                    <CardTitle className="text-xl leading-tight group-hover:text-blue-600 transition-colors">
-                      {event.fields['Event Title']}
-                    </CardTitle>
-                    <CardDescription className="text-gray-600 line-clamp-2">
-                      {event.fields['Event Description']}
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent className="pt-0">
-                    <div className="space-y-3 mb-4">
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <MapPin className="h-4 w-4" />
-                        {event.fields.Location}
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-16">
+                {events.map((event) => (
+                  <Card key={event.id} className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:scale-105 overflow-hidden">
+                    <div className="aspect-[2/1] relative overflow-hidden bg-gray-100">
+                      <img 
+                        src={event.fields['Image URL'] || getDefaultImage(event.fields.Category)} 
+                        alt={event.fields['Event Title']}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute top-3 left-3">
+                        <Badge className={getCategoryColor(event.fields.Category)}>
+                          {event.fields.Category}
+                        </Badge>
                       </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <Users className="h-4 w-4" />
-                          {event.fields['Expected Attendees']} expected attendees
-                        </div>
-                        <div className="font-semibold text-green-600">{event.fields.Price}</div>
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Hosted by {event.fields['Host Organization']}
+                      <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1">
+                        <div className="text-sm font-semibold text-gray-900">{formatDate(event.fields.Date)}</div>
                       </div>
                     </div>
                     
-                    <Button className="w-full nyc-gradient hover:opacity-90 rounded-xl group-hover:scale-105 transition-all duration-200 shadow-lg text-white" asChild>
-                      <a href={event.fields['Event URL']} target="_blank" rel="noopener noreferrer">
-                        Register Now
-                        <ExternalLink className="ml-2 h-4 w-4" />
-                      </a>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                        <Clock className="h-4 w-4" />
+                        {formatTime(event.fields.Time)}
+                      </div>
+                      <CardTitle className="text-lg sm:text-xl leading-tight group-hover:text-blue-600 transition-colors">
+                        {event.fields['Event Title']}
+                      </CardTitle>
+                      <CardDescription className="text-gray-600 line-clamp-2">
+                        {event.fields['Event Description']}
+                      </CardDescription>
+                    </CardHeader>
+                    
+                    <CardContent className="pt-0">
+                      <div className="space-y-3 mb-4">
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <MapPin className="h-4 w-4 flex-shrink-0" />
+                          <span className="truncate">{event.fields.Location}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm gap-2">
+                          <div className="flex items-center gap-2 text-gray-600 min-w-0">
+                            <Users className="h-4 w-4 flex-shrink-0" />
+                            <span className="truncate">{event.fields['Expected Attendees']} expected</span>
+                          </div>
+                          <div className="font-semibold text-green-600 flex-shrink-0">{event.fields.Price}</div>
+                        </div>
+                        <div className="text-sm text-gray-500 truncate">
+                          Hosted by {event.fields['Host Organization']}
+                        </div>
+                      </div>
+                      
+                      <Button className="w-full nyc-gradient hover:opacity-90 rounded-xl group-hover:scale-105 transition-all duration-200 shadow-lg text-white" asChild>
+                        <a href={event.fields['Event URL']} target="_blank" rel="noopener noreferrer">
+                          Register Now
+                          <ExternalLink className="ml-2 h-4 w-4" />
+                        </a>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
 
-          <div className="text-center">
-            <Link to="/events">
-              <Button size="lg" variant="outline" className="border-2 border-green-200 text-green-700 hover:bg-green-50 rounded-xl px-8 py-4 hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-lg">
-                View All Events
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
+              {/* See All Events Button */}
+              <div className="text-center">
+                <Link to="/events">
+                  <Button size="lg" variant="outline" className="border-2 border-green-200 text-green-700 hover:bg-green-50 rounded-xl px-8 py-4 hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-lg">
+                    See All Events
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
