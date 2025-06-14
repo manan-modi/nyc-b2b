@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -47,13 +46,6 @@ const Index = () => {
     });
     setEmail("");
   };
-
-  const stats = [
-    { number: "5,000+", label: "Community Members", icon: Users, growth: "+12%" },
-    { number: "200+", label: "Events This Year", icon: Calendar, growth: "+45%" },
-    { number: "150+", label: "Articles Published", icon: Users, growth: "+23%" },
-    { number: "100+", label: "Partner Companies", icon: TrendingUp, growth: "+67%" }
-  ];
 
   const investors = [
     { name: "Andreessen Horowitz", shortName: "a16z" },
@@ -264,31 +256,6 @@ const Index = () => {
                 </Carousel>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-white/80 backdrop-blur-sm border-y border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 text-center">
-            {stats.map((stat, index) => (
-              <div key={index} className="animate-fade-in group hover:scale-105 transition-all duration-200 cursor-pointer">
-                <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm group-hover:shadow-xl transition-all duration-200 border border-gray-100">
-                  <div className="flex justify-center mb-3 sm:mb-4">
-                    <div className="p-2 sm:p-3 bg-gradient-to-br from-green-50 to-yellow-50 rounded-lg sm:rounded-xl group-hover:scale-110 transition-transform duration-200">
-                      <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-green-600" />
-                    </div>
-                  </div>
-                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-1 sm:mb-2">{stat.number}</div>
-                  <div className="text-xs sm:text-sm lg:text-base text-gray-600 font-medium mb-1 sm:mb-2">{stat.label}</div>
-                  <div className="text-xs sm:text-sm text-green-600 font-semibold flex items-center justify-center">
-                    <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                    {stat.growth}
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
