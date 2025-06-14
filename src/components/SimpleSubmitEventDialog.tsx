@@ -6,80 +6,38 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Link, Calendar, Building } from "lucide-react";
+import { Plus, Link } from "lucide-react";
 import { submitEventToStorage, SubmitEventData } from "@/lib/eventStorage";
-import { scrapeEventData } from "@/lib/eventScraper";
 
 interface SimpleSubmitData {
   eventUrl: string;
-  eventTitle: string;
-  hostOrganization: string;
-  date: string;
 }
 
 export const SimpleSubmitEventDialog = () => {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isExtracting, setIsExtracting] = useState(false);
 
   const form = useForm<SimpleSubmitData>({
     defaultValues: {
       eventUrl: "",
-      eventTitle: "",
-      hostOrganization: "",
-      date: "",
     },
   });
-
-  const handleUrlExtraction = async () => {
-    const url = form.getValues('eventUrl');
-    if (!url) return;
-
-    setIsExtracting(true);
-    try {
-      const scrapedData = await scrapeEventData(url);
-      
-      if (scrapedData.title) {
-        form.setValue('eventTitle', scrapedData.title);
-      }
-      if (scrapedData.hostOrganization) {
-        form.setValue('hostOrganization', scrapedData.hostOrganization);
-      }
-      if (scrapedData.date) {
-        form.setValue('date', scrapedData.date);
-      }
-
-      toast({
-        title: "Information Extracted",
-        description: "Event details have been pre-filled where possible.",
-      });
-    } catch (error) {
-      console.error('Error extracting event data:', error);
-      toast({
-        title: "Extraction Failed",
-        description: "Couldn't extract event details. Please fill them manually.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsExtracting(false);
-    }
-  };
 
   const onSubmit = async (data: SimpleSubmitData) => {
     setIsSubmitting(true);
     
     try {
-      // Create full event data with defaults for missing fields
+      // Create event data with minimal info and defaults for admin to fill
       const fullEventData: SubmitEventData = {
-        eventTitle: data.eventTitle,
-        eventDescription: "Event details will be updated by admin after review",
+        eventTitle: "Event Title (To be updated by admin)",
+        eventDescription: "Event description will be updated by admin after review",
         eventUrl: data.eventUrl,
-        date: data.date,
+        date: new Date().toISOString().split('T')[0], // Today's date as placeholder
         time: "18:00", // Default time
         location: "Location TBD",
         category: "Networking", // Default category
         price: "TBD",
-        hostOrganization: data.hostOrganization,
+        hostOrganization: "Host TBD",
         expectedAttendees: 50, // Default
         imageUrl: "",
       };
@@ -88,7 +46,7 @@ export const SimpleSubmitEventDialog = () => {
 
       toast({
         title: "Event Submitted Successfully!",
-        description: "Thank you for submitting your event. An admin will review and complete the details within 24-48 hours.",
+        description: "Thank you for submitting your event. An admin will review and add all the details within 24-48 hours.",
       });
 
       form.reset();
@@ -117,7 +75,7 @@ export const SimpleSubmitEventDialog = () => {
         <DialogHeader>
           <DialogTitle>Submit Your NYC B2B Event</DialogTitle>
           <DialogDescription>
-            Just provide the event URL and basic details. Our admins will complete the rest!
+            Just paste your event URL below. Our admins will handle all the details!
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -138,73 +96,12 @@ export const SimpleSubmitEventDialog = () => {
                     <Link className="h-4 w-4 text-green-600" />
                     Event URL
                   </FormLabel>
-                  <div className="flex gap-2">
-                    <FormControl className="flex-1">
-                      <Input placeholder="https://lu.ma/your-event or Eventbrite link" {...field} />
-                    </FormControl>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handleUrlExtraction}
-                      disabled={isExtracting || !field.value}
-                    >
-                      {isExtracting ? "Extracting..." : "Extract"}
-                    </Button>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="eventTitle"
-              rules={{ required: "Event title is required" }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-green-600" />
-                    Event Title
-                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="NYC Founders Meetup" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="hostOrganization"
-              rules={{ required: "Host organization is required" }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <Building className="h-4 w-4 text-green-600" />
-                    Host Organization
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder="NYC Startup Community" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="date"
-              rules={{ required: "Event date is required" }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-green-600" />
-                    Date
-                  </FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
+                    <Input 
+                      placeholder="https://lu.ma/your-event or any other event platform URL" 
+                      {...field} 
+                      className="text-base"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -213,7 +110,19 @@ export const SimpleSubmitEventDialog = () => {
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">
-                <strong>Note:</strong> Don't worry about filling in all the details! Our admins will review your submission and complete information like description, time, location, pricing, and category based on your event URL.
+                <strong>That's it!</strong> Just paste your event URL and we'll take care of the rest. Our admins will:
+              </p>
+              <ul className="text-sm text-blue-700 mt-2 ml-4 space-y-1">
+                <li>• Extract the event title, description, and details</li>
+                <li>• Add proper categorization and pricing info</li>
+                <li>• Set the correct date, time, and location</li>
+                <li>• Publish it for the NYC B2B community to see</li>
+              </ul>
+            </div>
+
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <p className="text-sm text-green-800">
+                <strong>Supported platforms:</strong> Lu.ma, Eventbrite, Meetup, Facebook Events, and most other event platforms work great!
               </p>
             </div>
 
@@ -226,7 +135,7 @@ export const SimpleSubmitEventDialog = () => {
                 disabled={isSubmitting}
                 className="nyc-gradient hover:opacity-90 text-white"
               >
-                {isSubmitting ? "Submitting..." : "Submit for Review"}
+                {isSubmitting ? "Submitting..." : "Submit Event"}
               </Button>
             </div>
           </form>
