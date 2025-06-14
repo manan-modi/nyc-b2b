@@ -572,7 +572,7 @@ const Index = () => {
                         </CarouselItem>
                       ))}
                     </CarouselContent>
-                  </CarouselContent>
+                  </Carousel>
                 </div>
               </div>
             </>
