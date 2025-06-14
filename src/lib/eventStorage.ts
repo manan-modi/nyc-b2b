@@ -111,3 +111,20 @@ export const updateEventStatus = async (recordId: string, status: 'Approved' | '
 
   return events[eventIndex];
 };
+
+export const updateEventDetails = async (recordId: string, updates: Partial<Event['fields']>): Promise<Event> => {
+  const events = getEvents();
+  const eventIndex = events.findIndex(event => event.id === recordId);
+  
+  if (eventIndex === -1) {
+    throw new Error('Event not found');
+  }
+
+  events[eventIndex].fields = {
+    ...events[eventIndex].fields,
+    ...updates
+  };
+  saveEvents(events);
+
+  return events[eventIndex];
+};

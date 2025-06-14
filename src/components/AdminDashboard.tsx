@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { Check, X, Calendar, MapPin, Users, ExternalLink, Clock } from "lucide-react";
 import { fetchAllEvents, updateEventStatus, Event } from "@/lib/eventStorage";
+import { EditEventDialog } from "./EditEventDialog";
 
 const AdminDashboard = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -57,6 +58,12 @@ const AdminDashboard = () => {
     } finally {
       setUpdatingStatus(null);
     }
+  };
+
+  const handleEventUpdated = (updatedEvent: Event) => {
+    setEvents(events.map(event => 
+      event.id === updatedEvent.id ? updatedEvent : event
+    ));
   };
 
   const getStatusColor = (status: string) => {
@@ -209,6 +216,8 @@ const AdminDashboard = () => {
                       <ExternalLink className="ml-2 h-4 w-4" />
                     </a>
                   </Button>
+
+                  <EditEventDialog event={event} onEventUpdated={handleEventUpdated} />
 
                   {event.fields.Status === 'Pending Review' && (
                     <>

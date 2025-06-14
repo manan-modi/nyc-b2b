@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, MapPin, Users, Search, ExternalLink, Clock } from "lucide-react";
-import { EnhancedSubmitEventDialog } from "./EnhancedSubmitEventDialog";
+import { SimpleSubmitEventDialog } from "./SimpleSubmitEventDialog";
 import { fetchApprovedEvents, Event } from "@/lib/eventStorage";
 import { toast } from "@/hooks/use-toast";
 
@@ -116,7 +116,7 @@ const EventsPage = () => {
               Discover and attend the best startup events in New York City
             </p>
           </div>
-          <EnhancedSubmitEventDialog />
+          <SimpleSubmitEventDialog />
         </div>
 
         {/* Filters */}
