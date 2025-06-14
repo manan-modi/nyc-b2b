@@ -1,4 +1,5 @@
 
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -153,6 +154,14 @@ const Index = () => {
               <Link to="/events" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">Events</Link>
               <Link to="/blog" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">Blog</Link>
               <Link to="/about" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">About</Link>
+              <a 
+                href="https://venture.angellist.com/nyc-ventures/syndicate" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105"
+              >
+                Invest
+              </a>
               <Link to="/admin" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">Admin</Link>
               <SimpleSubmitEventDialog />
               <Button size="sm" className="nyc-gradient hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 text-white" onClick={() => document.getElementById('email-signup')?.scrollIntoView({ behavior: 'smooth' })}>
@@ -197,6 +206,15 @@ const Index = () => {
               >
                 About
               </Link>
+              <a 
+                href="https://venture.angellist.com/nyc-ventures/syndicate" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block text-gray-600 hover:text-green-600 transition-colors font-medium py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Invest
+              </a>
               <Link 
                 to="/admin" 
                 className="block text-xs text-gray-400 hover:text-gray-600 transition-colors py-2"
@@ -529,3 +547,4 @@ const Index = () => {
 };
 
 export default Index;
+
