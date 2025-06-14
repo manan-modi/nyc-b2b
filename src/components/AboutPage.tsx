@@ -83,8 +83,10 @@ const AboutPage = () => {
                 Invest
               </a>
               <SimpleSubmitEventDialog />
-              <Button size="sm" className="nyc-gradient hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 text-white">
-                Join Community
+              <Button size="sm" className="nyc-gradient hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 text-white" asChild>
+                <a href="https://nycb2b.beehiiv.com" target="_blank" rel="noopener noreferrer">
+                  Join Community
+                </a>
               </Button>
             </div>
 
@@ -133,9 +135,12 @@ const AboutPage = () => {
               <Button 
                 size="sm" 
                 className="nyc-gradient hover:opacity-90 text-white w-full mt-2"
+                asChild
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Join Community
+                <a href="https://nycb2b.beehiiv.com" target="_blank" rel="noopener noreferrer">
+                  Join Community
+                </a>
               </Button>
             </div>
           )}
@@ -194,7 +199,7 @@ const AboutPage = () => {
               </div>
               
               <div>
-                <h3 className="font-semibold text-lg mb-2">Curated Slack Communities</h3>
+                <h3 className="font-semibold text-lg mb-2">Curated WhatsApp Communities</h3>
                 <p>Vertical-focused channels for FinTech, HealthTech, Bootstrapped SaaS, Pre-Seed & Seed stage founders, and more.</p>
               </div>
             </div>
@@ -310,9 +315,11 @@ const AboutPage = () => {
                   Subscribe to Newsletter
                 </a>
               </Button>
-              <Button size="lg" variant="outline" className="border-2 border-green-200 text-green-700 hover:bg-green-50">
-                <Users className="mr-2 h-5 w-5" />
-                Join Slack Community
+              <Button size="lg" variant="outline" className="border-2 border-green-200 text-green-700 hover:bg-green-50" asChild>
+                <a href="https://chat.whatsapp.com/KqjrPrn3dv5I2ARCwvGpmD" target="_blank" rel="noopener noreferrer">
+                  <Users className="mr-2 h-5 w-5" />
+                  Join WhatsApp Community
+                </a>
               </Button>
             </div>
           </div>

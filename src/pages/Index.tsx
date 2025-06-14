@@ -189,8 +189,10 @@ const Index = () => {
                 Invest
               </a>
               <SimpleSubmitEventDialog />
-              <Button size="sm" className="nyc-gradient hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 text-white" onClick={() => document.getElementById('email-signup')?.scrollIntoView({ behavior: 'smooth' })}>
-                Join Community
+              <Button size="sm" className="nyc-gradient hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 text-white" asChild>
+                <a href="https://nycb2b.beehiiv.com" target="_blank" rel="noopener noreferrer">
+                  Join Community
+                </a>
               </Button>
             </div>
 
@@ -239,6 +241,7 @@ const Index = () => {
               <Button 
                 size="sm" 
                 className="nyc-gradient hover:opacity-90 text-white w-full mt-2"
+                asChild
                 onClick={() => {
                   setMobileMenuOpen(false);
                   document.getElementById('email-signup')?.scrollIntoView({ behavior: 'smooth' });
@@ -549,7 +552,10 @@ const Index = () => {
           
           <div className="border-t border-gray-800 mt-12 sm:mt-16 pt-6 sm:pt-8 flex flex-col sm:flex-row justify-between items-center text-xs sm:text-sm text-gray-400 gap-4">
             <p>&copy; 2024 NYC B2B. All rights reserved.</p>
-            <p>Made with ❤️ in NYC</p>
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+              <p>Contact: newyorkcityventures@gmail.com</p>
+              <p>Made with ❤️ in NYC</p>
+            </div>
           </div>
         </div>
       </footer>
