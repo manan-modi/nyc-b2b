@@ -1,10 +1,12 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Calendar, MapPin, Users, Briefcase, BookOpen, MessageCircle, Mail, Building2, TrendingUp, Network, Star, ChevronRight, Zap, Target, Globe } from "lucide-react";
+import { ArrowRight, Calendar, MapPin, Users, BookOpen, MessageCircle, Mail, Building2, TrendingUp, Star, ChevronRight, Target, Globe } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   const [email, setEmail] = useState("");
@@ -14,14 +16,14 @@ const Index = () => {
     if (!email) {
       toast({
         title: "Please enter your email",
-        description: "We need your email to send you updates about NYC B2B events and opportunities.",
+        description: "We need your email to send you updates about NYC B2B events.",
         variant: "destructive",
       });
       return;
     }
     toast({
       title: "Thanks for joining!",
-      description: "You'll receive our next update with the hottest NYC B2B events and job opportunities.",
+      description: "You'll receive our next update with the hottest NYC B2B events.",
     });
     setEmail("");
   };
@@ -56,40 +58,10 @@ const Index = () => {
     }
   ];
 
-  const featuredJobs = [
-    {
-      title: "Senior Frontend Engineer",
-      company: "Fintech Startup",
-      location: "NYC (Hybrid)",
-      salary: "$140k - $180k",
-      type: "Full-time",
-      posted: "2 days ago",
-      isHot: true
-    },
-    {
-      title: "Product Manager",
-      company: "E-commerce Scale-up",
-      location: "Manhattan",
-      salary: "$120k - $160k",
-      type: "Full-time",
-      posted: "1 week ago",
-      isHot: false
-    },
-    {
-      title: "Growth Marketing Lead",
-      company: "SaaS Startup",
-      location: "Remote/NYC",
-      salary: "$100k - $140k",
-      type: "Full-time",
-      posted: "3 days ago",
-      isHot: true
-    }
-  ];
-
   const stats = [
     { number: "5,000+", label: "Community Members", icon: Users, growth: "+12%" },
     { number: "200+", label: "Events This Year", icon: Calendar, growth: "+45%" },
-    { number: "1,500+", label: "Job Opportunities", icon: Briefcase, growth: "+23%" },
+    { number: "150+", label: "Articles Published", icon: BookOpen, growth: "+23%" },
     { number: "100+", label: "Partner Companies", icon: Building2, growth: "+67%" }
   ];
 
@@ -110,10 +82,9 @@ const Index = () => {
               </div>
             </div>
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#events" className="text-gray-600 hover:text-blue-600 transition-all duration-200 font-medium hover:scale-105">Events</a>
-              <a href="#jobs" className="text-gray-600 hover:text-blue-600 transition-all duration-200 font-medium hover:scale-105">Jobs</a>
-              <a href="#blog" className="text-gray-600 hover:text-blue-600 transition-all duration-200 font-medium hover:scale-105">Resources</a>
-              <a href="#about" className="text-gray-600 hover:text-blue-600 transition-all duration-200 font-medium hover:scale-105">About</a>
+              <Link to="/events" className="text-gray-600 hover:text-blue-600 transition-all duration-200 font-medium hover:scale-105">Events</Link>
+              <Link to="/blog" className="text-gray-600 hover:text-blue-600 transition-all duration-200 font-medium hover:scale-105">Blog</Link>
+              <Link to="/about" className="text-gray-600 hover:text-blue-600 transition-all duration-200 font-medium hover:scale-105">About</Link>
               <Button size="sm" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
                 Join Community
               </Button>
@@ -143,7 +114,7 @@ const Index = () => {
             </h1>
             
             <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed font-light">
-              Your gateway to NYC's most exclusive B2B events, job opportunities, and resources. 
+              Your gateway to NYC's most exclusive B2B events and insights. 
               Join founders, developers, and innovators building the future of technology.
             </p>
             
@@ -268,81 +239,18 @@ const Index = () => {
           </div>
 
           <div className="text-center">
-            <Button size="lg" variant="outline" className="border-2 border-blue-200 text-blue-700 hover:bg-blue-50 rounded-xl px-8 py-4 hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-lg">
-              View All Events
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Jobs Section */}
-      <section id="jobs" className="py-24 px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-blue-50/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
-            <div className="flex justify-center items-center gap-3 mb-6">
-              <div className="p-3 bg-gradient-to-br from-green-50 to-blue-50 rounded-xl">
-                <Briefcase className="h-8 w-8 text-green-600" />
-              </div>
-              <h2 className="text-5xl font-bold text-gray-900 tracking-tight">Hot Jobs</h2>
-            </div>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
-              Land your dream role at NYC's fastest-growing B2B companies. New opportunities added daily 
-              with competitive packages and equity upside.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            {featuredJobs.map((job, index) => (
-              <Card key={index} className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:scale-105 overflow-hidden">
-                <CardHeader className="pb-4">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex gap-2">
-                      <Badge className={`${
-                        job.type === 'Full-time' ? 'bg-gradient-to-r from-green-400 to-green-500 text-white' :
-                        'bg-gradient-to-r from-blue-400 to-blue-500 text-white'
-                      } border-0 shadow-sm`}>
-                        {job.type}
-                      </Badge>
-                      {job.isHot && (
-                        <Badge className="bg-gradient-to-r from-red-400 to-red-500 text-white border-0 shadow-sm">
-                          🔥 Hot
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-bold text-green-600">{job.salary}</div>
-                      <div className="text-xs text-gray-500">{job.posted}</div>
-                    </div>
-                  </div>
-                  <CardTitle className="text-xl group-hover:text-green-600 transition-colors duration-200">{job.title}</CardTitle>
-                  <CardDescription className="text-gray-600 font-medium">{job.company}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-3 text-sm text-gray-600 mb-6">
-                    <MapPin className="h-4 w-4 text-gray-400" />
-                    <span className="font-medium">{job.location}</span>
-                  </div>
-                  <Button className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-xl group-hover:scale-105 transition-all duration-200 shadow-lg">
-                    Apply Now
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <Button size="lg" variant="outline" className="border-2 border-green-200 text-green-700 hover:bg-green-50 rounded-xl px-8 py-4 hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-lg">
-              Browse All Jobs
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link to="/events">
+              <Button size="lg" variant="outline" className="border-2 border-blue-200 text-blue-700 hover:bg-blue-50 rounded-xl px-8 py-4 hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-lg">
+                View All Events
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Resources Section */}
-      <section id="blog" className="py-24 px-6 lg:px-8">
+      <section id="blog" className="py-24 px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-blue-50/30">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <div className="flex justify-center items-center gap-3 mb-6">
@@ -357,7 +265,7 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
             <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:scale-105 overflow-hidden">
               <CardHeader className="pb-4">
                 <Badge className="w-fit bg-gradient-to-r from-purple-400 to-purple-500 text-white border-0 shadow-sm mb-4">
@@ -418,6 +326,15 @@ const Index = () => {
               </CardContent>
             </Card>
           </div>
+
+          <div className="text-center">
+            <Link to="/blog">
+              <Button size="lg" variant="outline" className="border-2 border-purple-200 text-purple-700 hover:bg-purple-50 rounded-xl px-8 py-4 hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-lg">
+                Read All Articles
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -434,7 +351,7 @@ const Index = () => {
             Ready to Level Up Your B2B Journey?
           </h2>
           <p className="text-xl md:text-2xl mb-12 opacity-90 font-light leading-relaxed max-w-3xl mx-auto">
-            Join NYC's most connected B2B community. Get exclusive access to events, jobs, and resources 
+            Join NYC's most connected B2B community. Get exclusive access to events and resources 
             that accelerate your career and business growth.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
@@ -468,7 +385,7 @@ const Index = () => {
                 </div>
               </div>
               <p className="text-gray-400 mb-6 leading-relaxed">
-                Connecting NYC's B2B ecosystem through events, opportunities, and community. 
+                Connecting NYC's B2B ecosystem through events and community. 
                 Built by founders, for founders.
               </p>
               <div className="flex gap-4">
@@ -487,8 +404,7 @@ const Index = () => {
             <div>
               <h3 className="text-lg font-semibold mb-6">Community</h3>
               <ul className="space-y-3 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors hover:translate-x-1 inline-block">Events</a></li>
-                <li><a href="#" className="hover:text-white transition-colors hover:translate-x-1 inline-block">Jobs</a></li>
+                <li><Link to="/events" className="hover:text-white transition-colors hover:translate-x-1 inline-block">Events</Link></li>
                 <li><a href="#" className="hover:text-white transition-colors hover:translate-x-1 inline-block">WhatsApp Group</a></li>
                 <li><a href="#" className="hover:text-white transition-colors hover:translate-x-1 inline-block">Newsletter</a></li>
               </ul>
@@ -497,7 +413,7 @@ const Index = () => {
             <div>
               <h3 className="text-lg font-semibold mb-6">Resources</h3>
               <ul className="space-y-3 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors hover:translate-x-1 inline-block">Blog</a></li>
+                <li><Link to="/blog" className="hover:text-white transition-colors hover:translate-x-1 inline-block">Blog</Link></li>
                 <li><a href="#" className="hover:text-white transition-colors hover:translate-x-1 inline-block">Founder Stories</a></li>
                 <li><a href="#" className="hover:text-white transition-colors hover:translate-x-1 inline-block">Market Reports</a></li>
                 <li><a href="#" className="hover:text-white transition-colors hover:translate-x-1 inline-block">Guides</a></li>
@@ -507,7 +423,7 @@ const Index = () => {
             <div>
               <h3 className="text-lg font-semibold mb-6">Company</h3>
               <ul className="space-y-3 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors hover:translate-x-1 inline-block">About</a></li>
+                <li><Link to="/about" className="hover:text-white transition-colors hover:translate-x-1 inline-block">About</Link></li>
                 <li><a href="#" className="hover:text-white transition-colors hover:translate-x-1 inline-block">Contact</a></li>
                 <li><a href="#" className="hover:text-white transition-colors hover:translate-x-1 inline-block">Privacy Policy</a></li>
                 <li><a href="#" className="hover:text-white transition-colors hover:translate-x-1 inline-block">Terms of Service</a></li>
