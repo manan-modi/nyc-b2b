@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -438,7 +437,7 @@ const Index = () => {
               <div className="p-2 sm:p-3 bg-gradient-to-br from-green-50 to-yellow-50 rounded-lg sm:rounded-xl">
                 <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
               </div>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight">Upcoming Events</h2>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 tracking-tight">Upcoming Events</h2>
             </div>
             <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed mb-4">
               Connect with NYC's most innovative B2B minds at exclusive networking events and workshops. 
@@ -546,7 +545,7 @@ const Index = () => {
                   <Carousel
                     plugins={[
                       Autoplay({
-                        delay: 3000,
+                        delay: 2000,
                         stopOnInteraction: false,
                         stopOnMouseEnter: true,
                       }),
