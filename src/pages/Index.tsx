@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import { ArrowRight, Calendar, MapPin, Users, Mail, TrendingUp, ChevronRight, Globe, Clock, ExternalLink, Menu, Plus } from "lucide-react";
+import { ArrowRight, Calendar, MapPin, Users, Mail, TrendingUp, ChevronRight, Globe, Clock, ExternalLink, Menu, Plus, Heart } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -16,6 +16,7 @@ const Index = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showHearts, setShowHearts] = useState(false);
 
   useEffect(() => {
     loadEvents();
@@ -315,8 +316,28 @@ const Index = () => {
       <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-white to-green-50/30 border-y border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="animate-fade-in">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 tracking-tight">
+            <h2 
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 tracking-tight relative cursor-pointer"
+              onMouseEnter={() => setShowHearts(true)}
+              onMouseLeave={() => setShowHearts(false)}
+            >
               Loved by <span className="nyc-gradient-text">10X founders</span> in NYC
+              {showHearts && (
+                <div className="absolute inset-0 pointer-events-none">
+                  {[...Array(6)].map((_, i) => (
+                    <Heart
+                      key={i}
+                      className={`absolute w-6 h-6 text-green-500 animate-bounce fill-current opacity-80`}
+                      style={{
+                        left: `${20 + i * 15}%`,
+                        top: `${10 + (i % 2) * 20}%`,
+                        animationDelay: `${i * 100}ms`,
+                        animationDuration: '1s'
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </h2>
             <p className="text-lg sm:text-xl text-gray-600 mb-12 sm:mb-16 max-w-4xl mx-auto font-light leading-relaxed">
               Trusted by nearly 10,000+ founders, operators, and investors as the premier B2B startup community in NYC.
@@ -331,7 +352,7 @@ const Index = () => {
                 <Carousel
                   plugins={[
                     Autoplay({
-                      delay: 2000,
+                      delay: 1300,
                       stopOnInteraction: false,
                       stopOnMouseEnter: true,
                     }),
@@ -339,22 +360,24 @@ const Index = () => {
                   opts={{
                     align: "start",
                     loop: true,
+                    slidesToScroll: 1,
+                    dragFree: true,
                   }}
                   className="w-full max-w-6xl mx-auto"
                 >
                   <CarouselContent className="-ml-1 sm:-ml-2 md:-ml-4">
                     {investors.map((investor, index) => (
                       <CarouselItem key={index} className="pl-1 sm:pl-2 md:pl-4 basis-1/2 sm:basis-1/3 lg:basis-1/4">
-                        <div className="p-4 sm:p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 hover:shadow-lg transition-all duration-200 group hover:scale-105">
+                        <div className="p-4 sm:p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 hover:shadow-lg transition-all duration-300 group hover:scale-105">
                           <div className="flex items-center justify-center h-12 sm:h-16">
                             {investor.logo ? (
                               <img 
                                 src={investor.logo} 
                                 alt={investor.name}
-                                className="max-h-8 sm:max-h-10 max-w-full object-contain filter group-hover:brightness-110 transition-all duration-200"
+                                className="max-h-8 sm:max-h-10 max-w-full object-contain filter group-hover:brightness-110 transition-all duration-300"
                               />
                             ) : (
-                              <span className="text-sm sm:text-lg font-bold text-gray-700 group-hover:text-green-600 transition-colors duration-200 text-center">
+                              <span className="text-sm sm:text-lg font-bold text-gray-700 group-hover:text-green-600 transition-colors duration-300 text-center">
                                 {investor.shortName}
                               </span>
                             )}
@@ -380,9 +403,12 @@ const Index = () => {
               </div>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight">Upcoming Events</h2>
             </div>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed mb-6">
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed mb-4">
               Connect with NYC's most innovative B2B minds at exclusive networking events and workshops. 
               Build meaningful relationships that drive your career forward.
+            </p>
+            <p className="text-lg sm:text-xl font-medium text-green-700 mb-6">
+              Find the top startup events and tech events in NYC here
             </p>
             <div className="flex justify-center">
               <SimpleSubmitEventDialog />
