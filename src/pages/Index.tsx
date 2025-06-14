@@ -1,14 +1,16 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import { ArrowRight, Calendar, MapPin, Users, Mail, TrendingUp, ChevronRight, Globe, Clock, ExternalLink, Menu } from "lucide-react";
+import { ArrowRight, Calendar, MapPin, Users, Mail, TrendingUp, ChevronRight, Globe, Clock, ExternalLink, Menu, Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
 import { fetchApprovedEvents, Event } from "@/lib/eventStorage";
+import { SimpleSubmitEventDialog } from "@/components/SimpleSubmitEventDialog";
 
 const Index = () => {
   const [email, setEmail] = useState("");
@@ -152,6 +154,7 @@ const Index = () => {
               <Link to="/blog" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">Blog</Link>
               <Link to="/about" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">About</Link>
               <Link to="/admin" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">Admin</Link>
+              <SimpleSubmitEventDialog />
               <Button size="sm" className="nyc-gradient hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 text-white" onClick={() => document.getElementById('email-signup')?.scrollIntoView({ behavior: 'smooth' })}>
                 Join Community
               </Button>
@@ -201,6 +204,9 @@ const Index = () => {
               >
                 Admin
               </Link>
+              <div className="pt-2">
+                <SimpleSubmitEventDialog />
+              </div>
               <Button 
                 size="sm" 
                 className="nyc-gradient hover:opacity-90 text-white w-full mt-2"
@@ -342,10 +348,13 @@ const Index = () => {
               </div>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight">Upcoming Events</h2>
             </div>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed mb-6">
               Connect with NYC's most innovative B2B minds at exclusive networking events and workshops. 
               Build meaningful relationships that drive your career forward.
             </p>
+            <div className="flex justify-center">
+              <SimpleSubmitEventDialog />
+            </div>
           </div>
 
           {loading ? (
