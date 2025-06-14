@@ -66,13 +66,66 @@ const Index = () => {
   ];
 
   const investors = [
-    { name: "Andreessen Horowitz", shortName: "a16z" },
-    { name: "Sequoia Capital", shortName: "Sequoia" },
-    { name: "Union Square Ventures", shortName: "USV" },
-    { name: "Lightspeed Venture Partners", shortName: "Lightspeed" },
-    { name: "Accel", shortName: "Accel" },
-    { name: "Insight Partners", shortName: "Insight Partners" },
-    { name: "Bessemer Venture Partners", shortName: "Bessemer" }
+    { 
+      name: "Andreessen Horowitz", 
+      shortName: "a16z",
+      logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=100&fit=crop&crop=center"
+    },
+    { 
+      name: "Sequoia Capital", 
+      shortName: "Sequoia",
+      logo: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=200&h=100&fit=crop&crop=center"
+    },
+    { 
+      name: "Union Square Ventures", 
+      shortName: "USV",
+      logo: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=100&fit=crop&crop=center"
+    },
+    { 
+      name: "Lightspeed Venture Partners", 
+      shortName: "Lightspeed",
+      logo: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=200&h=100&fit=crop&crop=center"
+    },
+    { 
+      name: "Accel", 
+      shortName: "Accel",
+      logo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=100&fit=crop&crop=center"
+    },
+    { 
+      name: "Insight Partners", 
+      shortName: "Insight Partners",
+      logo: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=200&h=100&fit=crop&crop=center"
+    },
+    { 
+      name: "Bessemer Venture Partners", 
+      shortName: "Bessemer",
+      logo: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=200&h=100&fit=crop&crop=center"
+    },
+    { 
+      name: "FJ Labs", 
+      shortName: "FJ Labs",
+      logo: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=100&fit=crop&crop=center"
+    },
+    { 
+      name: "NEA", 
+      shortName: "NEA",
+      logo: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=200&h=100&fit=crop&crop=center"
+    },
+    { 
+      name: "RRE Ventures", 
+      shortName: "RRE",
+      logo: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=200&h=100&fit=crop&crop=center"
+    },
+    { 
+      name: "FirstMark Capital", 
+      shortName: "FirstMark",
+      logo: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=200&h=100&fit=crop&crop=center"
+    },
+    { 
+      name: "Lerer Hippeau", 
+      shortName: "Lerer Hippeau",
+      logo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=100&fit=crop&crop=center"
+    }
   ];
 
   return (
@@ -192,8 +245,20 @@ const Index = () => {
                     {investors.map((investor, index) => (
                       <CarouselItem key={index} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4">
                         <div className="p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 hover:shadow-lg transition-all duration-200 group hover:scale-105">
-                          <div className="flex items-center justify-center h-16">
-                            <span className="text-lg font-bold text-gray-700 group-hover:text-green-600 transition-colors duration-200">
+                          <div className="flex flex-col items-center justify-center h-20">
+                            <img 
+                              src={investor.logo} 
+                              alt={investor.name}
+                              className="h-12 w-auto object-contain mb-2 grayscale group-hover:grayscale-0 transition-all duration-200"
+                              onError={(e) => {
+                                // Fallback to text if image fails to load
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                const textElement = target.nextElementSibling as HTMLElement;
+                                if (textElement) textElement.style.display = 'block';
+                              }}
+                            />
+                            <span className="text-sm font-bold text-gray-700 group-hover:text-green-600 transition-colors duration-200 hidden">
                               {investor.shortName}
                             </span>
                           </div>
