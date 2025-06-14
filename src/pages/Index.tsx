@@ -226,19 +226,19 @@ const Index = () => {
         <div className="max-w-7xl mx-auto text-center relative">
           <div className="animate-fade-in">
             <Badge className="mb-6 sm:mb-8 bg-gradient-to-r from-green-50 to-yellow-50 text-green-800 border-green-200/50 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold shadow-sm">
-              🚀 NYC's Premier B2B Community · 10,000+ Members
+              🚀 NYC's Leading B2B Startup Network · 10,000+ Members
             </Badge>
             
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight tracking-tight px-2">
-              Connect. Build.{" "}
+              Where Builders Meet.{" "}
               <span className="nyc-gradient-text animate-pulse">
-                Scale.
+                Deals Happen.
               </span>
             </h1>
             
             <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-8 sm:mb-12 max-w-4xl mx-auto leading-relaxed font-light px-2">
-              Your gateway to NYC's most exclusive B2B events, resources, and insights. 
-              Join nearly 10k founders, operators, and investors building the future of technology.
+              Join the go-to community for 10k+ B2B founders, operators, and investors 
+              shaping the next wave of enterprise tech.
             </p>
             
             <div id="email-signup" className="flex flex-col gap-4 sm:gap-6 justify-center items-center mb-12 sm:mb-16 px-4">
