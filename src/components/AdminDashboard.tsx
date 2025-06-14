@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -94,6 +95,33 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleMoveUp = (eventId: string) => {
+    const currentEvent = events.find(e => e.id === eventId);
+    if (!currentEvent) return;
+    
+    const currentOrder = currentEvent.fields['Display Order'] || 0;
+    const newOrder = currentOrder + 1;
+    handleOrderUpdate(eventId, newOrder);
+  };
+
+  const handleMoveDown = (eventId: string) => {
+    const currentEvent = events.find(e => e.id === eventId);
+    if (!currentEvent) return;
+    
+    const currentOrder = currentEvent.fields['Display Order'] || 0;
+    const newOrder = Math.max(0, currentOrder - 1);
+    handleOrderUpdate(eventId, newOrder);
+  };
+
+  const handleToggleFeatured = (eventId: string) => {
+    const currentEvent = events.find(e => e.id === eventId);
+    if (!currentEvent) return;
+    
+    const currentOrder = currentEvent.fields['Display Order'] || 0;
+    const currentFeatured = currentEvent.fields.Featured || false;
+    handleOrderUpdate(eventId, currentOrder, !currentFeatured);
+  };
+
   const handleEventUpdated = (updatedEvent: Event) => {
     setEvents(events.map(event => 
       event.id === updatedEvent.id ? updatedEvent : event
@@ -143,6 +171,8 @@ const AdminDashboard = () => {
     );
   }
 
+  const approvedEvents = events.filter(e => e.fields.Status === 'Approved').sort((a, b) => (b.fields['Display Order'] || 0) - (a.fields['Display Order'] || 0));
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -168,6 +198,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardContent className="p-6">
@@ -195,6 +226,72 @@ const AdminDashboard = () => {
           </Card>
         </div>
 
+        {/* Homepage Event Order Section */}
+        <div className="mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Homepage Event Display Order</CardTitle>
+              <CardDescription>
+                Control which approved events appear on the homepage and their order. Higher priority events appear first.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {approvedEvents.slice(0, 6).map((event, index) => (
+                  <div key={event.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-4">
+                      <div className="text-sm font-medium text-gray-500">#{index + 1}</div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-medium">{event.fields['Event Title']}</h3>
+                          {event.fields.Featured && (
+                            <Badge className="bg-yellow-100 text-yellow-700">
+                              <Star className="h-3 w-3 mr-1" />
+                              Featured
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="text-sm text-gray-600">Order: {event.fields['Display Order'] || 0}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleToggleFeatured(event.id)}
+                        disabled={updatingOrder === event.id}
+                        className="text-yellow-600 border-yellow-200 hover:bg-yellow-50"
+                      >
+                        <Star className="h-4 w-4" />
+                        {event.fields.Featured ? 'Unfeature' : 'Feature'}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleMoveUp(event.id)}
+                        disabled={updatingOrder === event.id}
+                      >
+                        <ArrowUp className="h-4 w-4" />
+                        Higher
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleMoveDown(event.id)}
+                        disabled={updatingOrder === event.id}
+                      >
+                        <ArrowDown className="h-4 w-4" />
+                        Lower
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* All Events */}
         <div className="space-y-6">
           {events.map((event) => (
             <Card key={event.id} className="overflow-hidden">

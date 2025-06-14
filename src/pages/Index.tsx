@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -44,7 +45,40 @@ const Index = () => {
     }
 
     try {
-      // Open Beehiiv subscription page with the email pre-filled
+      // Subscribe to Beehiiv using API
+      const response = await fetch('https://api.beehiiv.com/v2/publications/pub_255e23a2-96f2-406a-8d8b-f3c978f4620f/subscriptions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer pub_255e23a2-96f2-406a-8d8b-f3c978f4620f'
+        },
+        body: JSON.stringify({
+          email: email,
+          reactivate_existing: true,
+          send_welcome_email: true
+        })
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Successfully subscribed!",
+          description: "Welcome to the NYC B2B community. Check your email for confirmation.",
+        });
+        setEmail("");
+      } else {
+        // Fallback to manual subscription
+        const subscriptionUrl = `https://nycb2b.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`;
+        window.open(subscriptionUrl, '_blank');
+        
+        toast({
+          title: "Redirecting to subscription!",
+          description: "Complete your subscription on the new page that opened.",
+        });
+        setEmail("");
+      }
+    } catch (error) {
+      console.error('Beehiiv API error:', error);
+      // Fallback to manual subscription
       const subscriptionUrl = `https://nycb2b.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`;
       window.open(subscriptionUrl, '_blank');
       
@@ -53,12 +87,6 @@ const Index = () => {
         description: "Complete your subscription on the new page that opened.",
       });
       setEmail("");
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
     }
   };
 
@@ -70,13 +98,13 @@ const Index = () => {
     { name: "Accel", shortName: "Accel", logo: "/lovable-uploads/933e8e9f-e858-4c2f-880c-f32fbc97d95f.png" },
     { name: "Insight Partners", shortName: "Insight Partners", logo: "/lovable-uploads/a3116963-3da8-4448-b95c-7f13981b3232.png" },
     { name: "Bessemer Venture Partners", shortName: "Bessemer", logo: "/lovable-uploads/f7e6d198-65e3-417a-8f28-db14ed8b761d.png" },
-    { name: "FJ Labs", shortName: "FJ Labs" },
+    { name: "FJ Labs", shortName: "FJ Labs", logo: "/lovable-uploads/15301ceb-d1bd-4b2c-a09c-842f37f8be01.png" },
     { name: "NEA", shortName: "NEA", logo: "/lovable-uploads/7b8efdde-0e0c-4ecf-88d8-c71778eba024.png" },
     { name: "RRE Ventures", shortName: "RRE" },
     { name: "FirstMark Capital", shortName: "FirstMark", logo: "/lovable-uploads/6b399693-2602-4ef3-8c21-5b3413a1b16d.png" },
     { name: "Lerer Hippeau", shortName: "Lerer Hippeau", logo: "/lovable-uploads/92c7be6d-607a-4121-8a90-3824891c5875.png" },
     { name: "Antler", shortName: "Antler", logo: "/lovable-uploads/f4d2292b-9cde-46b0-8bda-d2e749bc53fb.png" },
-    { name: "Hustle Fund", shortName: "Hustle Fund", logo: "/lovable-uploads/71f4076b-d0a2-41b2-9ca5-2be9ff767129.png" }
+    { name: "Hustle Fund", shortName: "Hustle Fund", logo: "/lovable-uploads/1372bbf6-c158-4a58-b90e-906613c48a8c.png" }
   ];
 
   const getCategoryColor = (category: string) => {
@@ -162,7 +190,6 @@ const Index = () => {
               >
                 Invest
               </a>
-              <Link to="/admin" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">Admin</Link>
               <SimpleSubmitEventDialog />
               <Button size="sm" className="nyc-gradient hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 text-white" onClick={() => document.getElementById('email-signup')?.scrollIntoView({ behavior: 'smooth' })}>
                 Join Community
@@ -215,13 +242,6 @@ const Index = () => {
               >
                 Invest
               </a>
-              <Link 
-                to="/admin" 
-                className="block text-xs text-gray-400 hover:text-gray-600 transition-colors py-2"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Admin
-              </Link>
               <div className="pt-2">
                 <SimpleSubmitEventDialog />
               </div>
@@ -474,7 +494,7 @@ const Index = () => {
             that accelerate your career and business growth.
           </p>
           <div className="flex justify-center">
-            <Button size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white/10 rounded-xl px-6 sm:px-8 py-3 sm:py-4 backdrop-blur-sm hover:scale-105 transition-all duration-200 text-sm sm:text-base" asChild>
+            <Button size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white hover:text-gray-900 rounded-xl px-6 sm:px-8 py-3 sm:py-4 backdrop-blur-sm hover:scale-105 transition-all duration-200 text-sm sm:text-base" asChild>
               <a href="https://nycb2b.beehiiv.com/subscribe" target="_blank" rel="noopener noreferrer">
                 <Mail className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
                 Subscribe to Newsletter
