@@ -277,8 +277,8 @@ const EventsPage = () => {
                           </div>
                         </div>
                         
-                        {/* Event Image */}
-                        <div className="w-full sm:w-48 h-48 sm:h-auto flex-shrink-0 relative">
+                        {/* Event Image - Fixed sizing and cropping */}
+                        <div className="w-full sm:w-64 h-48 sm:h-64 flex-shrink-0 relative overflow-hidden">
                           <img 
                             src={event.fields['Image URL'] || getDefaultImage(event.fields.Category)} 
                             alt={event.fields['Event Title']}

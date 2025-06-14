@@ -1,20 +1,116 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { Check, X, Calendar, MapPin, Users, ExternalLink, Clock, LogOut, ArrowUp, ArrowDown, Star } from "lucide-react";
+import { Check, X, Calendar, MapPin, Users, ExternalLink, Clock, LogOut, GripVertical, Star } from "lucide-react";
 import { fetchAllEvents, updateEventStatus, updateEventOrder, Event } from "@/lib/eventStorage";
 import { logout } from "@/lib/auth";
 import { EditEventDialog } from "./EditEventDialog";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import {
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+// Sortable Item Component
+const SortableEventItem = ({ 
+  event, 
+  index, 
+  onToggleFeatured, 
+  updatingOrder 
+}: { 
+  event: Event; 
+  index: number; 
+  onToggleFeatured: (eventId: string) => void;
+  updatingOrder: string | null;
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: event.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center justify-between p-4 bg-gray-50 rounded-lg ${isDragging ? 'shadow-lg' : ''}`}
+    >
+      <div className="flex items-center gap-4">
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab hover:cursor-grabbing p-1 hover:bg-gray-200 rounded"
+        >
+          <GripVertical className="h-5 w-5 text-gray-400" />
+        </div>
+        <div className="text-sm font-medium text-gray-500">#{index + 1}</div>
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="font-medium">{event.fields['Event Title']}</h3>
+            {event.fields.Featured && (
+              <Badge className="bg-yellow-100 text-yellow-700">
+                <Star className="h-3 w-3 mr-1" />
+                Featured
+              </Badge>
+            )}
+          </div>
+          <div className="text-sm text-gray-600">Order: {event.fields['Display Order'] || 0}</div>
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => onToggleFeatured(event.id)}
+          disabled={updatingOrder === event.id}
+          className="text-yellow-600 border-yellow-200 hover:bg-yellow-50"
+        >
+          <Star className="h-4 w-4" />
+          {event.fields.Featured ? 'Unfeature' : 'Feature'}
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 const AdminDashboard = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
   const [updatingOrder, setUpdatingOrder] = useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   useEffect(() => {
     loadEvents();
@@ -95,24 +191,6 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleMoveUp = (eventId: string) => {
-    const currentEvent = events.find(e => e.id === eventId);
-    if (!currentEvent) return;
-    
-    const currentOrder = currentEvent.fields['Display Order'] || 0;
-    const newOrder = currentOrder + 1;
-    handleOrderUpdate(eventId, newOrder);
-  };
-
-  const handleMoveDown = (eventId: string) => {
-    const currentEvent = events.find(e => e.id === eventId);
-    if (!currentEvent) return;
-    
-    const currentOrder = currentEvent.fields['Display Order'] || 0;
-    const newOrder = Math.max(0, currentOrder - 1);
-    handleOrderUpdate(eventId, newOrder);
-  };
-
   const handleToggleFeatured = (eventId: string) => {
     const currentEvent = events.find(e => e.id === eventId);
     if (!currentEvent) return;
@@ -120,6 +198,44 @@ const AdminDashboard = () => {
     const currentOrder = currentEvent.fields['Display Order'] || 0;
     const currentFeatured = currentEvent.fields.Featured || false;
     handleOrderUpdate(eventId, currentOrder, !currentFeatured);
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const approvedEvents = events.filter(e => e.fields.Status === 'Approved').sort((a, b) => (b.fields['Display Order'] || 0) - (a.fields['Display Order'] || 0));
+    
+    const oldIndex = approvedEvents.findIndex(item => item.id === active.id);
+    const newIndex = approvedEvents.findIndex(item => item.id === over.id);
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      const reorderedEvents = arrayMove(approvedEvents, oldIndex, newIndex);
+      
+      // Update display orders based on new positions
+      const updatePromises = reorderedEvents.map((event, index) => {
+        const newOrder = reorderedEvents.length - index; // Higher position = higher order number
+        return handleOrderUpdate(event.id, newOrder, event.fields.Featured || false);
+      });
+
+      try {
+        await Promise.all(updatePromises);
+        toast({
+          title: "Events Reordered",
+          description: "The event display order has been updated successfully.",
+        });
+      } catch (error) {
+        console.error('Failed to reorder events:', error);
+        toast({
+          title: "Reorder Failed",
+          description: "There was an error reordering the events. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   const handleEventUpdated = (updatedEvent: Event) => {
@@ -226,67 +342,38 @@ const AdminDashboard = () => {
           </Card>
         </div>
 
-        {/* Homepage Event Order Section */}
+        {/* Homepage Event Order Section with Drag & Drop */}
         <div className="mb-8">
           <Card>
             <CardHeader>
               <CardTitle>Homepage Event Display Order</CardTitle>
               <CardDescription>
-                Control which approved events appear on the homepage and their order. Higher priority events appear first.
+                Drag and drop to reorder events. Events at the top will appear first on the homepage.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {approvedEvents.slice(0, 6).map((event, index) => (
-                  <div key={event.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <div className="text-sm font-medium text-gray-500">#{index + 1}</div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-medium">{event.fields['Event Title']}</h3>
-                          {event.fields.Featured && (
-                            <Badge className="bg-yellow-100 text-yellow-700">
-                              <Star className="h-3 w-3 mr-1" />
-                              Featured
-                            </Badge>
-                          )}
-                        </div>
-                        <div className="text-sm text-gray-600">Order: {event.fields['Display Order'] || 0}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleToggleFeatured(event.id)}
-                        disabled={updatingOrder === event.id}
-                        className="text-yellow-600 border-yellow-200 hover:bg-yellow-50"
-                      >
-                        <Star className="h-4 w-4" />
-                        {event.fields.Featured ? 'Unfeature' : 'Feature'}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleMoveUp(event.id)}
-                        disabled={updatingOrder === event.id}
-                      >
-                        <ArrowUp className="h-4 w-4" />
-                        Higher
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleMoveDown(event.id)}
-                        disabled={updatingOrder === event.id}
-                      >
-                        <ArrowDown className="h-4 w-4" />
-                        Lower
-                      </Button>
-                    </div>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={approvedEvents.slice(0, 6).map(event => event.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="space-y-4">
+                    {approvedEvents.slice(0, 6).map((event, index) => (
+                      <SortableEventItem
+                        key={event.id}
+                        event={event}
+                        index={index}
+                        onToggleFeatured={handleToggleFeatured}
+                        updatingOrder={updatingOrder}
+                      />
+                    ))}
                   </div>
-                ))}
-              </div>
+                </SortableContext>
+              </DndContext>
             </CardContent>
           </Card>
         </div>
