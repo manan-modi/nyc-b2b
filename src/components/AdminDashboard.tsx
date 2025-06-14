@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { Check, X, Calendar, MapPin, Users, ExternalLink, Clock } from "lucide-react";
+import { Check, X, Calendar, MapPin, Users, ExternalLink, Clock, LogOut } from "lucide-react";
 import { fetchAllEvents, updateEventStatus, Event } from "@/lib/eventStorage";
+import { logout } from "@/lib/auth";
 import { EditEventDialog } from "./EditEventDialog";
 
 const AdminDashboard = () => {
@@ -30,6 +31,11 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    window.location.reload(); // This will trigger the ProtectedRoute to show login
   };
 
   const handleStatusUpdate = async (recordId: string, status: 'Approved' | 'Rejected') => {
@@ -112,11 +118,21 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Event Admin Dashboard</h1>
-          <p className="text-gray-600">
-            Review and manage submitted events
-          </p>
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Event Admin Dashboard</h1>
+            <p className="text-gray-600">
+              Review and manage submitted events
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={handleLogout}
+            className="flex items-center gap-2"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
