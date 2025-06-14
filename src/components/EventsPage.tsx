@@ -1,11 +1,11 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, MapPin, Users, Search, ExternalLink, Clock } from "lucide-react";
+import { MapPin, Users, Search, ExternalLink, Clock } from "lucide-react";
 import { SimpleSubmitEventDialog } from "./SimpleSubmitEventDialog";
 import { fetchApprovedEvents, Event } from "@/lib/eventStorage";
 import { toast } from "@/hooks/use-toast";
@@ -162,15 +162,20 @@ const EventsPage = () => {
                 Join Community
               </Button>
             </div>
+            <div className="md:hidden">
+              <Button size="sm" className="nyc-gradient hover:opacity-90 text-white">
+                Join
+              </Button>
+            </div>
           </div>
         </div>
       </nav>
 
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-4">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <div>
-            <h1 className="text-2xl font-bold mb-1">NYC B2B Events</h1>
+            <h1 className="text-xl sm:text-2xl font-bold mb-1">NYC B2B Events</h1>
             <p className="text-gray-400 text-sm">
               Discover the best startup events in NYC
             </p>
@@ -179,18 +184,18 @@ const EventsPage = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex gap-3 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
             <Input
               placeholder="Search events..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
+              className="pl-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 h-12"
             />
           </div>
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-36 bg-gray-800 border-gray-700 text-white">
+            <SelectTrigger className="w-full sm:w-36 bg-gray-800 border-gray-700 text-white h-12">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent className="bg-gray-800 border-gray-700">
@@ -214,12 +219,12 @@ const EventsPage = () => {
               </div>
               
               {/* Events for this date */}
-              <div className="space-y-4 ml-5">
+              <div className="space-y-3 ml-5">
                 {groupedEvents[date].map((event) => (
                   <Card key={event.id} className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-all duration-200 overflow-hidden">
                     <div className="flex">
                       {/* Event Image */}
-                      <div className="w-20 h-20 flex-shrink-0 relative overflow-hidden rounded-l-lg">
+                      <div className="w-16 sm:w-20 h-16 sm:h-20 flex-shrink-0 relative overflow-hidden rounded-l-lg">
                         <img 
                           src={event.fields['Image URL'] || getDefaultImage(event.fields.Category)} 
                           alt={event.fields['Event Title']}
@@ -228,42 +233,42 @@ const EventsPage = () => {
                       </div>
                       
                       {/* Event Content */}
-                      <div className="flex-1 p-4">
+                      <div className="flex-1 p-3 sm:p-4">
                         <div className="flex items-start justify-between mb-2">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-sm font-medium text-green-400">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                              <span className="text-xs sm:text-sm font-medium text-green-400">
                                 {formatTime(event.fields.Time)}
                               </span>
-                              <Badge className={`${getCategoryColor(event.fields.Category)} text-xs`}>
+                              <Badge className={`${getCategoryColor(event.fields.Category)} text-xs w-fit`}>
                                 {event.fields.Category}
                               </Badge>
                             </div>
                             
-                            <h3 className="font-semibold text-white leading-tight mb-1">
+                            <h3 className="font-semibold text-white leading-tight mb-1 text-sm sm:text-base line-clamp-2">
                               {event.fields['Event Title']}
                             </h3>
                             
-                            <div className="flex items-center gap-4 text-xs text-gray-400 mb-2">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs text-gray-400 mb-2">
                               <div className="flex items-center gap-1">
-                                <MapPin className="h-3 w-3" />
-                                {event.fields.Location}
+                                <MapPin className="h-3 w-3 flex-shrink-0" />
+                                <span className="truncate">{event.fields.Location}</span>
                               </div>
                               <div className="flex items-center gap-1">
-                                <Users className="h-3 w-3" />
-                                {event.fields['Expected Attendees']}
+                                <Users className="h-3 w-3 flex-shrink-0" />
+                                <span className="truncate">{event.fields['Expected Attendees']}</span>
                               </div>
                             </div>
                             
-                            <p className="text-sm text-gray-400 line-clamp-2 mb-2">
+                            <p className="text-xs sm:text-sm text-gray-400 line-clamp-2 mb-2">
                               {event.fields['Event Description']}
                             </p>
                             
                             <div className="flex items-center justify-between">
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-gray-500 truncate">
                                 By {event.fields['Host Organization']}
                               </span>
-                              <span className="text-sm font-semibold text-green-400">
+                              <span className="text-xs sm:text-sm font-semibold text-green-400 ml-2">
                                 {event.fields.Price}
                               </span>
                             </div>
@@ -288,7 +293,7 @@ const EventsPage = () => {
         {/* Empty State */}
         {filteredEvents.length === 0 && !loading && (
           <div className="text-center py-12">
-            <Calendar className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+            <Clock className="h-12 w-12 text-gray-600 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-white mb-2">No events found</h3>
             <p className="text-gray-400">
               {events.length === 0 
