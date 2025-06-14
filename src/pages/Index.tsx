@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,14 +14,14 @@ const Index = () => {
     if (!email) {
       toast({
         title: "Please enter your email",
-        description: "We need your email to send you updates about NYC startup events and opportunities.",
+        description: "We need your email to send you updates about NYC B2B events and opportunities.",
         variant: "destructive",
       });
       return;
     }
     toast({
       title: "Thanks for joining!",
-      description: "You'll receive our next update with the hottest NYC startup events and job opportunities.",
+      description: "You'll receive our next update with the hottest NYC B2B events and job opportunities.",
     });
     setEmail("");
   };
@@ -106,7 +105,7 @@ const Index = () => {
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
               </div>
               <div>
-                <span className="text-xl font-bold text-gray-900">NYC Startup Hub</span>
+                <span className="text-xl font-bold text-gray-900">NYC B2B</span>
                 <div className="text-xs text-gray-500 font-medium">Powered by community</div>
               </div>
             </div>
@@ -133,7 +132,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto text-center relative">
           <div className="animate-fade-in">
             <Badge className="mb-8 bg-gradient-to-r from-blue-50 to-purple-50 text-blue-800 border-blue-200/50 px-4 py-2 text-sm font-semibold shadow-sm">
-              🚀 NYC's Premier Startup Community · 5,000+ Members
+              🚀 NYC's Premier B2B Community · 5,000+ Members
             </Badge>
             
             <h1 className="text-6xl md:text-8xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
@@ -144,7 +143,7 @@ const Index = () => {
             </h1>
             
             <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed font-light">
-              Your gateway to NYC's most exclusive startup events, job opportunities, and resources. 
+              Your gateway to NYC's most exclusive B2B events, job opportunities, and resources. 
               Join founders, developers, and innovators building the future of technology.
             </p>
             
@@ -219,7 +218,7 @@ const Index = () => {
               <h2 className="text-5xl font-bold text-gray-900 tracking-tight">Upcoming Events</h2>
             </div>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
-              Connect with NYC's most innovative minds at exclusive networking events and workshops. 
+              Connect with NYC's most innovative B2B minds at exclusive networking events and workshops. 
               Build meaningful relationships that drive your career forward.
             </p>
           </div>
@@ -288,7 +287,7 @@ const Index = () => {
               <h2 className="text-5xl font-bold text-gray-900 tracking-tight">Hot Jobs</h2>
             </div>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
-              Land your dream role at NYC's fastest-growing startups. New opportunities added daily 
+              Land your dream role at NYC's fastest-growing B2B companies. New opportunities added daily 
               with competitive packages and equity upside.
             </p>
           </div>
@@ -353,7 +352,7 @@ const Index = () => {
               <h2 className="text-5xl font-bold text-gray-900 tracking-tight">Resources & Insights</h2>
             </div>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
-              Stay ahead with curated content, founder stories, and market insights from NYC's startup ecosystem. 
+              Stay ahead with curated content, founder stories, and market insights from NYC's B2B ecosystem. 
               Learn from those who've scaled successfully.
             </p>
           </div>
@@ -432,10 +431,10 @@ const Index = () => {
         
         <div className="max-w-5xl mx-auto text-center text-white relative">
           <h2 className="text-5xl md:text-6xl font-bold mb-8 tracking-tight">
-            Ready to Level Up Your Startup Journey?
+            Ready to Level Up Your B2B Journey?
           </h2>
           <p className="text-xl md:text-2xl mb-12 opacity-90 font-light leading-relaxed max-w-3xl mx-auto">
-            Join NYC's most connected startup community. Get exclusive access to events, jobs, and resources 
+            Join NYC's most connected B2B community. Get exclusive access to events, jobs, and resources 
             that accelerate your career and business growth.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
@@ -464,12 +463,12 @@ const Index = () => {
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></div>
                 </div>
                 <div>
-                  <span className="text-xl font-bold">NYC Startup Hub</span>
+                  <span className="text-xl font-bold">NYC B2B</span>
                   <div className="text-xs text-gray-400">Est. 2024</div>
                 </div>
               </div>
               <p className="text-gray-400 mb-6 leading-relaxed">
-                Connecting NYC's startup ecosystem through events, opportunities, and community. 
+                Connecting NYC's B2B ecosystem through events, opportunities, and community. 
                 Built by founders, for founders.
               </p>
               <div className="flex gap-4">
@@ -517,7 +516,7 @@ const Index = () => {
           </div>
           
           <div className="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center text-gray-400">
-            <p>&copy; 2024 NYC Startup Hub. All rights reserved.</p>
+            <p>&copy; 2024 NYC B2B. All rights reserved.</p>
             <p className="text-sm mt-4 md:mt-0">Made with ❤️ in NYC</p>
           </div>
         </div>
