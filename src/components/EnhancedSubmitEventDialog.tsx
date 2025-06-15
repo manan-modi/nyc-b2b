@@ -35,15 +35,11 @@ export const EnhancedSubmitEventDialog = () => {
   const categories = ["Networking", "Finance", "AI/ML", "Workshop", "Community", "Blockchain", "SaaS", "Marketing", "Sales"];
 
   const onSubmit = async (data: SubmitEventData) => {
-    console.log('Form submitted with data:', data);
+    console.log('Enhanced form submitted with data:', data);
     setIsSubmitting(true);
     
     try {
-      // Validate required fields
-      if (!data.eventTitle || !data.eventDescription || !data.eventUrl || !data.date || !data.time || !data.location || !data.category || !data.price || !data.hostOrganization) {
-        throw new Error('Please fill in all required fields');
-      }
-
+      console.log('Starting event submission process...');
       await submitEventToStorage(data);
 
       toast({
@@ -53,11 +49,19 @@ export const EnhancedSubmitEventDialog = () => {
 
       form.reset();
       setOpen(false);
+      console.log('Event submission completed successfully');
     } catch (error) {
-      console.error('Error submitting event:', error);
+      console.error('Enhanced form submission error:', error);
+      
+      let errorMessage = "There was an error submitting your event. Please try again.";
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
       toast({
         title: "Submission Failed",
-        description: error instanceof Error ? error.message : "There was an error submitting your event. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

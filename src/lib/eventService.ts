@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export interface Event {
@@ -39,34 +38,92 @@ export interface SubmitEventData {
 export const submitEventToStorage = async (eventData: SubmitEventData): Promise<Event> => {
   console.log('Submitting event data:', eventData);
   
-  const { data, error } = await supabase
-    .from('events')
-    .insert([{
-      title: eventData.eventTitle,
-      description: eventData.eventDescription,
-      event_url: eventData.eventUrl,
-      date: eventData.date,
-      time: eventData.time,
-      location: eventData.location,
-      category: eventData.category,
-      price: eventData.price,
-      host_organization: eventData.hostOrganization,
-      expected_attendees: eventData.expectedAttendees,
-      image_url: eventData.imageUrl || null,
-      status: 'pending',
-      display_order: 999,
-      featured: false,
-    }])
-    .select()
-    .single();
-
-  if (error) {
-    console.error('Error submitting event:', error);
-    throw new Error(`Failed to submit event: ${error.message}`);
+  // Validate required fields before submission
+  const requiredFields = ['eventTitle', 'eventDescription', 'eventUrl', 'date', 'time', 'location', 'category', 'price', 'hostOrganization'];
+  const missingFields = requiredFields.filter(field => !eventData[field as keyof SubmitEventData]);
+  
+  if (missingFields.length > 0) {
+    throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
   }
 
-  console.log('Event submitted successfully:', data);
-  return data as Event;
+  // Validate URL format
+  try {
+    new URL(eventData.eventUrl);
+  } catch {
+    throw new Error('Please provide a valid event URL');
+  }
+
+  // Validate date format (YYYY-MM-DD)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(eventData.date)) {
+    throw new Error('Date must be in YYYY-MM-DD format');
+  }
+
+  // Validate time format (HH:MM)
+  if (!/^\d{2}:\d{2}$/.test(eventData.time)) {
+    throw new Error('Time must be in HH:MM format');
+  }
+
+  // Ensure expected attendees is a positive number
+  if (eventData.expectedAttendees <= 0) {
+    throw new Error('Expected attendees must be greater than 0');
+  }
+
+  try {
+    const insertData = {
+      title: eventData.eventTitle.trim(),
+      description: eventData.eventDescription.trim(),
+      event_url: eventData.eventUrl.trim(),
+      date: eventData.date,
+      time: eventData.time,
+      location: eventData.location.trim(),
+      category: eventData.category,
+      price: eventData.price.trim(),
+      host_organization: eventData.hostOrganization.trim(),
+      expected_attendees: eventData.expectedAttendees,
+      image_url: eventData.imageUrl?.trim() || null,
+      status: 'pending' as const,
+      display_order: 999,
+      featured: false,
+    };
+
+    console.log('Prepared insert data:', insertData);
+
+    const { data, error } = await supabase
+      .from('events')
+      .insert([insertData])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Supabase error details:', error);
+      
+      // Handle specific error types
+      if (error.code === '42501') {
+        throw new Error('Permission denied. Please check if event submission is allowed.');
+      } else if (error.code === '23505') {
+        throw new Error('An event with this information already exists.');
+      } else if (error.message.includes('violates row-level security')) {
+        throw new Error('Unable to submit event due to security restrictions. Please try again.');
+      } else {
+        throw new Error(`Failed to submit event: ${error.message}`);
+      }
+    }
+
+    if (!data) {
+      throw new Error('Event was submitted but no data was returned. Please check the admin dashboard.');
+    }
+
+    console.log('Event successfully submitted:', data);
+    return data as Event;
+  } catch (error) {
+    console.error('Error in submitEventToStorage:', error);
+    
+    if (error instanceof Error) {
+      throw error;
+    } else {
+      throw new Error('An unexpected error occurred while submitting the event.');
+    }
+  }
 };
 
 export const fetchApprovedEvents = async (): Promise<Event[]> => {

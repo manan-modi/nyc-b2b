@@ -33,6 +33,8 @@ export const SimpleSubmitEventDialog = () => {
         throw new Error('Event URL is required');
       }
 
+      console.log('Processing simple event submission...');
+
       toast({
         title: "Processing Event...",
         description: "Your event is being submitted for review.",
@@ -41,7 +43,9 @@ export const SimpleSubmitEventDialog = () => {
       // Try to scrape event data from the URL, but provide fallbacks
       let scrapedData;
       try {
+        console.log('Attempting to scrape event data...');
         scrapedData = await scrapeEventData(data.eventUrl);
+        console.log('Scraped data:', scrapedData);
       } catch (scrapeError) {
         console.warn('Event scraping failed, using defaults:', scrapeError);
         scrapedData = {
@@ -83,11 +87,19 @@ export const SimpleSubmitEventDialog = () => {
 
       form.reset();
       setOpen(false);
+      console.log('Simple event submission completed successfully');
     } catch (error) {
-      console.error('Error submitting event:', error);
+      console.error('Simple form submission error:', error);
+      
+      let errorMessage = "There was an error submitting your event. Please try again.";
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
       toast({
         title: "Submission Failed",
-        description: error instanceof Error ? error.message : "There was an error submitting your event. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
