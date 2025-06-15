@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export interface Event {
@@ -39,11 +40,12 @@ export const submitEventToStorage = async (eventData: SubmitEventData): Promise<
     throw new Error('Please enter a valid URL starting with http:// or https://');
   }
 
-  // Create event record with minimal required data - only event_url is required, status defaults to 'pending'
+  // Create event record with minimal required data
   const eventRecord = {
     event_url: eventData.eventUrl.trim()
-    // Remove explicit status field to let it default to 'pending'
   };
+
+  console.log('Inserting event record:', eventRecord);
 
   const { data, error } = await supabase
     .from('events')
@@ -52,12 +54,24 @@ export const submitEventToStorage = async (eventData: SubmitEventData): Promise<
     .single();
 
   if (error) {
-    console.error('Database error:', error);
-    throw new Error(`Failed to submit event: ${error.message}`);
+    console.error('Database error details:', error);
+    console.error('Error code:', error.code);
+    console.error('Error message:', error.message);
+    console.error('Error details:', error.details);
+    
+    // More specific error messages
+    if (error.code === '42501') {
+      throw new Error('Permission denied. Please try again or contact support.');
+    } else if (error.code === '23505') {
+      throw new Error('This event URL has already been submitted.');
+    } else {
+      throw new Error(`Failed to submit event: ${error.message}`);
+    }
   }
 
   if (!data) {
-    throw new Error('No data returned from database');
+    console.error('No data returned from database insert');
+    throw new Error('Event submission failed - no data returned');
   }
 
   console.log('Event submitted successfully:', data);

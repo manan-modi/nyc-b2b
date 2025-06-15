@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Link } from "lucide-react";
+import { Plus, Link, CheckCircle } from "lucide-react";
 import { submitEventToStorage, SubmitEventData } from "@/lib/eventService";
 
 export const SimpleSubmitEventDialog = () => {
@@ -20,6 +20,8 @@ export const SimpleSubmitEventDialog = () => {
   });
 
   const onSubmit = async (data: SubmitEventData) => {
+    console.log('Form submitted with data:', data);
+    
     // Basic client-side validation
     if (!data.eventUrl?.trim()) {
       toast({
@@ -33,12 +35,25 @@ export const SimpleSubmitEventDialog = () => {
     setIsSubmitting(true);
     
     try {
-      await submitEventToStorage(data);
+      console.log('Starting event submission...');
+      const result = await submitEventToStorage(data);
+      console.log('Event submission successful:', result);
 
       toast({
-        title: "Event Submitted Successfully!",
-        description: "Your event has been submitted for review and will be processed within 24-48 hours.",
+        title: "🎉 Event Submitted Successfully!",
+        description: (
+          <div className="flex items-start gap-2">
+            <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-medium">Your event has been submitted for review!</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                We'll review it within 24-48 hours and notify you once it's approved and live on the calendar.
+              </p>
+            </div>
+          </div>
+        ),
         variant: "default",
+        duration: 6000,
       });
 
       // Reset form and close dialog
@@ -55,9 +70,10 @@ export const SimpleSubmitEventDialog = () => {
       }
 
       toast({
-        title: "Submission Failed",
+        title: "❌ Submission Failed",
         description: errorMessage,
         variant: "destructive",
+        duration: 5000,
       });
     } finally {
       setIsSubmitting(false);
