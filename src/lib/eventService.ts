@@ -40,7 +40,7 @@ export const submitEventToStorage = async (eventData: SubmitEventData): Promise<
     throw new Error('Please enter a valid URL starting with http:// or https://');
   }
 
-  // Create event record with minimal required data
+  // Create event record with minimal required data - matching jobs submission pattern
   const eventRecord = {
     title: "Event Submission",
     description: "Event submitted for review",

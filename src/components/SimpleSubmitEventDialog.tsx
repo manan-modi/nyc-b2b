@@ -20,7 +20,6 @@ export const SimpleSubmitEventDialog = () => {
   });
 
   const onSubmit = async (data: SubmitEventData) => {
-    // Basic client-side validation
     if (!data.eventUrl?.trim()) {
       toast({
         title: "URL Required",
@@ -41,7 +40,6 @@ export const SimpleSubmitEventDialog = () => {
         variant: "default",
       });
 
-      // Reset form and close dialog
       form.reset();
       setOpen(false);
       
