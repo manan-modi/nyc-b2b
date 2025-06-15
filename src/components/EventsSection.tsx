@@ -8,11 +8,29 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
 import { OptimizedImage } from "@/components/ui/optimized-image";
+import { fetchApprovedEvents, EventSubmission } from "@/lib/eventService";
+import { SubmitEventDialog } from "@/components/SubmitEventDialog";
+import EventCard from "@/components/EventCard";
 
 export const EventsSection = () => {
-  // Events functionality has been disabled
-  const events: any[] = [];
-  const loading = false;
+  const [events, setEvents] = useState<EventSubmission[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadEvents();
+  }, []);
+
+  const loadEvents = async () => {
+    try {
+      const eventsData = await fetchApprovedEvents();
+      // Show only first 6 events on the home page
+      setEvents(eventsData.slice(0, 6));
+    } catch (error) {
+      console.error('Failed to load events:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const communityImages = [
     {
@@ -37,7 +55,7 @@ export const EventsSection = () => {
     },
     {
       src: "/lovable-uploads/b6001725-cfda-49a7-9a37-31277a327cf5.png",
-      alt: "NYC B2B Community Members Network ing"
+      alt: "NYC B2B Community Members Networking"
     }
   ];
 
@@ -51,21 +69,57 @@ export const EventsSection = () => {
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 tracking-tight">Community Events</h2>
           </div>
-          <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed mb-4">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed mb-8">
             Connect with NYC's most innovative B2B minds at exclusive networking events and workshops. 
             Build meaningful relationships that drive your career forward.
           </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+            <SubmitEventDialog />
+            <Button variant="outline" asChild>
+              <Link to="/events">
+                View All Events
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </div>
 
-        {/* Event submission disabled message */}
-        <div className="text-center py-12 mb-16">
-          <Card className="max-w-2xl mx-auto">
-            <CardContent className="p-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Event Submissions Currently Disabled</h3>
-              <p className="text-gray-600">Event submission functionality has been temporarily disabled. Please check back later or contact us directly for event inquiries.</p>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Events Grid */}
+        {loading ? (
+          <div className="text-center py-12 mb-16">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading events...</p>
+          </div>
+        ) : events.length > 0 ? (
+          <div className="mb-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-8">
+              {events.map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))}
+            </div>
+            
+            <div className="text-center">
+              <Button variant="outline" size="lg" asChild>
+                <Link to="/events">
+                  View All Events
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-12 mb-16">
+            <Card className="max-w-2xl mx-auto">
+              <CardContent className="p-8">
+                <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Events Yet</h3>
+                <p className="text-gray-600 mb-4">Be the first to submit an event to our community!</p>
+                <SubmitEventDialog />
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Inside NYC B2B Section */}
         <div className="text-center mb-12 sm:mb-16">

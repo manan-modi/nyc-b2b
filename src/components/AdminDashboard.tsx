@@ -119,7 +119,7 @@ const AdminDashboard = () => {
 
         <Tabs defaultValue="events" className="space-y-6">
           <TabsList>
-            <TabsTrigger value="events">Event Submissions</TabsTrigger>
+            <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="blog">Blog Articles</TabsTrigger>
             <TabsTrigger value="jobs">Jobs</TabsTrigger>
           </TabsList>

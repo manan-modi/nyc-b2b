@@ -7,6 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
 import { Plus } from "lucide-react";
+import { submitEventUrl } from "@/lib/eventService";
 
 interface SubmitEventFormData {
   eventUrl: string;
@@ -26,29 +27,8 @@ export const SubmitEventDialog = () => {
     setIsSubmitting(true);
     
     try {
-      // Replace with your Airtable API endpoint
-      const AIRTABLE_API_URL = 'https://api.airtable.com/v0/YOUR_BASE_ID/YOUR_TABLE_NAME';
-      const AIRTABLE_API_KEY = 'YOUR_API_KEY';
-
-      const response = await fetch(AIRTABLE_API_URL, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fields: {
-            'Event URL': data.eventUrl,
-            'Status': 'Pending Review',
-            'Submitted At': new Date().toISOString(),
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit event');
-      }
-
+      await submitEventUrl({ eventUrl: data.eventUrl });
+      
       toast({
         title: "Event Submitted!",
         description: "Thanks for submitting your event. We'll review it and add it to our curated list.",

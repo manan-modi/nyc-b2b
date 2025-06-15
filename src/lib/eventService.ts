@@ -1,6 +1,5 @@
 
-// Event service functionality has been disabled
-// This file is kept for compatibility but all functions return empty data
+import { supabase } from "@/integrations/supabase/client";
 
 export interface EventSubmission {
   id: string;
@@ -28,23 +27,82 @@ export interface SubmitEventData {
 }
 
 export const submitEventUrl = async (eventData: SubmitEventData): Promise<EventSubmission> => {
-  throw new Error('Event submission is currently disabled');
+  const { data, error } = await supabase
+    .from('event_submissions')
+    .insert([{
+      event_url: eventData.eventUrl,
+      status: 'pending' as const,
+    }])
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error submitting event:', error);
+    throw new Error('Failed to submit event');
+  }
+
+  return data as EventSubmission;
 };
 
 export const fetchAllEventSubmissions = async (): Promise<EventSubmission[]> => {
-  console.log('Event submissions feature is disabled');
-  return [];
+  const { data, error } = await supabase
+    .from('event_submissions')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching event submissions:', error);
+    throw error;
+  }
+
+  return data || [];
 };
 
 export const fetchApprovedEvents = async (): Promise<EventSubmission[]> => {
-  console.log('Event display feature is disabled');
-  return [];
+  const { data, error } = await supabase
+    .from('event_submissions')
+    .select('*')
+    .eq('status', 'approved')
+    .order('featured', { ascending: false })
+    .order('display_order', { ascending: true })
+    .order('date', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching approved events:', error);
+    throw error;
+  }
+
+  return data || [];
 };
 
 export const updateEventSubmissionStatus = async (recordId: string, status: 'approved' | 'rejected'): Promise<EventSubmission> => {
-  throw new Error('Event management is currently disabled');
+  const { data, error } = await supabase
+    .from('event_submissions')
+    .update({ status })
+    .eq('id', recordId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating event status:', error);
+    throw error;
+  }
+
+  return data as EventSubmission;
 };
 
 export const updateEventSubmissionDetails = async (recordId: string, updates: Partial<Omit<EventSubmission, 'id' | 'created_at' | 'updated_at' | 'submitted_at'>>): Promise<EventSubmission> => {
-  throw new Error('Event management is currently disabled');
+  const { data, error } = await supabase
+    .from('event_submissions')
+    .update(updates)
+    .eq('id', recordId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating event details:', error);
+    throw error;
+  }
+
+  return data as EventSubmission;
 };

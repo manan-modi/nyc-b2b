@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import AboutPage from "./components/AboutPage";
 import JobsPage from "./pages/JobsPage";
 import BlogPage from "./pages/BlogPage";
+import EventsPage from "./pages/EventsPage";
 import AdminDashboard from "./components/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
@@ -25,6 +26,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/events" element={<EventsPage />} />
             <Route path="/jobs" element={<JobsPage />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/blog/:slug" element={<BlogPage />} />
