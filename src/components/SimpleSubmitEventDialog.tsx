@@ -8,7 +8,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Link } from "lucide-react";
 import { submitEventToStorage, SubmitEventData } from "@/lib/eventService";
-import { scrapeEventData } from "@/lib/eventScraper";
 
 interface SimpleSubmitData {
   eventUrl: string;
@@ -25,71 +24,59 @@ export const SimpleSubmitEventDialog = () => {
   });
 
   const onSubmit = async (data: SimpleSubmitData) => {
-    console.log('Simple submit form data:', data);
+    console.log('=== FORM SUBMISSION STARTED ===');
+    console.log('Form data:', data);
+    
     setIsSubmitting(true);
     
     try {
-      if (!data.eventUrl) {
+      if (!data.eventUrl?.trim()) {
         throw new Error('Event URL is required');
       }
 
-      console.log('Processing simple event submission...');
-
-      toast({
-        title: "Processing Event...",
-        description: "Your event is being submitted for review.",
-      });
-
-      // Try to scrape event data from the URL, but provide fallbacks
-      let scrapedData;
+      // Validate URL format
       try {
-        console.log('Attempting to scrape event data...');
-        scrapedData = await scrapeEventData(data.eventUrl);
-        console.log('Scraped data:', scrapedData);
-      } catch (scrapeError) {
-        console.warn('Event scraping failed, using defaults:', scrapeError);
-        scrapedData = {
-          title: null,
-          description: null,
-          date: null,
-          time: null,
-          location: null,
-          category: null,
-          price: null,
-          hostOrganization: null,
-          expectedAttendees: null,
-          imageUrl: null,
-        };
+        new URL(data.eventUrl);
+      } catch {
+        throw new Error('Please enter a valid URL starting with http:// or https://');
       }
 
-      // Create event data with scraped info or defaults
-      const fullEventData: SubmitEventData = {
-        eventTitle: scrapedData.title || "Event Title (To be updated by admin)",
-        eventDescription: scrapedData.description || "Event description will be updated by admin after review",
-        eventUrl: data.eventUrl,
-        date: scrapedData.date || new Date().toISOString().split('T')[0],
-        time: scrapedData.time || "18:00",
-        location: scrapedData.location || "Location TBD",
-        category: scrapedData.category || "Networking",
-        price: scrapedData.price || "TBD",
-        hostOrganization: scrapedData.hostOrganization || "Host TBD",
-        expectedAttendees: scrapedData.expectedAttendees || 50,
-        imageUrl: scrapedData.imageUrl || "",
+      console.log('=== CREATING EVENT DATA ===');
+      
+      // Create minimal event data for submission
+      const eventData: SubmitEventData = {
+        eventTitle: "Event Submission (Title will be updated after review)",
+        eventDescription: "Event details will be updated by admin after review",
+        eventUrl: data.eventUrl.trim(),
+        date: new Date().toISOString().split('T')[0], // Today's date as default
+        time: "18:00", // Default time
+        location: "Location TBD",
+        category: "Networking",
+        price: "TBD",
+        hostOrganization: "Host TBD",
+        expectedAttendees: 50,
+        imageUrl: "",
       };
 
-      console.log('Submitting processed event data:', fullEventData);
-      await submitEventToStorage(fullEventData);
+      console.log('=== SUBMITTING TO SERVICE ===');
+      console.log('Event data to submit:', eventData);
+
+      const result = await submitEventToStorage(eventData);
+
+      console.log('=== SUBMISSION SUCCESS ===');
+      console.log('Submitted event result:', result);
 
       toast({
         title: "Event Submitted Successfully!",
-        description: "Your event has been submitted and is now pending review.",
+        description: "Your event has been submitted for review and will be processed within 24-48 hours.",
       });
 
       form.reset();
       setOpen(false);
-      console.log('Simple event submission completed successfully');
+      
     } catch (error) {
-      console.error('Simple form submission error:', error);
+      console.error('=== SUBMISSION ERROR ===');
+      console.error('Error details:', error);
       
       let errorMessage = "There was an error submitting your event. Please try again.";
       

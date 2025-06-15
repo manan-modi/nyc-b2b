@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export interface Event {
@@ -36,92 +37,92 @@ export interface SubmitEventData {
 }
 
 export const submitEventToStorage = async (eventData: SubmitEventData): Promise<Event> => {
-  console.log('Submitting event data:', eventData);
+  console.log('=== STARTING EVENT SUBMISSION ===');
+  console.log('Raw event data received:', eventData);
   
-  // Validate required fields before submission
-  const requiredFields = ['eventTitle', 'eventDescription', 'eventUrl', 'date', 'time', 'location', 'category', 'price', 'hostOrganization'];
-  const missingFields = requiredFields.filter(field => !eventData[field as keyof SubmitEventData]);
-  
-  if (missingFields.length > 0) {
-    throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+  // Basic validation
+  if (!eventData.eventTitle?.trim()) {
+    throw new Error('Event title is required');
+  }
+  if (!eventData.eventUrl?.trim()) {
+    throw new Error('Event URL is required');
+  }
+  if (!eventData.date?.trim()) {
+    throw new Error('Event date is required');
+  }
+  if (!eventData.time?.trim()) {
+    throw new Error('Event time is required');
+  }
+  if (!eventData.location?.trim()) {
+    throw new Error('Event location is required');
   }
 
-  // Validate URL format
+  // Prepare the data for database insertion
+  const insertData = {
+    title: eventData.eventTitle.trim(),
+    description: eventData.eventDescription?.trim() || 'Event description pending review',
+    event_url: eventData.eventUrl.trim(),
+    date: eventData.date,
+    time: eventData.time,
+    location: eventData.location.trim(),
+    category: eventData.category || 'Networking',
+    price: eventData.price?.trim() || 'TBD',
+    host_organization: eventData.hostOrganization?.trim() || 'TBD',
+    expected_attendees: eventData.expectedAttendees || 50,
+    image_url: eventData.imageUrl?.trim() || null,
+    status: 'pending'
+  };
+
+  console.log('=== PREPARED DATA FOR INSERT ===');
+  console.log('Insert data:', insertData);
+
   try {
-    new URL(eventData.eventUrl);
-  } catch {
-    throw new Error('Please provide a valid event URL');
-  }
-
-  // Validate date format (YYYY-MM-DD)
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(eventData.date)) {
-    throw new Error('Date must be in YYYY-MM-DD format');
-  }
-
-  // Validate time format (HH:MM)
-  if (!/^\d{2}:\d{2}$/.test(eventData.time)) {
-    throw new Error('Time must be in HH:MM format');
-  }
-
-  // Ensure expected attendees is a positive number
-  if (eventData.expectedAttendees <= 0) {
-    throw new Error('Expected attendees must be greater than 0');
-  }
-
-  try {
-    const insertData = {
-      title: eventData.eventTitle.trim(),
-      description: eventData.eventDescription.trim(),
-      event_url: eventData.eventUrl.trim(),
-      date: eventData.date,
-      time: eventData.time,
-      location: eventData.location.trim(),
-      category: eventData.category,
-      price: eventData.price.trim(),
-      host_organization: eventData.hostOrganization.trim(),
-      expected_attendees: eventData.expectedAttendees,
-      image_url: eventData.imageUrl?.trim() || null,
-      status: 'pending' as const,
-      display_order: 999,
-      featured: false,
-    };
-
-    console.log('Prepared insert data:', insertData);
-
+    console.log('=== ATTEMPTING DATABASE INSERT ===');
+    
+    // Insert the event directly without any complex logic
     const { data, error } = await supabase
       .from('events')
-      .insert([insertData])
+      .insert(insertData)
       .select()
       .single();
 
+    console.log('=== DATABASE RESPONSE ===');
+    console.log('Data:', data);
+    console.log('Error:', error);
+
     if (error) {
-      console.error('Supabase error details:', error);
+      console.error('=== DATABASE ERROR DETAILS ===');
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      console.error('Error details:', error.details);
+      console.error('Error hint:', error.hint);
       
-      // Handle specific error types
+      // Provide more specific error messages
       if (error.code === '42501') {
-        throw new Error('Permission denied. Please check if event submission is allowed.');
+        throw new Error('Database permission error. Event submission policies may not be configured correctly.');
       } else if (error.code === '23505') {
-        throw new Error('An event with this information already exists.');
-      } else if (error.message.includes('violates row-level security')) {
-        throw new Error('Unable to submit event due to security restrictions. Please try again.');
+        throw new Error('An event with this URL already exists.');
       } else {
-        throw new Error(`Failed to submit event: ${error.message}`);
+        throw new Error(`Database error: ${error.message}`);
       }
     }
 
     if (!data) {
-      throw new Error('Event was submitted but no data was returned. Please check the admin dashboard.');
+      throw new Error('Event submission failed - no data returned from database');
     }
 
-    console.log('Event successfully submitted:', data);
+    console.log('=== SUCCESS ===');
+    console.log('Event submitted successfully:', data);
     return data as Event;
+
   } catch (error) {
-    console.error('Error in submitEventToStorage:', error);
+    console.error('=== SUBMISSION ERROR ===');
+    console.error('Error details:', error);
     
     if (error instanceof Error) {
       throw error;
     } else {
-      throw new Error('An unexpected error occurred while submitting the event.');
+      throw new Error('Unknown error occurred during event submission');
     }
   }
 };
