@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,7 +70,7 @@ const BlogPage = () => {
     }
   };
 
-  // Single article view
+  // Single article view with Medium-style readability
   if (slug && singleArticle) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -78,52 +79,60 @@ const BlogPage = () => {
         
         <Navigation onJoinCommunityClick={() => window.open('https://nycb2b.beehiiv.com', '_blank')} />
         
-        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <article className="max-w-2xl mx-auto px-6 py-16">
           {/* Article Header */}
-          <header className="mb-8">
+          <header className="mb-12">
             {singleArticle.category && (
-              <Badge className={`${getCategoryColor(singleArticle.category)} mb-4`}>
+              <Badge className={`${getCategoryColor(singleArticle.category)} mb-6 text-sm`}>
                 {singleArticle.category}
               </Badge>
             )}
             
-            <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
+            <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight tracking-tight">
               {singleArticle.title}
             </h1>
             
             {singleArticle.excerpt && (
-              <p className="text-xl text-gray-600 mb-6">
+              <p className="text-2xl text-gray-600 mb-8 leading-relaxed font-light">
                 {singleArticle.excerpt}
               </p>
             )}
             
-            <div className="flex items-center gap-6 text-sm text-gray-500 mb-8">
-              <div className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                {singleArticle.author_name}
-                {singleArticle.author_role && ` • ${singleArticle.author_role}`}
+            <div className="flex items-center gap-8 text-base text-gray-500 mb-12 pt-6 border-t border-gray-200">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-yellow-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                  {singleArticle.author_name?.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <div className="font-medium text-gray-900">{singleArticle.author_name}</div>
+                  {singleArticle.author_role && (
+                    <div className="text-sm text-gray-500">{singleArticle.author_role}</div>
+                  )}
+                </div>
               </div>
               
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                {formatDate(singleArticle.published_date || singleArticle.created_at)}
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                {singleArticle.read_time} min read
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <Eye className="h-4 w-4" />
-                {singleArticle.views || 0} views
+              <div className="flex items-center gap-6 text-sm">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  {formatDate(singleArticle.published_date || singleArticle.created_at)}
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  {singleArticle.read_time} min read
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4" />
+                  {singleArticle.views || 0} views
+                </div>
               </div>
             </div>
           </header>
 
           {/* Featured Image */}
           {singleArticle.featured_image && (
-            <div className="mb-8">
+            <div className="mb-12">
               <img 
                 src={singleArticle.featured_image} 
                 alt={singleArticle.title}
@@ -132,19 +141,19 @@ const BlogPage = () => {
             </div>
           )}
 
-          {/* Article Content */}
-          <div className="prose prose-lg max-w-none">
-            <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+          {/* Article Content - Medium style */}
+          <div className="prose prose-xl prose-gray max-w-none">
+            <div className="text-gray-800 leading-relaxed text-xl font-light tracking-wide whitespace-pre-wrap">
               {singleArticle.content}
             </div>
           </div>
 
           {/* Tags */}
           {singleArticle.tags && singleArticle.tags.length > 0 && (
-            <div className="mt-8 pt-8 border-t border-gray-200">
-              <div className="flex flex-wrap gap-2">
+            <div className="mt-16 pt-8 border-t border-gray-200">
+              <div className="flex flex-wrap gap-3">
                 {singleArticle.tags.map((tag, index) => (
-                  <Badge key={index} variant="secondary">
+                  <Badge key={index} variant="secondary" className="text-sm px-4 py-2">
                     {tag}
                   </Badge>
                 ))}
@@ -153,8 +162,8 @@ const BlogPage = () => {
           )}
 
           {/* Back to Blog */}
-          <div className="mt-12 pt-8 border-t border-gray-200">
-            <Button variant="outline" asChild>
+          <div className="mt-16 pt-8 border-t border-gray-200">
+            <Button variant="outline" asChild className="hover:bg-gray-50 transition-colors">
               <a href="/blog">← Back to All Articles</a>
             </Button>
           </div>
@@ -241,9 +250,11 @@ const BlogPage = () => {
                       <div className="text-sm text-gray-600">
                         By {article.author_name} • {formatDate(article.published_date || article.created_at)}
                       </div>
-                      <Button variant="ghost" className="text-purple-600 hover:text-purple-700" asChild>
+                      <Button variant="ghost" className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 transition-all duration-200 relative overflow-hidden group" asChild>
                         <a href={`/blog/${article.slug}`}>
-                          Read Article <ArrowRight className="ml-2 h-4 w-4" />
+                          <span className="relative z-10">Read Article</span>
+                          <ArrowRight className="ml-2 h-4 w-4 relative z-10 transition-transform group-hover:translate-x-1" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-blue-600/10 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"></div>
                         </a>
                       </Button>
                     </div>
@@ -299,9 +310,11 @@ const BlogPage = () => {
                       <div className="text-xs text-gray-600">
                         By {article.author_name} • {formatDate(article.published_date || article.created_at)}
                       </div>
-                      <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 p-0" asChild>
+                      <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 transition-all duration-200 p-2 relative overflow-hidden group" asChild>
                         <a href={`/blog/${article.slug}`}>
-                          Read <ArrowRight className="ml-1 h-3 w-3" />
+                          <span className="relative z-10">Read</span>
+                          <ArrowRight className="ml-1 h-3 w-3 relative z-10 transition-transform group-hover:translate-x-1" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-blue-600/10 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"></div>
                         </a>
                       </Button>
                     </div>
