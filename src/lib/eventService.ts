@@ -28,7 +28,7 @@ export interface SubmitEventData {
 
 export const submitEventToStorage = async (eventData: SubmitEventData): Promise<Event> => {
   console.log('Submitting event:', eventData);
-  
+
   if (!eventData.eventUrl?.trim()) {
     throw new Error('Event URL is required');
   }
@@ -63,8 +63,12 @@ export const submitEventToStorage = async (eventData: SubmitEventData): Promise<
     .single();
 
   if (error) {
+    // Improved error logging and robust fallback for missing error.message
     console.error('Database error:', error);
-    throw new Error(`Failed to submit event: ${error.message}`);
+    throw new Error(
+      "Failed to submit event: " +
+      (error.message || JSON.stringify(error) || "Unknown error")
+    );
   }
 
   if (!data) {
