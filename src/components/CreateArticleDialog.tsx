@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Info } from "lucide-react";
 import { createArticle, type BlogArticleInsert } from "@/lib/blogService";
 
 interface CreateArticleDialogProps {
@@ -101,11 +101,11 @@ export const CreateArticleDialog = ({ onArticleCreated }: CreateArticleDialogPro
           Create Article
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Blog Article</DialogTitle>
           <DialogDescription>
-            Create an SEO-optimized blog article with automatic URL generation.
+            Create an SEO-optimized blog article with rich text formatting support.
           </DialogDescription>
         </DialogHeader>
         
@@ -148,21 +148,45 @@ export const CreateArticleDialog = ({ onArticleCreated }: CreateArticleDialogPro
               id="excerpt"
               value={formData.excerpt}
               onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
-              placeholder="Brief description of the article"
+              placeholder="Brief description of the article (appears in previews and meta tags)"
               rows={2}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="content">Content *</Label>
+            <div className="flex items-center gap-2 mb-2">
+              <Label htmlFor="content">Content *</Label>
+              <div className="group relative">
+                <Info className="h-4 w-4 text-gray-400 cursor-help" />
+                <div className="absolute left-0 top-6 z-10 w-80 p-3 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  <strong>Formatting Guide:</strong><br />
+                  <span className="text-gray-300">
+                    **Bold text** or __Bold text__<br />
+                    *Italic text* or _Italic text_<br />
+                    # Header 1<br />
+                    ## Header 2<br />
+                    ### Header 3<br />
+                    * Bullet point or - Bullet point<br />
+                    1. Numbered list<br />
+                    [Link text](URL)<br />
+                    > Block quote<br />
+                    `Inline code`
+                  </span>
+                </div>
+              </div>
+            </div>
             <Textarea
               id="content"
               value={formData.content}
               onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-              placeholder="Write your article content here..."
-              rows={8}
+              placeholder="Write your article content here using markdown formatting..."
+              rows={10}
               required
+              className="font-mono text-sm"
             />
+            <div className="text-xs text-gray-500 mt-1">
+              Supports: **bold**, *italic*, # headers, * bullets, [links](URL), > quotes, `code`
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -199,14 +223,18 @@ export const CreateArticleDialog = ({ onArticleCreated }: CreateArticleDialogPro
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="meta_description">Meta Description (SEO)</Label>
+            <Label htmlFor="meta_description">Meta Description (SEO) *</Label>
             <Textarea
               id="meta_description"
               value={formData.meta_description}
               onChange={(e) => setFormData(prev => ({ ...prev, meta_description: e.target.value }))}
-              placeholder="SEO meta description (150-160 characters)"
+              placeholder="SEO meta description (150-160 characters for optimal search results)"
               rows={2}
+              maxLength={160}
             />
+            <div className="text-xs text-gray-500">
+              {formData.meta_description.length}/160 characters
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -215,7 +243,7 @@ export const CreateArticleDialog = ({ onArticleCreated }: CreateArticleDialogPro
               id="meta_keywords"
               value={formData.meta_keywords}
               onChange={(e) => setFormData(prev => ({ ...prev, meta_keywords: e.target.value }))}
-              placeholder="keyword1, keyword2, keyword3"
+              placeholder="startup, nyc, b2b, founder, entrepreneur"
             />
           </div>
 
@@ -225,7 +253,7 @@ export const CreateArticleDialog = ({ onArticleCreated }: CreateArticleDialogPro
               id="tags"
               value={formData.tags}
               onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
-              placeholder="tag1, tag2, tag3"
+              placeholder="startup, founder, guide, nyc"
             />
           </div>
 

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +8,7 @@ import { fetchPublishedArticles, fetchArticleBySlug, incrementViews, type BlogAr
 import { Navigation } from "@/components/Navigation";
 import { SEOHead } from "@/components/SEOHead";
 import { StructuredData } from "@/components/StructuredData";
+import { RichTextRenderer } from "@/components/RichTextRenderer";
 
 const BlogPage = () => {
   const { slug } = useParams();
@@ -79,7 +79,7 @@ const BlogPage = () => {
         
         <Navigation onJoinCommunityClick={() => window.open('https://nycb2b.beehiiv.com', '_blank')} />
         
-        <article className="max-w-2xl mx-auto px-6 py-16">
+        <article className="max-w-4xl mx-auto px-6 py-16">
           {/* Article Header */}
           <header className="mb-12">
             {singleArticle.category && (
@@ -141,11 +141,12 @@ const BlogPage = () => {
             </div>
           )}
 
-          {/* Article Content - Medium style */}
-          <div className="prose prose-xl prose-gray max-w-none">
-            <div className="text-gray-800 leading-relaxed text-xl font-light tracking-wide whitespace-pre-wrap">
-              {singleArticle.content}
-            </div>
+          {/* Article Content - Rich Text Formatting */}
+          <div className="mb-16">
+            <RichTextRenderer 
+              content={singleArticle.content} 
+              className="text-gray-800 text-lg leading-relaxed"
+            />
           </div>
 
           {/* Tags */}
