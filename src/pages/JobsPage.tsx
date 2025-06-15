@@ -7,12 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Briefcase, MapPin, DollarSign, Clock, Search, ExternalLink, Building2 } from "lucide-react";
 import { SubmitJobDialog } from "@/components/SubmitJobDialog";
+import { Navigation } from "@/components/Navigation";
 
 const JobsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRole, setSelectedRole] = useState("all");
-  const [selectedLocation, setSelectedLocation] = useState("all");
-  const [selectedIndustry, setSelectedIndustry] = useState("all");
+  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedIndustry, setSelectedIndustry] = useState("");
 
   // Mock data for now - will be replaced with real data from Supabase
   const jobs = [
@@ -61,7 +62,6 @@ const JobsPage = () => {
   ];
 
   const industries = [
-    "all",
     "Sales & Marketing Tech",
     "Fintech & Payments", 
     "HR & Recruiting",
@@ -78,15 +78,15 @@ const JobsPage = () => {
     "Education Tech"
   ];
 
-  const locations = ["all", "Manhattan", "Brooklyn", "Remote", "Hybrid"];
+  const locations = ["Manhattan", "Brooklyn", "Remote", "Hybrid"];
 
   const filteredJobs = jobs.filter(job => {
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          job.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = selectedRole === "all" || job.title.toLowerCase().includes(selectedRole.toLowerCase());
-    const matchesLocation = selectedLocation === "all" || job.location.toLowerCase().includes(selectedLocation.toLowerCase());
-    const matchesIndustry = selectedIndustry === "all" || job.industry === selectedIndustry;
+    const matchesRole = !selectedRole || job.title.toLowerCase().includes(selectedRole.toLowerCase());
+    const matchesLocation = !selectedLocation || job.location.toLowerCase().includes(selectedLocation.toLowerCase());
+    const matchesIndustry = !selectedIndustry || job.industry === selectedIndustry;
     return matchesSearch && matchesRole && matchesLocation && matchesIndustry;
   });
 
@@ -96,6 +96,8 @@ const JobsPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <Navigation onJoinCommunityClick={() => window.open('https://nycb2b.beehiiv.com', '_blank')} />
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">
@@ -123,8 +125,8 @@ const JobsPage = () => {
             </div>
             <Input
               placeholder="Role (e.g. Frontend Engineer)"
-              value={selectedRole === "all" ? "" : selectedRole}
-              onChange={(e) => setSelectedRole(e.target.value || "all")}
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value)}
             />
             <Select value={selectedLocation} onValueChange={setSelectedLocation}>
               <SelectTrigger>
@@ -133,7 +135,7 @@ const JobsPage = () => {
               <SelectContent>
                 {locations.map(location => (
                   <SelectItem key={location} value={location}>
-                    {location === "all" ? "All Locations" : location}
+                    {location}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -145,7 +147,7 @@ const JobsPage = () => {
               <SelectContent>
                 {industries.map(industry => (
                   <SelectItem key={industry} value={industry}>
-                    {industry === "all" ? "All Industries" : industry}
+                    {industry}
                   </SelectItem>
                 ))}
               </SelectContent>
