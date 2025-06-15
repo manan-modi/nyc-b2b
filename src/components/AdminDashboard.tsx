@@ -4,9 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { Check, X, Calendar, MapPin, Users, ExternalLink, Clock, LogOut, GripVertical, Star, BookOpen, Eye, Edit } from "lucide-react";
+import { Check, X, Calendar, MapPin, Users, ExternalLink, Clock, LogOut, GripVertical, Star, BookOpen, Eye, Edit, Briefcase } from "lucide-react";
 import { fetchAllEvents, updateEventStatus, updateEventOrder, Event } from "@/lib/eventStorage";
 import { fetchAllArticles, updateArticleStatus, type BlogArticle } from "@/lib/blogService";
+import { supabase } from "@/integrations/supabase/client";
 import { logout } from "@/lib/auth";
 import { EditEventDialog } from "./EditEventDialog";
 import { CreateArticleDialog } from "./CreateArticleDialog";
@@ -102,9 +103,29 @@ const SortableEventItem = ({
   );
 };
 
+interface Job {
+  id: string;
+  title: string;
+  company: string;
+  location: string | null;
+  job_url: string;
+  description: string | null;
+  salary_range: string | null;
+  employment_type: string | null;
+  experience_level: string | null;
+  industry: string | null;
+  company_size: string | null;
+  funding_stage: string | null;
+  status: string | null;
+  posted_date: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 const AdminDashboard = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [articles, setArticles] = useState<BlogArticle[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
   const [updatingOrder, setUpdatingOrder] = useState<string | null>(null);
@@ -122,12 +143,14 @@ const AdminDashboard = () => {
 
   const loadData = async () => {
     try {
-      const [eventsData, articlesData] = await Promise.all([
+      const [eventsData, articlesData, jobsData] = await Promise.all([
         fetchAllEvents(),
-        fetchAllArticles()
+        fetchAllArticles(),
+        fetchAllJobs()
       ]);
       setEvents(eventsData);
       setArticles(articlesData);
+      setJobs(jobsData);
     } catch (error) {
       console.error('Failed to load data:', error);
       toast({
@@ -137,6 +160,59 @@ const AdminDashboard = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAllJobs = async (): Promise<Job[]> => {
+    const { data, error } = await supabase
+      .from('jobs')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching jobs:', error);
+      throw error;
+    }
+
+    return data || [];
+  };
+
+  const updateJobStatus = async (jobId: string, status: 'approved' | 'rejected') => {
+    const { error } = await supabase
+      .from('jobs')
+      .update({ status })
+      .eq('id', jobId);
+
+    if (error) {
+      console.error('Error updating job status:', error);
+      throw error;
+    }
+  };
+
+  const handleJobStatusUpdate = async (jobId: string, status: 'approved' | 'rejected') => {
+    setUpdatingStatus(jobId);
+    try {
+      await updateJobStatus(jobId, status);
+      
+      setJobs(jobs.map(job => 
+        job.id === jobId 
+          ? { ...job, status }
+          : job
+      ));
+
+      toast({
+        title: `Job ${status}`,
+        description: `The job has been ${status} successfully.`,
+      });
+    } catch (error) {
+      console.error('Failed to update job status:', error);
+      toast({
+        title: "Update Failed",
+        description: "There was an error updating the job status. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdatingStatus(null);
     }
   };
 
@@ -285,6 +361,7 @@ const AdminDashboard = () => {
       case 'published': return 'bg-green-100 text-green-700';
       case 'Rejected': return 'bg-red-100 text-red-700';
       case 'draft': return 'bg-gray-100 text-gray-700';
+      case 'pending': return 'bg-yellow-100 text-yellow-700';
       default: return 'bg-yellow-100 text-yellow-700';
     }
   };
@@ -333,7 +410,7 @@ const AdminDashboard = () => {
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
             <p className="text-gray-600">
-              Manage events, blog articles, and website content
+              Manage events, blog articles, jobs, and website content
             </p>
           </div>
           <div className="flex gap-3">
@@ -352,6 +429,7 @@ const AdminDashboard = () => {
           <TabsList>
             <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="blog">Blog Articles</TabsTrigger>
+            <TabsTrigger value="jobs">Jobs</TabsTrigger>
           </TabsList>
 
           <TabsContent value="events" className="space-y-6">
@@ -705,6 +783,177 @@ const AdminDashboard = () => {
                   <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">No articles yet</h3>
                   <p className="text-gray-600">Create your first blog article to get started.</p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="jobs" className="space-y-6">
+            {/* Job Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-2xl font-bold text-gray-900">
+                    {jobs.filter(j => j.status === 'pending').length}
+                  </div>
+                  <div className="text-sm text-gray-600">Pending Review</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-2xl font-bold text-green-600">
+                    {jobs.filter(j => j.status === 'approved').length}
+                  </div>
+                  <div className="text-sm text-gray-600">Approved</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-2xl font-bold text-red-600">
+                    {jobs.filter(j => j.status === 'rejected').length}
+                  </div>
+                  <div className="text-sm text-gray-600">Rejected</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {jobs.length}
+                  </div>
+                  <div className="text-sm text-gray-600">Total Jobs</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">Job Submissions</h2>
+            </div>
+
+            {/* Jobs List */}
+            <div className="space-y-6">
+              {jobs.map((job) => (
+                <Card key={job.id} className="overflow-hidden">
+                  <CardHeader className="pb-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <CardTitle className="text-xl">{job.title}</CardTitle>
+                        </div>
+                        <CardDescription className="text-base">
+                          {job.company} {job.location && `• ${job.location}`}
+                        </CardDescription>
+                      </div>
+                      <Badge className={getStatusColor(job.status || 'pending')}>
+                        {job.status || 'pending'}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      <div className="space-y-3">
+                        {job.salary_range && (
+                          <div className="text-sm">
+                            <span className="font-medium text-gray-700">Salary:</span> {job.salary_range}
+                          </div>
+                        )}
+                        {job.employment_type && (
+                          <div className="text-sm">
+                            <span className="font-medium text-gray-700">Type:</span> {job.employment_type}
+                          </div>
+                        )}
+                        {job.experience_level && (
+                          <div className="text-sm">
+                            <span className="font-medium text-gray-700">Experience:</span> {job.experience_level}
+                          </div>
+                        )}
+                        {job.industry && (
+                          <div className="text-sm">
+                            <span className="font-medium text-gray-700">Industry:</span> {job.industry}
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-3">
+                        {job.company_size && (
+                          <div className="text-sm">
+                            <span className="font-medium text-gray-700">Company Size:</span> {job.company_size}
+                          </div>
+                        )}
+                        {job.funding_stage && (
+                          <div className="text-sm">
+                            <span className="font-medium text-gray-700">Funding Stage:</span> {job.funding_stage}
+                          </div>
+                        )}
+                        <div className="text-sm">
+                          <span className="font-medium text-gray-700">Submitted:</span> {formatDate(job.created_at)}
+                        </div>
+                        {job.posted_date && (
+                          <div className="text-sm">
+                            <span className="font-medium text-gray-700">Posted:</span> {formatDate(job.posted_date)}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {job.description && (
+                      <div className="mb-6">
+                        <h4 className="font-medium text-gray-700 mb-2">Description:</h4>
+                        <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-md">
+                          {job.description}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="flex flex-wrap gap-3 items-center">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        asChild
+                        className="border-gray-300"
+                      >
+                        <a 
+                          href={job.job_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                        >
+                          View Job Posting
+                          <ExternalLink className="ml-2 h-4 w-4" />
+                        </a>
+                      </Button>
+
+                      {job.status === 'pending' && (
+                        <>
+                          <Button
+                            size="sm"
+                            onClick={() => handleJobStatusUpdate(job.id, 'approved')}
+                            disabled={updatingStatus === job.id}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            <Check className="mr-2 h-4 w-4" />
+                            {updatingStatus === job.id ? 'Approving...' : 'Approve'}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleJobStatusUpdate(job.id, 'rejected')}
+                            disabled={updatingStatus === job.id}
+                          >
+                            <X className="mr-2 h-4 w-4" />
+                            {updatingStatus === job.id ? 'Rejecting...' : 'Reject'}
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+
+              {jobs.length === 0 && (
+                <div className="text-center py-12">
+                  <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No job submissions yet</h3>
+                  <p className="text-gray-600">Job postings will appear here once users start submitting them.</p>
                 </div>
               )}
             </div>
