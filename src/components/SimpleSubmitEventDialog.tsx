@@ -27,29 +27,27 @@ export const SimpleSubmitEventDialog = () => {
     console.log('=== FORM SUBMISSION STARTED ===');
     console.log('Form data:', data);
     
+    if (!data.eventUrl?.trim()) {
+      toast({
+        title: "URL Required",
+        description: "Please enter a valid event URL.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
-      if (!data.eventUrl?.trim()) {
-        throw new Error('Event URL is required');
-      }
-
-      // Validate URL format
-      try {
-        new URL(data.eventUrl);
-      } catch {
-        throw new Error('Please enter a valid URL starting with http:// or https://');
-      }
-
       console.log('=== CREATING EVENT DATA ===');
       
       // Create minimal event data for submission
       const eventData: SubmitEventData = {
-        eventTitle: "Event Submission (Title will be updated after review)",
+        eventTitle: "Event Submission",
         eventDescription: "Event details will be updated by admin after review",
         eventUrl: data.eventUrl.trim(),
-        date: new Date().toISOString().split('T')[0], // Today's date as default
-        time: "18:00", // Default time
+        date: new Date().toISOString().split('T')[0],
+        time: "18:00",
         location: "Location TBD",
         category: "Networking",
         price: "TBD",
