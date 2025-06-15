@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,8 +11,6 @@ import { Navigation } from "@/components/Navigation";
 const JobsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
-  const [selectedIndustry, setSelectedIndustry] = useState("");
 
   // Mock data for now - will be replaced with real data from Supabase
   const jobs = [
@@ -61,33 +58,24 @@ const JobsPage = () => {
     }
   ];
 
-  const industries = [
-    "Sales & Marketing Tech",
-    "Fintech & Payments", 
-    "HR & Recruiting",
-    "Customer Success & Support",
-    "DevTools & Infrastructure",
-    "Data & Analytics",
-    "Security & Compliance",
-    "Productivity & Collaboration",
-    "E-commerce & Retail Tech",
-    "Healthcare Tech",
-    "Legal Tech",
-    "Real Estate Tech",
-    "Supply Chain & Logistics",
-    "Education Tech"
+  const roles = [
+    "Frontend Engineer",
+    "Backend Engineer",
+    "Full Stack Engineer",
+    "Product Manager",
+    "Designer",
+    "Marketing",
+    "Sales",
+    "Data Scientist",
+    "DevOps Engineer"
   ];
-
-  const locations = ["Manhattan", "Brooklyn", "Remote", "Hybrid"];
 
   const filteredJobs = jobs.filter(job => {
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          job.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = !selectedRole || job.title.toLowerCase().includes(selectedRole.toLowerCase());
-    const matchesLocation = !selectedLocation || job.location.toLowerCase().includes(selectedLocation.toLowerCase());
-    const matchesIndustry = !selectedIndustry || job.industry === selectedIndustry;
-    return matchesSearch && matchesRole && matchesLocation && matchesIndustry;
+    return matchesSearch && matchesRole;
   });
 
   const getTypeColor = (type: string) => {
@@ -113,7 +101,7 @@ const JobsPage = () => {
 
         {/* Filters */}
         <div className="bg-white/70 backdrop-blur-sm rounded-lg p-6 mb-8 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               <Input
@@ -123,31 +111,14 @@ const JobsPage = () => {
                 className="pl-10"
               />
             </div>
-            <Input
-              placeholder="Role (e.g. Frontend Engineer)"
-              value={selectedRole}
-              onChange={(e) => setSelectedRole(e.target.value)}
-            />
-            <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+            <Select value={selectedRole} onValueChange={setSelectedRole}>
               <SelectTrigger>
-                <SelectValue placeholder="Location" />
+                <SelectValue placeholder="Role" />
               </SelectTrigger>
               <SelectContent>
-                {locations.map(location => (
-                  <SelectItem key={location} value={location}>
-                    {location}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={selectedIndustry} onValueChange={setSelectedIndustry}>
-              <SelectTrigger>
-                <SelectValue placeholder="Industry" />
-              </SelectTrigger>
-              <SelectContent>
-                {industries.map(industry => (
-                  <SelectItem key={industry} value={industry}>
-                    {industry}
+                {roles.map(role => (
+                  <SelectItem key={role} value={role}>
+                    {role}
                   </SelectItem>
                 ))}
               </SelectContent>
