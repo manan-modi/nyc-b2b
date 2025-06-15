@@ -20,12 +20,8 @@ export const SimpleSubmitEventDialog = () => {
   });
 
   const onSubmit = async (data: SubmitEventData) => {
-    console.log('=== FORM SUBMISSION STARTED ===');
-    console.log('Form data received:', data);
-    
     // Basic client-side validation
     if (!data.eventUrl?.trim()) {
-      console.log('Client validation failed: empty URL');
       toast({
         title: "URL Required",
         description: "Please enter a valid event URL.",
@@ -37,12 +33,7 @@ export const SimpleSubmitEventDialog = () => {
     setIsSubmitting(true);
     
     try {
-      console.log('=== CALLING SERVICE FUNCTION ===');
-      
-      const result = await submitEventToStorage(data);
-
-      console.log('=== SERVICE CALL SUCCESS ===');
-      console.log('Service result:', result);
+      await submitEventToStorage(data);
 
       toast({
         title: "Event Submitted Successfully!",
@@ -55,15 +46,12 @@ export const SimpleSubmitEventDialog = () => {
       setOpen(false);
       
     } catch (error) {
-      console.error('=== FORM SUBMISSION ERROR ===');
-      console.error('Error type:', typeof error);
-      console.error('Error details:', error);
+      console.error('Event submission error:', error);
       
       let errorMessage = "There was an error submitting your event. Please try again.";
       
       if (error instanceof Error) {
         errorMessage = error.message;
-        console.error('Error message extracted:', errorMessage);
       }
 
       toast({
@@ -72,7 +60,6 @@ export const SimpleSubmitEventDialog = () => {
         variant: "destructive",
       });
     } finally {
-      console.log('=== CLEANING UP ===');
       setIsSubmitting(false);
     }
   };

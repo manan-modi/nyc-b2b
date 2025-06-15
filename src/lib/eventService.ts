@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export interface Event {
@@ -26,89 +27,54 @@ export interface SubmitEventData {
 }
 
 export const submitEventToStorage = async (eventData: SubmitEventData): Promise<Event> => {
-  console.log('=== EVENT SUBMISSION STARTED ===');
-  console.log('Input data:', eventData);
-  console.log('Supabase client status:', !!supabase);
+  console.log('Submitting event:', eventData);
   
-  // Simple validation
+  // Validate URL format
   if (!eventData.eventUrl?.trim()) {
-    console.error('Validation failed: Empty URL');
     throw new Error('Event URL is required');
   }
 
-  // Validate URL format
   try {
-    const url = new URL(eventData.eventUrl);
-    console.log('URL validation passed:', url.href);
+    new URL(eventData.eventUrl);
   } catch (error) {
-    console.error('URL validation failed:', error);
     throw new Error('Please enter a valid URL starting with http:// or https://');
   }
 
-  // Create the simplest possible event record
+  // Create event record with minimal required data
   const eventRecord = {
     title: "Event Submission",
     description: "Event submitted for review",
     event_url: eventData.eventUrl.trim(),
-    date: new Date().toISOString().split('T')[0], // Today's date
-    time: "18:00:00", // Default time
+    date: new Date().toISOString().split('T')[0],
+    time: "18:00:00",
     location: "TBD",
     category: "Networking",
     price: "TBD",
     host_organization: "TBD",
     expected_attendees: 50,
-    status: 'pending'
+    status: 'pending' as const
   };
 
-  console.log('=== PREPARING INSERT ===');
-  console.log('Event record to insert:', JSON.stringify(eventRecord, null, 2));
+  const { data, error } = await supabase
+    .from('events')
+    .insert([eventRecord])
+    .select()
+    .single();
 
-  try {
-    console.log('=== EXECUTING INSERT ===');
-    
-    const { data, error } = await supabase
-      .from('events')
-      .insert([eventRecord])
-      .select()
-      .single();
-
-    console.log('=== INSERT RESPONSE ===');
-    console.log('Data:', data);
-    console.log('Error:', error);
-
-    if (error) {
-      console.error('=== INSERT ERROR DETAILS ===');
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
-      console.error('Error details:', error.details);
-      console.error('Error hint:', error.hint);
-      throw new Error(`Database error: ${error.message}`);
-    }
-
-    if (!data) {
-      console.error('=== NO DATA RETURNED ===');
-      throw new Error('No data returned from database');
-    }
-
-    console.log('=== SUBMISSION SUCCESS ===');
-    console.log('Returned event:', data);
-    return data as Event;
-    
-  } catch (submitError) {
-    console.error('=== SUBMISSION CATCH BLOCK ===');
-    console.error('Submit error:', submitError);
-    
-    if (submitError instanceof Error) {
-      throw submitError;
-    }
-    
-    throw new Error('Unknown error during event submission');
+  if (error) {
+    console.error('Database error:', error);
+    throw new Error(`Failed to submit event: ${error.message}`);
   }
+
+  if (!data) {
+    throw new Error('No data returned from database');
+  }
+
+  console.log('Event submitted successfully:', data);
+  return data as Event;
 };
 
 export const fetchApprovedEvents = async (): Promise<Event[]> => {
-  console.log('Fetching approved events...');
-  
   const { data, error } = await supabase
     .from('events')
     .select('*')
@@ -121,13 +87,10 @@ export const fetchApprovedEvents = async (): Promise<Event[]> => {
     throw new Error(`Failed to fetch events: ${error.message}`);
   }
 
-  console.log('Fetched approved events:', data?.length || 0);
   return (data || []) as Event[];
 };
 
 export const fetchAllEvents = async (): Promise<Event[]> => {
-  console.log('Fetching all events...');
-  
   const { data, error } = await supabase
     .from('events')
     .select('*')
@@ -138,13 +101,10 @@ export const fetchAllEvents = async (): Promise<Event[]> => {
     throw new Error(`Failed to fetch all events: ${error.message}`);
   }
 
-  console.log('Fetched all events:', data?.length || 0);
   return (data || []) as Event[];
 };
 
 export const updateEventStatus = async (recordId: string, status: 'approved' | 'rejected'): Promise<Event> => {
-  console.log(`Updating event ${recordId} status to ${status}`);
-  
   const { data, error } = await supabase
     .from('events')
     .update({ status })
@@ -157,13 +117,10 @@ export const updateEventStatus = async (recordId: string, status: 'approved' | '
     throw new Error(`Failed to update event status: ${error.message}`);
   }
 
-  console.log('Event status updated successfully:', data);
   return data as Event;
 };
 
 export const updateEventDetails = async (recordId: string, updates: Partial<Omit<Event, 'id' | 'created_at' | 'updated_at'>>): Promise<Event> => {
-  console.log(`Updating event ${recordId} details:`, updates);
-  
   const { data, error } = await supabase
     .from('events')
     .update(updates)
@@ -176,13 +133,10 @@ export const updateEventDetails = async (recordId: string, updates: Partial<Omit
     throw new Error(`Failed to update event details: ${error.message}`);
   }
 
-  console.log('Event details updated successfully:', data);
   return data as Event;
 };
 
 export const updateEventOrder = async (recordId: string, displayOrder: number, featured: boolean = false): Promise<Event> => {
-  console.log(`Updating event ${recordId} order to ${displayOrder}, featured: ${featured}`);
-  
   const { data, error } = await supabase
     .from('events')
     .update({ 
@@ -198,6 +152,5 @@ export const updateEventOrder = async (recordId: string, displayOrder: number, f
     throw new Error(`Failed to update event order: ${error.message}`);
   }
 
-  console.log('Event order updated successfully:', data);
   return data as Event;
 };
