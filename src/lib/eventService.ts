@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export interface Event {
@@ -40,10 +39,10 @@ export const submitEventToStorage = async (eventData: SubmitEventData): Promise<
     throw new Error('Please enter a valid URL starting with http:// or https://');
   }
 
-  // Create event record with minimal required data - only event_url and status are required
+  // Create event record with minimal required data - only event_url is required, status defaults to 'pending'
   const eventRecord = {
-    event_url: eventData.eventUrl.trim(),
-    status: 'pending' as const
+    event_url: eventData.eventUrl.trim()
+    // Remove explicit status field to let it default to 'pending'
   };
 
   const { data, error } = await supabase
