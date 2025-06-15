@@ -3,12 +3,12 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Users, Clock } from "lucide-react";
-import { Event } from "@/lib/eventService";
+import { EventSubmission } from "@/lib/eventService";
 import { format } from "date-fns";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 
 interface EventCardProps {
-  event: Event;
+  event: EventSubmission;
 }
 
 const EventCard = ({ event }: EventCardProps) => {
@@ -27,13 +27,14 @@ const EventCard = ({ event }: EventCardProps) => {
     featured
   } = event;
 
-  const eventDate = new Date(date);
-  const formattedDate = format(eventDate, 'MMM dd, yyyy');
+  const eventDate = new Date(date || new Date());
+  const formattedDate = date ? format(eventDate, 'MMM dd, yyyy') : 'Date TBD';
   const isPaid = price && price.toLowerCase() !== 'free';
 
   // Default images for categories using Unsplash with optimized parameters
-  const getDefaultImage = (category: string) => {
-    const images = {
+  const getDefaultImage = (category: string | null | undefined) => {
+    const defaultCat = "Networking";
+    const images: { [key: string]: string } = {
       "Networking": "https://images.unsplash.com/photo-1515187029135-18ee286d815b",
       "Finance": "https://images.unsplash.com/photo-1559136555-9303baea8ebd",
       "AI/ML": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
@@ -44,7 +45,7 @@ const EventCard = ({ event }: EventCardProps) => {
       "Marketing": "https://images.unsplash.com/photo-1533750349088-cd871a92f312",
       "Sales": "https://images.unsplash.com/photo-1556745757-8d76bdb6984b"
     };
-    return images[category] || images["Networking"];
+    return images[category || defaultCat] || images[defaultCat];
   };
 
   return (
@@ -52,7 +53,7 @@ const EventCard = ({ event }: EventCardProps) => {
       <div className="relative">
         <OptimizedImage
           src={imageUrl || getDefaultImage(category)}
-          alt={title}
+          alt={title || "Event image"}
           aspectRatio="landscape"
           className="group-hover:scale-105 transition-transform duration-300"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -97,7 +98,7 @@ const EventCard = ({ event }: EventCardProps) => {
           
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 text-green-600" />
-            <span>{time}</span>
+            <span>{time || "Time TBD"}</span>
           </div>
           
           <div className="flex items-center gap-2">

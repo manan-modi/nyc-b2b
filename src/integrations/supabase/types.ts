@@ -77,43 +77,61 @@ export type Database = {
       }
       event_submissions: {
         Row: {
-          created_at: string | null
+          category: string | null
+          created_at: string
           date: string | null
           description: string | null
+          display_order: number | null
           event_url: string
+          expected_attendees: string | null
+          featured: boolean | null
+          host_organization: string | null
           id: string
           image_url: string | null
           location: string | null
-          status: string | null
-          submitted_at: string | null
+          price: string | null
+          status: string
+          submitted_at: string
           time: string | null
           title: string | null
           updated_at: string | null
         }
         Insert: {
-          created_at?: string | null
+          category?: string | null
+          created_at?: string
           date?: string | null
           description?: string | null
+          display_order?: number | null
           event_url: string
+          expected_attendees?: string | null
+          featured?: boolean | null
+          host_organization?: string | null
           id?: string
           image_url?: string | null
           location?: string | null
-          status?: string | null
-          submitted_at?: string | null
+          price?: string | null
+          status?: string
+          submitted_at?: string
           time?: string | null
           title?: string | null
           updated_at?: string | null
         }
         Update: {
-          created_at?: string | null
+          category?: string | null
+          created_at?: string
           date?: string | null
           description?: string | null
+          display_order?: number | null
           event_url?: string
+          expected_attendees?: string | null
+          featured?: boolean | null
+          host_organization?: string | null
           id?: string
           image_url?: string | null
           location?: string | null
-          status?: string | null
-          submitted_at?: string | null
+          price?: string | null
+          status?: string
+          submitted_at?: string
           time?: string | null
           title?: string | null
           updated_at?: string | null

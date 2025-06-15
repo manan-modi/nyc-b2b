@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,12 +6,12 @@ import { ArrowRight, Calendar, MapPin, Users, Clock, ExternalLink } from "lucide
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
-import { fetchApprovedEvents, Event } from "@/lib/eventService";
+import { fetchApprovedEvents, EventSubmission } from "@/lib/eventService";
 import { SimpleSubmitEventDialog } from "@/components/SimpleSubmitEventDialog";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 
 export const EventsSection = () => {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<EventSubmission[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +21,14 @@ export const EventsSection = () => {
   const loadEvents = async () => {
     try {
       const data = await fetchApprovedEvents();
-      setEvents(data.slice(0, 6));
+      // Sort to show featured events first, then slice
+      const sortedData = data.sort((a, b) => {
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        // You might want a secondary sort criterion here, e.g., by date
+        return new Date(a.date || 0).getTime() - new Date(b.date || 0).getTime();
+      });
+      setEvents(sortedData.slice(0, 6));
     } catch (error) {
       console.error('Failed to load events:', error);
     } finally {
@@ -30,8 +36,8 @@ export const EventsSection = () => {
     }
   };
 
-  const getCategoryColor = (category: string) => {
-    const colors = {
+  const getCategoryColor = (category: string | null | undefined) => {
+    const colors: { [key: string]: string } = {
       "Networking": "bg-blue-100 text-blue-700",
       "Finance": "bg-green-100 text-green-700",
       "AI/ML": "bg-purple-100 text-purple-700",
@@ -42,12 +48,14 @@ export const EventsSection = () => {
       "Marketing": "bg-red-100 text-red-700",
       "Sales": "bg-teal-100 text-teal-700"
     };
-    return colors[category] || "bg-gray-100 text-gray-700";
+    return colors[category || ""] || "bg-gray-100 text-gray-700";
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return "Date TBD";
     try {
-      return new Date(dateString).toLocaleDateString('en-US', {
+      // Add a time component to avoid timezone issues with `new Date()`
+      return new Date(`${dateString}T00:00:00`).toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric'
       });
@@ -56,7 +64,8 @@ export const EventsSection = () => {
     }
   };
 
-  const formatTime = (timeString: string) => {
+  const formatTime = (timeString: string | null | undefined) => {
+    if (!timeString) return "Time TBD";
     try {
       return new Date(`1970-01-01T${timeString}`).toLocaleTimeString('en-US', {
         hour: 'numeric',
@@ -68,8 +77,9 @@ export const EventsSection = () => {
     }
   };
 
-  const getDefaultImage = (category: string) => {
-    const images = {
+  const getDefaultImage = (category: string | null | undefined) => {
+    const defaultCat = "Networking";
+    const images: { [key: string]: string } = {
       "Networking": "https://images.unsplash.com/photo-1515187029135-18ee286d815b",
       "Finance": "https://images.unsplash.com/photo-1559136555-9303baea8ebd",
       "AI/ML": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
@@ -77,7 +87,7 @@ export const EventsSection = () => {
       "Community": "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6",
       "Blockchain": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0"
     };
-    return images[category] || "https://images.unsplash.com/photo-1515187029135-18ee286d815b";
+    return images[category || defaultCat] || images[defaultCat];
   };
 
   const communityImages = [
@@ -142,7 +152,7 @@ export const EventsSection = () => {
                   <div className="relative">
                     <OptimizedImage
                       src={event.image_url || getDefaultImage(event.category)}
-                      alt={event.title}
+                      alt={event.title || "Event Image"}
                       aspectRatio="landscape"
                       className="group-hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
