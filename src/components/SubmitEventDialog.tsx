@@ -6,61 +6,57 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
-import { Plus } from "lucide-react";
-
-interface SubmitEventFormData {
-  eventUrl: string;
-}
+import { Plus, Link } from "lucide-react";
+import { submitEventToStorage, SubmitEventData } from "@/lib/eventService";
 
 export const SubmitEventDialog = () => {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<SubmitEventFormData>({
+  const form = useForm<SubmitEventData>({
     defaultValues: {
       eventUrl: "",
     },
   });
 
-  const onSubmit = async (data: SubmitEventFormData) => {
+  const onSubmit = async (data: SubmitEventData) => {
+    // Basic client-side validation
+    if (!data.eventUrl?.trim()) {
+      toast({
+        title: "URL Required",
+        description: "Please enter a valid event URL.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
-      // Replace with your Airtable API endpoint
-      const AIRTABLE_API_URL = 'https://api.airtable.com/v0/YOUR_BASE_ID/YOUR_TABLE_NAME';
-      const AIRTABLE_API_KEY = 'YOUR_API_KEY';
+      await submitEventToStorage(data);
 
-      const response = await fetch(AIRTABLE_API_URL, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fields: {
-            'Event URL': data.eventUrl,
-            'Status': 'Pending Review',
-            'Submitted At': new Date().toISOString(),
-          },
-        }),
+      toast({
+        title: "Event Submitted Successfully!",
+        description: "Your event has been submitted for review and will be processed within 24-48 hours.",
+        variant: "default",
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to submit event');
+      // Reset form and close dialog
+      form.reset();
+      setOpen(false);
+      
+    } catch (error) {
+      console.error('Event submission error:', error);
+      
+      let errorMessage = "There was an error submitting your event. Please try again.";
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
       }
 
       toast({
-        title: "Event Submitted!",
-        description: "Thanks for submitting your event. We'll review it and add it to our curated list.",
-      });
-
-      form.reset();
-      setOpen(false);
-    } catch (error) {
-      console.error('Error submitting event:', error);
-      toast({
         title: "Submission Failed",
-        description: "There was an error submitting your event. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -76,15 +72,15 @@ export const SubmitEventDialog = () => {
           Submit Event
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Submit an Event</DialogTitle>
+          <DialogTitle>Submit Your NYC B2B Event</DialogTitle>
           <DialogDescription>
-            Share an NYC B2B event by pasting the event URL below. We'll review and add it to our curated list.
+            Share your event URL and we'll review it for inclusion in our community calendar.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="eventUrl"
@@ -97,22 +93,48 @@ export const SubmitEventDialog = () => {
               }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Event URL</FormLabel>
+                  <FormLabel className="flex items-center gap-2">
+                    <Link className="h-4 w-4 text-green-600" />
+                    Event URL
+                  </FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="https://lu.ma/event-name or other event URL"
-                      {...field}
+                    <Input 
+                      placeholder="https://lu.ma/your-event or any other event platform URL" 
+                      {...field} 
+                      className="text-base"
+                      disabled={isSubmitting}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="flex justify-end gap-3">
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-800">
+                <strong>📋 Review Process:</strong> Our team will review your event submission and approve it if it fits our community guidelines.
+              </p>
+              <ul className="text-sm text-blue-700 mt-2 ml-4 space-y-1">
+                <li>• Must be relevant to NYC B2B professionals</li>
+                <li>• Should provide clear value to attendees</li>
+                <li>• Events are typically approved within 24-48 hours</li>
+              </ul>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setOpen(false)}
+                disabled={isSubmitting}
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+              >
                 {isSubmitting ? "Submitting..." : "Submit Event"}
               </Button>
             </div>

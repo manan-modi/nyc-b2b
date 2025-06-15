@@ -102,7 +102,7 @@ const EventsPage = () => {
   if (loading) {
     return (
       <>
-        <Navigation />
+        <Navigation onJoinCommunityClick={() => {}} />
         <div className="min-h-screen bg-white flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
@@ -119,10 +119,10 @@ const EventsPage = () => {
         title="NYC B2B Events - Professional Networking Events"
         description="Discover the best B2B networking events, conferences, and meetups in New York City. Connect with fellow professionals and grow your network."
       />
-      <StructuredData schema={structuredData} />
+      <StructuredData data={structuredData} />
       
       <div className="min-h-screen bg-white">
-        <Navigation />
+        <Navigation onJoinCommunityClick={() => {}} />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center mb-12">
