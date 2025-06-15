@@ -33,6 +33,7 @@ export const Navigation = ({ onJoinCommunityClick }: NavigationProps) => {
           {/* Desktop Navigation */}
           <div className="hidden sm:flex items-center space-x-6 lg:space-x-8">
             <Link to="/events" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">Events</Link>
+            <Link to="/jobs" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">Jobs</Link>
             <Link to="/about" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">About</Link>
             <a 
               href="https://venture.angellist.com/nyc-ventures/syndicate" 
@@ -72,6 +73,13 @@ export const Navigation = ({ onJoinCommunityClick }: NavigationProps) => {
               onClick={() => setMobileMenuOpen(false)}
             >
               Events
+            </Link>
+            <Link 
+              to="/jobs" 
+              className="block text-gray-600 hover:text-green-600 transition-colors font-medium py-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Jobs
             </Link>
             <Link 
               to="/about" 

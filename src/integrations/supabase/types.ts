@@ -9,7 +9,66 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      jobs: {
+        Row: {
+          company: string
+          company_logo: string | null
+          company_size: string | null
+          created_at: string
+          description: string | null
+          employment_type: string | null
+          experience_level: string | null
+          funding_stage: string | null
+          id: string
+          industry: string | null
+          job_url: string
+          location: string | null
+          posted_date: string | null
+          salary_range: string | null
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          company: string
+          company_logo?: string | null
+          company_size?: string | null
+          created_at?: string
+          description?: string | null
+          employment_type?: string | null
+          experience_level?: string | null
+          funding_stage?: string | null
+          id?: string
+          industry?: string | null
+          job_url: string
+          location?: string | null
+          posted_date?: string | null
+          salary_range?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          company?: string
+          company_logo?: string | null
+          company_size?: string | null
+          created_at?: string
+          description?: string | null
+          employment_type?: string | null
+          experience_level?: string | null
+          funding_stage?: string | null
+          id?: string
+          industry?: string | null
+          job_url?: string
+          location?: string | null
+          posted_date?: string | null
+          salary_range?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
