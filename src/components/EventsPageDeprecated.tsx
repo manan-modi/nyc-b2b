@@ -1,3 +1,8 @@
+/*
+ * DEPRECATED: This file has been deprecated and replaced by src/pages/EventsPage.tsx
+ * This file is kept for reference only and should not be used in new development.
+ * The new EventsPage component provides the same functionality with cleaner implementation.
+ */
 
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
@@ -6,11 +11,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Search, Calendar, MapPin, Clock, ExternalLink, Users } from "lucide-react";
 import { fetchApprovedEvents, Event } from "@/lib/eventService";
-import { SimpleSubmitEventDialog } from "@/components/SimpleSubmitEventDialog";
-import { SEOHead } from "@/components/SEOHead";
-import { StructuredData } from "@/components/StructuredData";
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
+import { SimpleSubmitEventDialog } from "./SimpleSubmitEventDialog";
+import { SEOHead } from "./SEOHead";
+import { StructuredData } from "./StructuredData";
+import { Navigation } from "./Navigation";
+import { Footer } from "./Footer";
 
 const EventsPage = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -118,8 +123,9 @@ const EventsPage = () => {
       <SEOHead 
         title="NYC B2B Events - Professional Networking Events"
         description="Discover the best B2B networking events, conferences, and meetups in New York City. Connect with fellow professionals and grow your network."
+        canonical="/events"
       />
-      <StructuredData schema={structuredData} />
+      <StructuredData data={structuredData} />
       
       <div className="min-h-screen bg-white">
         <Navigation />

@@ -7,7 +7,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
 import { Plus } from "lucide-react";
-import { submitEventUrl } from "@/lib/eventService";
 
 interface SubmitEventFormData {
   eventUrl: string;
@@ -24,13 +23,32 @@ export const SubmitEventDialog = () => {
   });
 
   const onSubmit = async (data: SubmitEventFormData) => {
-    console.log('Form submitted with data:', data);
     setIsSubmitting(true);
     
     try {
-      const result = await submitEventUrl({ eventUrl: data.eventUrl });
-      console.log('Submission successful:', result);
-      
+      // Replace with your Airtable API endpoint
+      const AIRTABLE_API_URL = 'https://api.airtable.com/v0/YOUR_BASE_ID/YOUR_TABLE_NAME';
+      const AIRTABLE_API_KEY = 'YOUR_API_KEY';
+
+      const response = await fetch(AIRTABLE_API_URL, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fields: {
+            'Event URL': data.eventUrl,
+            'Status': 'Pending Review',
+            'Submitted At': new Date().toISOString(),
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit event');
+      }
+
       toast({
         title: "Event Submitted!",
         description: "Thanks for submitting your event. We'll review it and add it to our curated list.",
@@ -39,16 +57,10 @@ export const SubmitEventDialog = () => {
       form.reset();
       setOpen(false);
     } catch (error) {
-      console.error('Submission error caught in component:', error);
-      
-      let errorMessage = "There was an error submitting your event. Please try again.";
-      if (error instanceof Error) {
-        errorMessage = `Submission failed: ${error.message}`;
-      }
-      
+      console.error('Error submitting event:', error);
       toast({
         title: "Submission Failed",
-        description: errorMessage,
+        description: "There was an error submitting your event. Please try again.",
         variant: "destructive",
       });
     } finally {

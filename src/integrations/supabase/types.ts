@@ -75,66 +75,66 @@ export type Database = {
         }
         Relationships: []
       }
-      event_submissions: {
+      events: {
         Row: {
-          category: string | null
+          category: string
           created_at: string
-          date: string | null
-          description: string | null
+          date: string
+          description: string
           display_order: number | null
           event_url: string
-          expected_attendees: string | null
+          expected_attendees: number
           featured: boolean | null
-          host_organization: string | null
+          host_organization: string
           id: string
           image_url: string | null
-          location: string | null
-          price: string | null
-          status: string
+          location: string
+          price: string
+          status: string | null
           submitted_at: string
-          time: string | null
-          title: string | null
-          updated_at: string | null
+          time: string
+          title: string
+          updated_at: string
         }
         Insert: {
-          category?: string | null
+          category: string
           created_at?: string
-          date?: string | null
-          description?: string | null
+          date: string
+          description: string
           display_order?: number | null
           event_url: string
-          expected_attendees?: string | null
+          expected_attendees?: number
           featured?: boolean | null
-          host_organization?: string | null
+          host_organization: string
           id?: string
           image_url?: string | null
-          location?: string | null
-          price?: string | null
-          status?: string
+          location: string
+          price: string
+          status?: string | null
           submitted_at?: string
-          time?: string | null
-          title?: string | null
-          updated_at?: string | null
+          time: string
+          title: string
+          updated_at?: string
         }
         Update: {
-          category?: string | null
+          category?: string
           created_at?: string
-          date?: string | null
-          description?: string | null
+          date?: string
+          description?: string
           display_order?: number | null
           event_url?: string
-          expected_attendees?: string | null
+          expected_attendees?: number
           featured?: boolean | null
-          host_organization?: string | null
+          host_organization?: string
           id?: string
           image_url?: string | null
-          location?: string | null
-          price?: string | null
-          status?: string
+          location?: string
+          price?: string
+          status?: string | null
           submitted_at?: string
-          time?: string | null
-          title?: string | null
-          updated_at?: string | null
+          time?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
