@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Users, Clock } from "lucide-react";
 import { Event } from "@/lib/eventService";
 import { format } from "date-fns";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 interface EventCardProps {
   event: Event;
@@ -30,20 +31,32 @@ const EventCard = ({ event }: EventCardProps) => {
   const formattedDate = format(eventDate, 'MMM dd, yyyy');
   const isPaid = price && price.toLowerCase() !== 'free';
 
+  // Default images for categories using Unsplash with optimized parameters
+  const getDefaultImage = (category: string) => {
+    const images = {
+      "Networking": "https://images.unsplash.com/photo-1515187029135-18ee286d815b",
+      "Finance": "https://images.unsplash.com/photo-1559136555-9303baea8ebd",
+      "AI/ML": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
+      "Workshop": "https://images.unsplash.com/photo-1552664730-d307ca884978",
+      "Community": "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6",
+      "Blockchain": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0",
+      "SaaS": "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
+      "Marketing": "https://images.unsplash.com/photo-1533750349088-cd871a92f312",
+      "Sales": "https://images.unsplash.com/photo-1556745757-8d76bdb6984b"
+    };
+    return images[category] || images["Networking"];
+  };
+
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 hover:scale-[1.02] border border-gray-200 overflow-hidden">
       <div className="relative">
-        {imageUrl ? (
-          <img 
-            src={imageUrl} 
-            alt={title}
-            className="w-full h-48 object-cover"
-          />
-        ) : (
-          <div className="w-full h-48 bg-gradient-to-br from-green-100 to-blue-100 flex items-center justify-center">
-            <Calendar className="h-16 w-16 text-green-600 opacity-50" />
-          </div>
-        )}
+        <OptimizedImage
+          src={imageUrl || getDefaultImage(category)}
+          alt={title}
+          aspectRatio="landscape"
+          className="group-hover:scale-105 transition-transform duration-300"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        />
         {featured && (
           <Badge className="absolute top-3 left-3 bg-yellow-500 text-white">
             Featured
