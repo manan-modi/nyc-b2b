@@ -1,129 +1,99 @@
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { ArrowRight, Mail, ChevronRight } from "lucide-react";
-import { useState } from "react";
-import { toast } from "@/hooks/use-toast";
+import { ArrowRight, Users, Briefcase, TrendingUp } from "lucide-react";
 
 export const HeroSection = () => {
-  const [email, setEmail] = useState("");
-
-  const handleEmailSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) {
-      toast({
-        title: "Please enter your email",
-        description: "We need your email to subscribe you to our newsletter.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      // Subscribe to Beehiiv using your actual API token
-      const response = await fetch('https://api.beehiiv.com/v2/publications/pub_255e23a2-96f2-406a-8d8b-f3c978f4620f/subscriptions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer 255e23a2-96f2-406a-8d8b-f3c978f4620f'
-        },
-        body: JSON.stringify({
-          email: email,
-          reactivate_existing: true,
-          send_welcome_email: true
-        })
-      });
-
-      if (response.ok) {
-        toast({
-          title: "Successfully subscribed!",
-          description: "Welcome to the NYC B2B community. Check your email for confirmation.",
-        });
-        setEmail("");
-      } else {
-        const errorData = await response.json();
-        console.error('Beehiiv API error:', errorData);
-        
-        // Fallback to manual subscription
-        const subscriptionUrl = `https://nycb2b.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`;
-        window.open(subscriptionUrl, '_blank');
-        
-        toast({
-          title: "Redirecting to subscription!",
-          description: "Complete your subscription on the new page that opened.",
-        });
-        setEmail("");
-      }
-    } catch (error) {
-      console.error('Beehiiv API error:', error);
-      // Fallback to manual subscription
-      const subscriptionUrl = `https://nycb2b.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`;
-      window.open(subscriptionUrl, '_blank');
-      
-      toast({
-        title: "Redirecting to subscription!",
-        description: "Complete your subscription on the new page that opened.",
-      });
-      setEmail("");
-    }
+  const handleJoinCommunityClick = () => {
+    window.open('https://nycb2b.beehiiv.com', '_blank');
   };
 
   return (
-    <section className="pt-12 sm:pt-16 lg:pt-24 pb-16 sm:pb-24 lg:pb-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-green-600/5 via-yellow-600/5 to-green-600/5"></div>
-      <div className="absolute top-20 left-10 w-32 h-32 bg-green-600/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-20 right-10 w-40 h-40 bg-yellow-600/10 rounded-full blur-3xl"></div>
+    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-white to-yellow-50/30 overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%2322c55e" fill-opacity="0.03"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
       
-      <div className="max-w-7xl mx-auto text-center relative">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="animate-fade-in">
-          <Badge className="mb-6 sm:mb-8 bg-gradient-to-r from-green-50 to-yellow-50 text-green-800 border-green-200/50 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold shadow-sm">
-            🚀 NYC's Leading B2B Startup Network · 10,000+ Members
-          </Badge>
-          
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight tracking-tight px-2">
-            Where Builders Meet.{" "}
-            <span className="nyc-gradient-text animate-pulse">
-              Deals Happen.
-            </span>
-          </h1>
-          
-          <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-8 sm:mb-12 max-w-4xl mx-auto leading-relaxed font-light px-2">
-            Join the go-to community for 10k+ B2B founders, operators, and investors 
-            shaping the next wave of enterprise tech.
-          </p>
-          
-          <div id="email-signup" className="flex flex-col gap-4 sm:gap-6 justify-center items-center mb-12 sm:mb-16 px-4">
-            <form onSubmit={handleEmailSignup} className="flex flex-col sm:flex-row gap-3 w-full max-w-md sm:max-w-none group">
-              <div className="relative flex-1">
-                <Input
-                  type="email"
-                  placeholder="Enter your email!"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full h-12 sm:h-14 border-gray-200 focus:border-green-500 rounded-xl text-base sm:text-lg px-4 sm:px-6 shadow-sm focus:shadow-lg transition-all duration-200"
-                />
-                <div className="absolute inset-0 rounded-xl nyc-gradient opacity-0 group-hover:opacity-10 transition-opacity duration-200 pointer-events-none"></div>
-              </div>
-              <Button type="submit" size="lg" className="nyc-gradient hover:opacity-90 px-6 sm:px-8 h-12 sm:h-14 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 text-white">
-                Join Free
-                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
-              </Button>
-            </form>
+          {/* Logo */}
+          <div className="mb-8 flex justify-center">
+            <img 
+              src="/lovable-uploads/b424aa23-7160-40e1-9b14-7a7b86f7c0b2.png" 
+              alt="NYC B2B" 
+              className="h-20 sm:h-24 lg:h-32 w-auto"
+            />
           </div>
 
-          <div className="flex justify-center px-4">
-            <Button size="lg" variant="outline" className="border-2 border-yellow-200 text-yellow-700 hover:bg-yellow-50 rounded-xl px-4 sm:px-6 py-2 sm:py-3 transition-all duration-200 hover:scale-105 hover:shadow-lg text-sm sm:text-base" asChild>
-              <a href="https://nycb2b.beehiiv.com/subscribe" target="_blank" rel="noopener noreferrer">
-                <Mail className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
-                Weekly Newsletter
-                <ChevronRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
+          {/* Main Headline */}
+          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-gray-900 mb-6 tracking-tight leading-tight">
+            The Ultimate <span className="nyc-gradient-text">B2B Community</span><br />
+            in New York City
+          </h1>
+          
+          {/* Subheading */}
+          <p className="text-xl sm:text-2xl lg:text-3xl text-gray-600 mb-8 max-w-4xl mx-auto font-light leading-relaxed">
+            Join NYC's premier B2B community. Access curated job opportunities, connect with industry leaders, 
+            and accelerate your career in the heart of NYC's business district.
+          </p>
+
+          {/* Stats */}
+          <div className="flex flex-wrap justify-center gap-6 sm:gap-8 mb-12 text-sm sm:text-base">
+            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-gray-100">
+              <Users className="h-5 w-5 text-green-600" />
+              <span className="font-semibold text-gray-900">8,500+ Members</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-gray-100">
+              <Briefcase className="h-5 w-5 text-blue-600" />
+              <span className="font-semibold text-gray-900">500+ Job Opportunities</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-gray-100">
+              <TrendingUp className="h-5 w-5 text-purple-600" />
+              <span className="font-semibold text-gray-900">$2B+ in Funding</span>
+            </div>
+          </div>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+            <Button 
+              size="lg" 
+              className="nyc-gradient hover:opacity-90 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+              onClick={handleJoinCommunityClick}
+            >
+              Join the Community
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-2 border-green-200 text-green-700 hover:bg-green-50 px-8 py-4 text-lg font-semibold"
+              asChild
+            >
+              <a href="/jobs">
+                Browse Jobs
               </a>
             </Button>
           </div>
+
+          {/* Trust Indicators */}
+          <div className="text-center text-gray-500 text-sm sm:text-base">
+            <p className="mb-2">Trusted by founders from</p>
+            <div className="flex flex-wrap justify-center gap-4 text-gray-400 font-medium">
+              <span>Y Combinator</span>
+              <span>•</span>
+              <span>Techstars</span>
+              <span>•</span>
+              <span>500 Startups</span>
+              <span>•</span>
+              <span>Entrepreneur First</span>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Decorative Elements */}
+      <div className="absolute top-20 left-10 w-20 h-20 bg-green-200 rounded-full opacity-20 animate-pulse"></div>
+      <div className="absolute bottom-20 right-10 w-16 h-16 bg-yellow-200 rounded-full opacity-20 animate-pulse delay-1000"></div>
+      <div className="absolute top-1/2 left-20 w-12 h-12 bg-blue-200 rounded-full opacity-20 animate-pulse delay-500"></div>
     </section>
   );
 };

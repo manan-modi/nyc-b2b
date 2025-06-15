@@ -1,3 +1,4 @@
+
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { Heart } from "lucide-react";
 import { useState } from "react";
@@ -20,6 +21,16 @@ export const SocialProofSection = () => {
     { name: "Lerer Hippeau", shortName: "Lerer Hippeau", logo: "/lovable-uploads/92c7be6d-607a-4121-8a90-3824891c5875.png" },
     { name: "Antler", shortName: "Antler", logo: "/lovable-uploads/f4d2292b-9cde-46b0-8bda-d2e749bc53fb.png" },
     { name: "Hustle Fund", shortName: "Hustle Fund", logo: "/lovable-uploads/1372bbf6-c158-4a58-b90e-906613c48a8c.png" }
+  ];
+
+  const communityPhotos = [
+    { src: "/lovable-uploads/00d2fcf3-063b-4181-8a1d-a84bd811f817.png", alt: "NYC B2B Community Event" },
+    { src: "/lovable-uploads/6cb02953-a4e4-4452-b5d9-e547c63eabbf.png", alt: "B2B Founders Networking" },
+    { src: "/lovable-uploads/71f4076b-d0a2-41b2-9ca5-2be9ff767129.png", alt: "NYC Startup Scene" },
+    { src: "/lovable-uploads/869b893b-cd8a-43f2-a2fd-931d8465dd47.png", alt: "Community Gathering" },
+    { src: "/lovable-uploads/8b97f66d-cf71-45a4-aa34-a4a0a47d6512.png", alt: "NYC B2B Meetup" },
+    { src: "/lovable-uploads/95f0e7bb-d022-430b-b63c-d9e545a744f7.png", alt: "Startup Founders Event" },
+    { src: "/lovable-uploads/f82fd6b5-0adc-4821-b6ef-8e916e338872.png", alt: "NYC Tech Community" }
   ];
 
   return (
@@ -62,7 +73,7 @@ export const SocialProofSection = () => {
             Trusted by nearly 10,000+ founders, operators, and investors as the premier B2B startup community in NYC.
           </p>
           
-          <div className="mb-8">
+          <div className="mb-16">
             <p className="text-base sm:text-lg font-semibold text-gray-700 mb-6 sm:mb-8">Founders backed by</p>
             <div className="relative">
               <div className="absolute left-0 top-0 bottom-0 w-4 sm:w-8 bg-gradient-to-r from-white via-white/60 to-transparent z-10 pointer-events-none"></div>
@@ -93,6 +104,42 @@ export const SocialProofSection = () => {
                               {investor.shortName}
                             </span>
                           )}
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+            </div>
+          </div>
+
+          {/* Photo Gallery Carousel */}
+          <div className="mt-16">
+            <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">Our Community in Action</h3>
+            <div className="relative">
+              <div className="absolute left-0 top-0 bottom-0 w-4 sm:w-8 bg-gradient-to-r from-white via-white/60 to-transparent z-10 pointer-events-none"></div>
+              <div className="absolute right-0 top-0 bottom-0 w-4 sm:w-8 bg-gradient-to-l from-white via-white/60 to-transparent z-10 pointer-events-none"></div>
+              
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                  slidesToScroll: 1,
+                  dragFree: true,
+                }}
+                className="w-full max-w-6xl mx-auto"
+              >
+                <CarouselContent className="-ml-2 sm:-ml-4">
+                  {communityPhotos.map((photo, index) => (
+                    <CarouselItem key={index} className="pl-2 sm:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
+                      <div className="group cursor-pointer">
+                        <div className="relative overflow-hidden rounded-xl bg-gray-100 aspect-[4/3] hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                          <img 
+                            src={photo.src} 
+                            alt={photo.alt}
+                            className="w-full h-full object-cover transition-all duration-300 group-hover:brightness-110"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         </div>
                       </div>
                     </CarouselItem>
