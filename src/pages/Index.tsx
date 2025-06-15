@@ -45,12 +45,12 @@ const Index = () => {
     }
 
     try {
-      // Subscribe to Beehiiv using API
+      // Subscribe to Beehiiv using your actual API token
       const response = await fetch('https://api.beehiiv.com/v2/publications/pub_255e23a2-96f2-406a-8d8b-f3c978f4620f/subscriptions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer pub_255e23a2-96f2-406a-8d8b-f3c978f4620f'
+          'Authorization': 'Bearer 255e23a2-96f2-406a-8d8b-f3c978f4620f'
         },
         body: JSON.stringify({
           email: email,
@@ -66,6 +66,9 @@ const Index = () => {
         });
         setEmail("");
       } else {
+        const errorData = await response.json();
+        console.error('Beehiiv API error:', errorData);
+        
         // Fallback to manual subscription
         const subscriptionUrl = `https://nycb2b.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`;
         window.open(subscriptionUrl, '_blank');
