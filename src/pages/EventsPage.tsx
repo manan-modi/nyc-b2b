@@ -39,15 +39,16 @@ const EventsPage = () => {
 
   useEffect(() => {
     const filtered = events.filter(event =>
-      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.location.toLowerCase().includes(searchTerm.toLowerCase())
+      (event.title?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+      (event.description?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+      (event.category?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+      (event.location?.toLowerCase().includes(searchTerm.toLowerCase()) || false)
     );
     setFilteredEvents(filtered);
   }, [searchTerm, events]);
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return 'Date TBD';
     try {
       return new Date(dateString).toLocaleDateString('en-US', {
         weekday: 'long',
@@ -60,7 +61,8 @@ const EventsPage = () => {
     }
   };
 
-  const formatTime = (timeString: string) => {
+  const formatTime = (timeString: string | null) => {
+    if (!timeString) return 'Time TBD';
     try {
       return new Date(`1970-01-01T${timeString}`).toLocaleTimeString('en-US', {
         hour: 'numeric',
@@ -83,17 +85,17 @@ const EventsPage = () => {
       "itemListElement": filteredEvents.map((event, index) => ({
         "@type": "Event",
         "position": index + 1,
-        "name": event.title,
-        "description": event.description,
-        "startDate": `${event.date}T${event.time}`,
-        "location": {
+        "name": event.title || "Event",
+        "description": event.description || "Event details to be announced",
+        "startDate": event.date && event.time ? `${event.date}T${event.time}` : undefined,
+        "location": event.location ? {
           "@type": "Place",
           "name": event.location
-        },
-        "organizer": {
+        } : undefined,
+        "organizer": event.host_organization ? {
           "@type": "Organization",
           "name": event.host_organization
-        },
+        } : undefined,
         "url": event.event_url
       }))
     }
@@ -181,7 +183,7 @@ const EventsPage = () => {
                     <CardHeader className="pb-4">
                       <div className="flex justify-between items-start mb-2">
                         <Badge variant="secondary" className="bg-green-100 text-green-700">
-                          {event.category}
+                          {event.category || 'Networking'}
                         </Badge>
                         {event.featured && (
                           <Badge className="bg-yellow-100 text-yellow-700">
@@ -190,10 +192,10 @@ const EventsPage = () => {
                         )}
                       </div>
                       <CardTitle className="text-xl mb-2 line-clamp-2">
-                        {event.title}
+                        {event.title || 'Event Details Coming Soon'}
                       </CardTitle>
                       <CardDescription className="text-base line-clamp-3">
-                        {event.description}
+                        {event.description || 'Event details will be updated soon. Click to view on the event platform.'}
                       </CardDescription>
                     </CardHeader>
                     
@@ -209,21 +211,23 @@ const EventsPage = () => {
                         </div>
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <MapPin className="h-4 w-4 text-green-600" />
-                          {event.location}
+                          {event.location || 'Location TBD'}
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Users className="h-4 w-4 text-green-600" />
-                          {event.expected_attendees} expected attendees
-                        </div>
+                        {event.expected_attendees && (
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Users className="h-4 w-4 text-green-600" />
+                            {event.expected_attendees} expected attendees
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex justify-between items-center">
                         <div className="text-sm">
                           <p className="text-gray-600">
-                            <span className="font-medium">Host:</span> {event.host_organization}
+                            <span className="font-medium">Host:</span> {event.host_organization || 'TBD'}
                           </p>
                           <p className="text-gray-600">
-                            <span className="font-medium">Price:</span> {event.price}
+                            <span className="font-medium">Price:</span> {event.price || 'TBD'}
                           </p>
                         </div>
                         

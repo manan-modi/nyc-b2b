@@ -3,17 +3,17 @@ import { supabase } from "@/integrations/supabase/client";
 
 export interface Event {
   id: string;
-  title: string;
-  description: string;
+  title?: string | null;
+  description?: string | null;
   event_url: string;
-  date: string;
-  time: string;
-  location: string;
-  category: string;
-  price: string;
-  host_organization: string;
-  expected_attendees: number;
-  image_url?: string;
+  date?: string | null;
+  time?: string | null;
+  location?: string | null;
+  category?: string | null;
+  price?: string | null;
+  host_organization?: string | null;
+  expected_attendees?: number | null;
+  image_url?: string | null;
   status: 'pending' | 'approved' | 'rejected';
   display_order?: number;
   featured?: boolean;
@@ -40,18 +40,9 @@ export const submitEventToStorage = async (eventData: SubmitEventData): Promise<
     throw new Error('Please enter a valid URL starting with http:// or https://');
   }
 
-  // Create event record with minimal required data
+  // Create event record with minimal required data - only event_url and status are required
   const eventRecord = {
-    title: "Event Submission",
-    description: "Event submitted for review",
     event_url: eventData.eventUrl.trim(),
-    date: new Date().toISOString().split('T')[0],
-    time: "18:00:00",
-    location: "TBD",
-    category: "Networking",
-    price: "TBD",
-    host_organization: "TBD",
-    expected_attendees: 50,
     status: 'pending' as const
   };
 

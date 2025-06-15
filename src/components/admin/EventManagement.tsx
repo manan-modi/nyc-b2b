@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,7 +48,8 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return 'Date TBD';
     try {
       return new Date(dateString).toLocaleDateString('en-US', {
         month: 'short',
@@ -61,7 +61,8 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
     }
   };
 
-  const formatTime = (timeString: string) => {
+  const formatTime = (timeString: string | null) => {
+    if (!timeString) return 'Time TBD';
     try {
       return new Date(`1970-01-01T${timeString}`).toLocaleTimeString('en-US', {
         hour: 'numeric',
@@ -229,7 +230,7 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
               <div className="flex justify-between items-start">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <CardTitle className="text-xl">{event.title}</CardTitle>
+                    <CardTitle className="text-xl">{event.title || 'Event Details Pending'}</CardTitle>
                     {event.featured && (
                       <Badge className="bg-yellow-100 text-yellow-700">
                         <Star className="h-3 w-3 mr-1" />
@@ -238,7 +239,7 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
                     )}
                   </div>
                   <CardDescription className="text-base">
-                    {event.description}
+                    {event.description || 'Event details to be added during review process.'}
                   </CardDescription>
                 </div>
                 <Badge className={getStatusColor(event.status || 'pending')}>
@@ -260,23 +261,25 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <MapPin className="h-4 w-4" />
-                    {event.location}
+                    {event.location || 'Location TBD'}
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Users className="h-4 w-4" />
-                    {event.expected_attendees} expected attendees
-                  </div>
+                  {event.expected_attendees && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Users className="h-4 w-4" />
+                      {event.expected_attendees} expected attendees
+                    </div>
+                  )}
                 </div>
                 
                 <div className="space-y-3">
                   <div className="text-sm">
-                    <span className="font-medium text-gray-700">Category:</span> {event.category}
+                    <span className="font-medium text-gray-700">Category:</span> {event.category || 'TBD'}
                   </div>
                   <div className="text-sm">
-                    <span className="font-medium text-gray-700">Price:</span> {event.price}
+                    <span className="font-medium text-gray-700">Price:</span> {event.price || 'TBD'}
                   </div>
                   <div className="text-sm">
-                    <span className="font-medium text-gray-700">Host:</span> {event.host_organization}
+                    <span className="font-medium text-gray-700">Host:</span> {event.host_organization || 'TBD'}
                   </div>
                   <div className="text-sm">
                     <span className="font-medium text-gray-700">Submitted:</span> {formatDate(event.submitted_at)}
