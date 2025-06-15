@@ -55,7 +55,7 @@ export const fetchAllEventSubmissions = async (): Promise<EventSubmission[]> => 
     throw error;
   }
 
-  return data || [];
+  return (data || []) as EventSubmission[];
 };
 
 export const fetchApprovedEvents = async (): Promise<EventSubmission[]> => {
@@ -72,7 +72,7 @@ export const fetchApprovedEvents = async (): Promise<EventSubmission[]> => {
     throw error;
   }
 
-  return data || [];
+  return (data || []) as EventSubmission[];
 };
 
 export const updateEventSubmissionStatus = async (recordId: string, status: 'approved' | 'rejected'): Promise<EventSubmission> => {
