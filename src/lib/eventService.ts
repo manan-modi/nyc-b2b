@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 // This is now the single source of truth for event data.
@@ -44,8 +43,7 @@ export const submitEventUrl = async (eventData: SubmitEventData): Promise<EventS
 
   const eventRecord = {
     event_url: eventData.eventUrl.trim(),
-    status: 'pending' as const,
-    submitted_at: new Date().toISOString()
+    status: 'pending' as const
   };
 
   console.log('Inserting event submission to event_submissions table:', eventRecord);
