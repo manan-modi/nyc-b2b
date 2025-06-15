@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -257,7 +256,7 @@ const BlogPage = () => {
 
         {/* Community Stats Section */}
         <div className="bg-white/50 backdrop-blur-sm rounded-lg p-8 mb-16">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
             <div className="flex flex-col items-center">
               <Mail className="h-8 w-8 text-green-600 mb-2" />
               <div className="text-2xl font-bold text-gray-900">8,500+</div>
@@ -267,11 +266,6 @@ const BlogPage = () => {
               <MessageCircle className="h-8 w-8 text-blue-600 mb-2" />
               <div className="text-2xl font-bold text-gray-900">1,500+</div>
               <div className="text-gray-600">Active WhatsApp Members</div>
-            </div>
-            <div className="flex flex-col items-center">
-              <Users className="h-8 w-8 text-purple-600 mb-2" />
-              <div className="text-2xl font-bold text-gray-900">60%</div>
-              <div className="text-gray-600">Newsletter Open Rate</div>
             </div>
           </div>
         </div>
