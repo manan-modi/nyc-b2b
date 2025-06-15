@@ -180,12 +180,7 @@ const JobsPage = () => {
               <p className="text-xl mb-6 opacity-90">
                 Reach 5,000+ qualified candidates in NYC's startup ecosystem. Get quality applications from top talent.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <SubmitJobDialog />
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600">
-                  View Pricing
-                </Button>
-              </div>
+              <SubmitJobDialog />
             </CardContent>
           </Card>
         </div>
