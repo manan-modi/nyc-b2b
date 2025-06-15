@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import EventsPage from "./components/EventsPage";
 import AboutPage from "./components/AboutPage";
 import JobsPage from "./pages/JobsPage";
+import BlogPage from "./pages/BlogPage";
 import AdminDashboard from "./components/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/jobs" element={<JobsPage />} />
+          <Route path="/blog" element={<BlogPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route 
             path="/admin" 
