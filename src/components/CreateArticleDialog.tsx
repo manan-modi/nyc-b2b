@@ -1,15 +1,13 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { Plus, X, Info } from "lucide-react";
+import { Plus } from "lucide-react";
 import { createArticle, type BlogArticleInsert } from "@/lib/blogService";
+import { ArticleBasicFields } from "./article/ArticleBasicFields";
+import { ArticleMetaFields } from "./article/ArticleMetaFields";
+import { ArticleSettings } from "./article/ArticleSettings";
 
 interface CreateArticleDialogProps {
   onArticleCreated: () => void;
@@ -32,6 +30,10 @@ export const CreateArticleDialog = ({ onArticleCreated }: CreateArticleDialogPro
     featured: false,
     status: 'draft' as 'draft' | 'published'
   });
+
+  const handleFormDataChange = (field: string, value: string | boolean) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,176 +111,11 @@ export const CreateArticleDialog = ({ onArticleCreated }: CreateArticleDialogPro
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">Title *</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="Enter article title"
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
-              <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Founder Story">Founder Story</SelectItem>
-                  <SelectItem value="Market Report">Market Report</SelectItem>
-                  <SelectItem value="Guide">Guide</SelectItem>
-                  <SelectItem value="Insights">Insights</SelectItem>
-                  <SelectItem value="Industry Trends">Industry Trends</SelectItem>
-                  <SelectItem value="Operations">Operations</SelectItem>
-                  <SelectItem value="Analysis">Analysis</SelectItem>
-                  <SelectItem value="Team Building">Team Building</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+          <ArticleBasicFields formData={formData} onFormDataChange={handleFormDataChange} />
+          
+          <ArticleMetaFields formData={formData} onFormDataChange={handleFormDataChange} />
 
-          <div className="space-y-2">
-            <Label htmlFor="excerpt">Excerpt</Label>
-            <Textarea
-              id="excerpt"
-              value={formData.excerpt}
-              onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
-              placeholder="Brief description of the article (appears in previews and meta tags)"
-              rows={2}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 mb-2">
-              <Label htmlFor="content">Content *</Label>
-              <div className="group relative">
-                <Info className="h-4 w-4 text-gray-400 cursor-help" />
-                <div className="absolute left-0 top-6 z-10 w-80 p-3 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                  <strong>Formatting Guide:</strong><br />
-                  <span className="text-gray-300">
-                    **Bold text** or __Bold text__<br />
-                    *Italic text* or _Italic text_<br />
-                    # Header 1<br />
-                    ## Header 2<br />
-                    ### Header 3<br />
-                    * Bullet point or - Bullet point<br />
-                    1. Numbered list<br />
-                    [Link text](URL)<br />
-                    {`> Block quote`}<br />
-                    `Inline code`
-                  </span>
-                </div>
-              </div>
-            </div>
-            <Textarea
-              id="content"
-              value={formData.content}
-              onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-              placeholder="Write your article content here using markdown formatting..."
-              rows={10}
-              required
-              className="font-mono text-sm"
-            />
-            <div className="text-xs text-gray-500 mt-1">
-              Supports: **bold**, *italic*, # headers, * bullets, [links](URL), {`> quotes`}, `code`
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="author_name">Author Name *</Label>
-              <Input
-                id="author_name"
-                value={formData.author_name}
-                onChange={(e) => setFormData(prev => ({ ...prev, author_name: e.target.value }))}
-                placeholder="Author name"
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="author_role">Author Role</Label>
-              <Input
-                id="author_role"
-                value={formData.author_role}
-                onChange={(e) => setFormData(prev => ({ ...prev, author_role: e.target.value }))}
-                placeholder="Author role/title"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="featured_image">Featured Image URL</Label>
-            <Input
-              id="featured_image"
-              value={formData.featured_image}
-              onChange={(e) => setFormData(prev => ({ ...prev, featured_image: e.target.value }))}
-              placeholder="https://example.com/image.jpg"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="meta_description">Meta Description (SEO) *</Label>
-            <Textarea
-              id="meta_description"
-              value={formData.meta_description}
-              onChange={(e) => setFormData(prev => ({ ...prev, meta_description: e.target.value }))}
-              placeholder="SEO meta description (150-160 characters for optimal search results)"
-              rows={2}
-              maxLength={160}
-            />
-            <div className="text-xs text-gray-500">
-              {formData.meta_description.length}/160 characters
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="meta_keywords">Meta Keywords (SEO)</Label>
-            <Input
-              id="meta_keywords"
-              value={formData.meta_keywords}
-              onChange={(e) => setFormData(prev => ({ ...prev, meta_keywords: e.target.value }))}
-              placeholder="startup, nyc, b2b, founder, entrepreneur"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="tags">Tags</Label>
-            <Input
-              id="tags"
-              value={formData.tags}
-              onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
-              placeholder="startup, founder, guide, nyc"
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="featured"
-                checked={formData.featured}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, featured: checked }))}
-              />
-              <Label htmlFor="featured">Featured Article</Label>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select value={formData.status} onValueChange={(value: 'draft' | 'published') => setFormData(prev => ({ ...prev, status: value }))}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="published">Published</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+          <ArticleSettings formData={formData} onFormDataChange={handleFormDataChange} />
 
           <div className="flex justify-end gap-4">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
