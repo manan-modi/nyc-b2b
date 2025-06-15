@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { LogOut } from "lucide-react";
-import { fetchAllEvents, Event } from "@/lib/eventStorage";
+import { fetchAllEvents, Event } from "@/lib/eventService";
 import { fetchAllArticles, type BlogArticle } from "@/lib/blogService";
 import { supabase } from "@/integrations/supabase/client";
 import { logout } from "@/lib/auth";
