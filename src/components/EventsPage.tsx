@@ -98,9 +98,10 @@ const EventsPage = () => {
           <h1 className="text-4xl sm:text-5xl font-bold nyc-gradient-text mb-4">
             NYC B2B Events
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
             Discover and connect at the best B2B events happening in New York City
           </p>
+          <SimpleSubmitEventDialog />
         </div>
 
         {/* Filters */}
