@@ -1,13 +1,14 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { LogOut } from "lucide-react";
-import { fetchAllEvents, Event } from "@/lib/eventService";
+import { fetchAllEventSubmissions, EventSubmission } from "@/lib/eventService";
 import { fetchAllArticles, type BlogArticle } from "@/lib/blogService";
 import { supabase } from "@/integrations/supabase/client";
 import { logout } from "@/lib/auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { EventManagement } from "./admin/EventManagement";
+import { EventSubmissionManagement } from "./admin/EventSubmissionManagement";
 import { BlogManagement } from "./admin/BlogManagement";
 import { JobManagement } from "./admin/JobManagement";
 
@@ -33,7 +34,7 @@ interface Job {
 }
 
 const AdminDashboard = () => {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [eventSubmissions, setEventSubmissions] = useState<EventSubmission[]>([]);
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,12 +45,12 @@ const AdminDashboard = () => {
 
   const loadData = async () => {
     try {
-      const [eventsData, articlesData, jobsData] = await Promise.all([
-        fetchAllEvents(),
+      const [submissionsData, articlesData, jobsData] = await Promise.all([
+        fetchAllEventSubmissions(),
         fetchAllArticles(),
         fetchAllJobs()
       ]);
-      setEvents(eventsData);
+      setEventSubmissions(submissionsData);
       setArticles(articlesData);
       setJobs(jobsData);
     } catch (error) {
@@ -101,7 +102,7 @@ const AdminDashboard = () => {
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
             <p className="text-gray-600">
-              Manage events, blog articles, jobs, and website content
+              Manage event submissions, blog articles, jobs, and website content
             </p>
           </div>
           <div className="flex gap-3">
@@ -118,13 +119,16 @@ const AdminDashboard = () => {
 
         <Tabs defaultValue="events" className="space-y-6">
           <TabsList>
-            <TabsTrigger value="events">Events</TabsTrigger>
+            <TabsTrigger value="events">Event Submissions</TabsTrigger>
             <TabsTrigger value="blog">Blog Articles</TabsTrigger>
             <TabsTrigger value="jobs">Jobs</TabsTrigger>
           </TabsList>
 
           <TabsContent value="events">
-            <EventManagement events={events} setEvents={setEvents} />
+            <EventSubmissionManagement 
+              submissions={eventSubmissions} 
+              setSubmissions={setEventSubmissions} 
+            />
           </TabsContent>
 
           <TabsContent value="blog">
