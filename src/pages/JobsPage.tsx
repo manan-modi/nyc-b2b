@@ -24,6 +24,7 @@ interface Job {
   industry: string | null;
   job_url: string;
   posted_date: string | null;
+  role: string | null;
 }
 
 const JobsPage = () => {
@@ -76,7 +77,7 @@ const JobsPage = () => {
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (job.description && job.description.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesRole = !selectedRole || job.title.toLowerCase().includes(selectedRole.toLowerCase());
+    const matchesRole = !selectedRole || job.role === selectedRole;
     return matchesSearch && matchesRole;
   });
 
@@ -165,9 +166,16 @@ const JobsPage = () => {
             <Card key={job.id} className="hover:shadow-lg transition-shadow duration-300 border-0 bg-white/70 backdrop-blur-sm">
               <CardHeader>
                 <div className="flex justify-between items-start mb-2">
-                  <Badge className={getTypeColor(job.employment_type || "Full-time")}>
-                    {job.employment_type || "Full-time"}
-                  </Badge>
+                  <div className="flex gap-2">
+                    <Badge className={getTypeColor(job.employment_type || "Full-time")}>
+                      {job.employment_type || "Full-time"}
+                    </Badge>
+                    {job.role && (
+                      <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+                        {job.role}
+                      </Badge>
+                    )}
+                  </div>
                   <div className="text-sm text-gray-500">{formatDate(job.posted_date)}</div>
                 </div>
                 <CardTitle className="text-xl">{job.title}</CardTitle>

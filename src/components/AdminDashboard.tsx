@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -28,6 +27,7 @@ interface Job {
   company_logo: string | null;
   status: string | null;
   posted_date: string | null;
+  role: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +25,7 @@ interface Job {
   company_logo: string | null;
   status: string | null;
   posted_date: string | null;
+  role: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -126,6 +128,11 @@ export const JobManagement = ({ jobs, setJobs }: JobManagementProps) => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <CardTitle className="text-xl">{job.title}</CardTitle>
+                    {job.role && (
+                      <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+                        {job.role}
+                      </Badge>
+                    )}
                   </div>
                   <CardDescription className="text-base">
                     {job.company} {job.location && `• ${job.location}`}
@@ -140,6 +147,11 @@ export const JobManagement = ({ jobs, setJobs }: JobManagementProps) => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div className="space-y-3">
+                  {job.role && (
+                    <div className="text-sm">
+                      <span className="font-medium text-gray-700">Role:</span> {job.role}
+                    </div>
+                  )}
                   {job.salary_range && (
                     <div className="text-sm">
                       <span className="font-medium text-gray-700">Salary:</span> {job.salary_range}

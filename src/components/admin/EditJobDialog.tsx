@@ -26,6 +26,7 @@ interface Job {
   company_logo: string | null;
   status: string | null;
   posted_date: string | null;
+  role: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -51,7 +52,8 @@ export const EditJobDialog = ({ job, onJobUpdated }: EditJobDialogProps) => {
     company_size: '',
     funding_stage: '',
     company_logo: '',
-    posted_date: ''
+    posted_date: '',
+    role: ''
   });
 
   useEffect(() => {
@@ -69,7 +71,8 @@ export const EditJobDialog = ({ job, onJobUpdated }: EditJobDialogProps) => {
         company_size: job.company_size || '',
         funding_stage: job.funding_stage || '',
         company_logo: job.company_logo || '',
-        posted_date: job.posted_date ? new Date(job.posted_date).toISOString().split('T')[0] : ''
+        posted_date: job.posted_date ? new Date(job.posted_date).toISOString().split('T')[0] : '',
+        role: job.role || ''
       });
     }
   }, [open, job]);
@@ -94,7 +97,8 @@ export const EditJobDialog = ({ job, onJobUpdated }: EditJobDialogProps) => {
           company_size: formData.company_size || null,
           funding_stage: formData.funding_stage || null,
           company_logo: formData.company_logo || null,
-          posted_date: formData.posted_date ? new Date(formData.posted_date).toISOString() : null
+          posted_date: formData.posted_date ? new Date(formData.posted_date).toISOString() : null,
+          role: formData.role || null
         })
         .eq('id', job.id);
 
@@ -160,7 +164,7 @@ export const EditJobDialog = ({ job, onJobUpdated }: EditJobDialogProps) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="location">Location</Label>
               <Input
@@ -179,6 +183,26 @@ export const EditJobDialog = ({ job, onJobUpdated }: EditJobDialogProps) => {
                 onChange={(e) => setFormData(prev => ({ ...prev, salary_range: e.target.value }))}
                 placeholder="$80,000 - $120,000"
               />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="role">Role</Label>
+              <Select value={formData.role} onValueChange={(value) => setFormData(prev => ({ ...prev, role: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Frontend Engineer">Frontend Engineer</SelectItem>
+                  <SelectItem value="Backend Engineer">Backend Engineer</SelectItem>
+                  <SelectItem value="Full Stack Engineer">Full Stack Engineer</SelectItem>
+                  <SelectItem value="Product Manager">Product Manager</SelectItem>
+                  <SelectItem value="Designer">Designer</SelectItem>
+                  <SelectItem value="Marketing">Marketing</SelectItem>
+                  <SelectItem value="Sales">Sales</SelectItem>
+                  <SelectItem value="Data Scientist">Data Scientist</SelectItem>
+                  <SelectItem value="DevOps Engineer">DevOps Engineer</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
