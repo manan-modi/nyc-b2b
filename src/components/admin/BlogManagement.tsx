@@ -1,14 +1,11 @@
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { BookOpen } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { Check, Calendar, Clock, BookOpen, Eye, Edit, ExternalLink } from "lucide-react";
 import { BlogArticle, updateArticleStatus } from "@/lib/blogService";
 import { CreateArticleDialog } from "../CreateArticleDialog";
-import { EditArticleDialog } from "../EditArticleDialog";
 import { BlogStatsCards } from "./BlogStatsCards";
+import { BlogArticleCard } from "./BlogArticleCard";
 
 interface BlogManagementProps {
   articles: BlogArticle[];
@@ -18,26 +15,6 @@ interface BlogManagementProps {
 
 export const BlogManagement = ({ articles, setArticles, onReloadData }: BlogManagementProps) => {
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'published': return 'bg-green-100 text-green-700';
-      case 'draft': return 'bg-gray-100 text-gray-700';
-      default: return 'bg-yellow-100 text-yellow-700';
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    try {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-      });
-    } catch {
-      return dateString;
-    }
-  };
 
   const handleArticleStatusUpdate = async (articleId: string, status: 'draft' | 'published') => {
     setUpdatingStatus(articleId);
@@ -77,124 +54,13 @@ export const BlogManagement = ({ articles, setArticles, onReloadData }: BlogMana
 
       <div className="space-y-6">
         {articles.map((article) => (
-          <Card key={article.id} className="overflow-hidden">
-            <CardHeader className="pb-4">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CardTitle className="text-xl">{article.title}</CardTitle>
-                    {article.featured && (
-                      <Badge className="bg-yellow-100 text-yellow-700">
-                        Featured
-                      </Badge>
-                    )}
-                  </div>
-                  <CardDescription className="text-base">
-                    {article.excerpt}
-                  </CardDescription>
-                  <div className="mt-2 text-sm text-gray-500">
-                    Slug: /blog/{article.slug}
-                  </div>
-                </div>
-                <Badge className={getStatusColor(article.status)}>
-                  {article.status}
-                </Badge>
-              </div>
-            </CardHeader>
-            
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <BookOpen className="h-4 w-4" />
-                    By {article.author_name} {article.author_role && `(${article.author_role})`}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Calendar className="h-4 w-4" />
-                    Created: {formatDate(article.created_at)}
-                  </div>
-                  {article.published_date && (
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Calendar className="h-4 w-4" />
-                      Published: {formatDate(article.published_date)}
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Clock className="h-4 w-4" />
-                    {article.read_time} min read
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  {article.category && (
-                    <div className="text-sm">
-                      <span className="font-medium text-gray-700">Category:</span> {article.category}
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Eye className="h-4 w-4" />
-                    {article.views || 0} views
-                  </div>
-                  {article.tags && article.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {article.tags.map((tag, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-3 items-center">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  asChild
-                  className="border-gray-300"
-                >
-                  <a 
-                    href={`/blog/${article.slug}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                  >
-                    View Article
-                    <ExternalLink className="ml-2 h-4 w-4" />
-                  </a>
-                </Button>
-
-                <EditArticleDialog 
-                  article={article} 
-                  onArticleUpdated={onReloadData}
-                />
-
-                {article.status === 'draft' && (
-                  <Button
-                    size="sm"
-                    onClick={() => handleArticleStatusUpdate(article.id, 'published')}
-                    disabled={updatingStatus === article.id}
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    <Check className="mr-2 h-4 w-4" />
-                    {updatingStatus === article.id ? 'Publishing...' : 'Publish'}
-                  </Button>
-                )}
-
-                {article.status === 'published' && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleArticleStatusUpdate(article.id, 'draft')}
-                    disabled={updatingStatus === article.id}
-                  >
-                    <Edit className="mr-2 h-4 w-4" />
-                    {updatingStatus === article.id ? 'Moving to Draft...' : 'Move to Draft'}
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <BlogArticleCard
+            key={article.id}
+            article={article}
+            onReloadData={onReloadData}
+            onStatusUpdate={handleArticleStatusUpdate}
+            updatingStatus={updatingStatus}
+          />
         ))}
 
         {articles.length === 0 && (
