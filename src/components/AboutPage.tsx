@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Building2, Users, Target, Heart, Mail, MessageCircle, TrendingUp, ExternalLink } from "lucide-react";
@@ -11,7 +10,7 @@ const AboutPage = () => {
     { number: "8,500+", label: "Newsletter Subscribers" },
     { number: "60%", label: "Average Open Rate" },
     { number: "10%+", label: "Click-Through Rate" },
-    { number: "1,500+", label: "Active Slack Members" }
+    { number: "1,500+", label: "Active WhatsApp Members" }
   ];
 
   const backedFounders = [
