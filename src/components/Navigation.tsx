@@ -16,7 +16,7 @@ export const Navigation = ({ onJoinCommunityClick }: NavigationProps) => {
     <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 sm:h-20">
-          <div className="flex items-center space-x-3 sm:space-x-4">
+          <Link to="/" className="flex items-center space-x-3 sm:space-x-4 hover:opacity-80 transition-opacity">
             <div className="relative">
               <img 
                 src="/lovable-uploads/00d2fcf3-063b-4181-8a1d-a84bd811f817.png"
@@ -28,7 +28,7 @@ export const Navigation = ({ onJoinCommunityClick }: NavigationProps) => {
               <span className="text-lg sm:text-xl font-bold nyc-gradient-text">NYC B2B</span>
               <div className="text-xs text-gray-500 font-medium hidden sm:block">Powered by community</div>
             </div>
-          </div>
+          </Link>
           
           {/* Desktop Navigation */}
           <div className="hidden sm:flex items-center space-x-6 lg:space-x-8">
