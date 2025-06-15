@@ -2,7 +2,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GripVertical, Star } from "lucide-react";
-import { Event } from "@/lib/eventStorage";
+import { Event } from "@/lib/eventService";
 import {
   useSortable,
 } from "@dnd-kit/sortable";
@@ -53,15 +53,15 @@ export const SortableEventItem = ({
         <div className="text-sm font-medium text-gray-500">#{index + 1}</div>
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="font-medium">{event.fields['Event Title']}</h3>
-            {event.fields.Featured && (
+            <h3 className="font-medium">{event.title}</h3>
+            {event.featured && (
               <Badge className="bg-yellow-100 text-yellow-700">
                 <Star className="h-3 w-3 mr-1" />
                 Featured
               </Badge>
             )}
           </div>
-          <div className="text-sm text-gray-600">Order: {event.fields['Display Order'] || 0}</div>
+          <div className="text-sm text-gray-600">Order: {event.display_order || 0}</div>
         </div>
       </div>
       <div className="flex items-center gap-2">
@@ -73,7 +73,7 @@ export const SortableEventItem = ({
           className="text-yellow-600 border-yellow-200 hover:bg-yellow-50"
         >
           <Star className="h-4 w-4" />
-          {event.fields.Featured ? 'Unfeature' : 'Feature'}
+          {event.featured ? 'Unfeature' : 'Feature'}
         </Button>
       </div>
     </div>

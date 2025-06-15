@@ -7,7 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Link } from "lucide-react";
-import { submitEventToStorage, SubmitEventData } from "@/lib/eventStorage";
+import { submitEventToStorage, SubmitEventData } from "@/lib/eventService";
 import { scrapeEventData } from "@/lib/eventScraper";
 
 interface SimpleSubmitData {

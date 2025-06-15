@@ -3,7 +3,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Users, Clock } from "lucide-react";
-import { Event } from "@/lib/eventStorage";
+import { Event } from "@/lib/eventService";
 import { format } from "date-fns";
 
 interface EventCardProps {
@@ -12,19 +12,19 @@ interface EventCardProps {
 
 const EventCard = ({ event }: EventCardProps) => {
   const {
-    'Event Title': title,
-    'Event Description': description,
-    'Event URL': url,
-    'Date': date,
-    'Time': time,
-    'Location': location,
-    'Category': category,
-    'Price': price,
-    'Host Organization': host,
-    'Expected Attendees': attendees,
-    'Image URL': imageUrl,
-    'Featured': featured
-  } = event.fields;
+    title,
+    description,
+    event_url: url,
+    date,
+    time,
+    location,
+    category,
+    price,
+    host_organization: host,
+    expected_attendees: attendees,
+    image_url: imageUrl,
+    featured
+  } = event;
 
   const eventDate = new Date(date);
   const formattedDate = format(eventDate, 'MMM dd, yyyy');

@@ -1,8 +1,9 @@
+
 import { useState, useEffect } from "react";
 import { SimpleSubmitEventDialog } from "./SimpleSubmitEventDialog";
 import EventCard from "./EventCard";
 import EventFilters from "./EventFilters";
-import { fetchApprovedEvents, Event } from "@/lib/eventStorage";
+import { fetchApprovedEvents, Event } from "@/lib/eventService";
 import { addDays, addMonths, isAfter, isBefore, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from "date-fns";
 import { Navigation } from "@/components/Navigation";
 import { Link } from "react-router-dom";
@@ -38,22 +39,22 @@ const EventsPage = () => {
     // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(event =>
-        event.fields['Event Title'].toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.fields['Event Description'].toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.fields['Host Organization'].toLowerCase().includes(searchTerm.toLowerCase())
+        event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        event.host_organization.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Filter by category
     if (selectedCategory !== "All Categories") {
-      filtered = filtered.filter(event => event.fields.Category === selectedCategory);
+      filtered = filtered.filter(event => event.category === selectedCategory);
     }
 
     // Filter by date
     if (selectedDateFilter !== "All Time") {
       const now = new Date();
       filtered = filtered.filter(event => {
-        const eventDate = new Date(event.fields.Date);
+        const eventDate = new Date(event.date);
         
         switch (selectedDateFilter) {
           case "This Week":

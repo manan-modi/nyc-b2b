@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { Check, X, Calendar, MapPin, Users, ExternalLink, Clock, Star } from "lucide-react";
-import { Event, updateEventStatus, updateEventOrder } from "@/lib/eventStorage";
+import { Event, updateEventStatus, updateEventOrder } from "@/lib/eventService";
 import { EditEventDialog } from "../EditEventDialog";
 import { SortableEventItem } from "./SortableEventItem";
 import { EventsStatsCards } from "./EventsStatsCards";
@@ -43,8 +43,8 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Approved': return 'bg-green-100 text-green-700';
-      case 'Rejected': return 'bg-red-100 text-red-700';
+      case 'approved': return 'bg-green-100 text-green-700';
+      case 'rejected': return 'bg-red-100 text-red-700';
       default: return 'bg-yellow-100 text-yellow-700';
     }
   };
@@ -73,20 +73,20 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
     }
   };
 
-  const handleStatusUpdate = async (recordId: string, status: 'Approved' | 'Rejected') => {
+  const handleStatusUpdate = async (recordId: string, status: 'approved' | 'rejected') => {
     setUpdatingStatus(recordId);
     try {
       await updateEventStatus(recordId, status);
       
       setEvents(events.map(event => 
         event.id === recordId 
-          ? { ...event, fields: { ...event.fields, Status: status } }
+          ? { ...event, status }
           : event
       ));
 
       toast({
         title: `Event ${status}`,
-        description: `The event has been ${status.toLowerCase()} successfully.`,
+        description: `The event has been ${status} successfully.`,
       });
     } catch (error) {
       console.error('Failed to update event status:', error);
@@ -107,7 +107,7 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
       
       setEvents(events.map(event => 
         event.id === recordId 
-          ? { ...event, fields: { ...event.fields, 'Display Order': newOrder, 'Featured': featured } }
+          ? { ...event, display_order: newOrder, featured }
           : event
       ));
 
@@ -131,8 +131,8 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
     const currentEvent = events.find(e => e.id === eventId);
     if (!currentEvent) return;
     
-    const currentOrder = currentEvent.fields['Display Order'] || 0;
-    const currentFeatured = currentEvent.fields.Featured || false;
+    const currentOrder = currentEvent.display_order || 0;
+    const currentFeatured = currentEvent.featured || false;
     handleOrderUpdate(eventId, currentOrder, !currentFeatured);
   };
 
@@ -143,7 +143,7 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
       return;
     }
 
-    const approvedEvents = events.filter(e => e.fields.Status === 'Approved').sort((a, b) => (b.fields['Display Order'] || 0) - (a.fields['Display Order'] || 0));
+    const approvedEvents = events.filter(e => e.status === 'approved').sort((a, b) => (b.display_order || 0) - (a.display_order || 0));
     
     const oldIndex = approvedEvents.findIndex(item => item.id === active.id);
     const newIndex = approvedEvents.findIndex(item => item.id === over.id);
@@ -153,7 +153,7 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
       
       const updatePromises = reorderedEvents.map((event, index) => {
         const newOrder = reorderedEvents.length - index;
-        return handleOrderUpdate(event.id, newOrder, event.fields.Featured || false);
+        return handleOrderUpdate(event.id, newOrder, event.featured || false);
       });
 
       try {
@@ -179,7 +179,7 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
     ));
   };
 
-  const approvedEvents = events.filter(e => e.fields.Status === 'Approved').sort((a, b) => (b.fields['Display Order'] || 0) - (a.fields['Display Order'] || 0));
+  const approvedEvents = events.filter(e => e.status === 'approved').sort((a, b) => (b.display_order || 0) - (a.display_order || 0));
 
   return (
     <div className="space-y-6">
@@ -229,8 +229,8 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
               <div className="flex justify-between items-start">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <CardTitle className="text-xl">{event.fields['Event Title']}</CardTitle>
-                    {event.fields.Featured && (
+                    <CardTitle className="text-xl">{event.title}</CardTitle>
+                    {event.featured && (
                       <Badge className="bg-yellow-100 text-yellow-700">
                         <Star className="h-3 w-3 mr-1" />
                         Featured
@@ -238,11 +238,11 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
                     )}
                   </div>
                   <CardDescription className="text-base">
-                    {event.fields['Event Description']}
+                    {event.description}
                   </CardDescription>
                 </div>
-                <Badge className={getStatusColor(event.fields.Status)}>
-                  {event.fields.Status}
+                <Badge className={getStatusColor(event.status || 'pending')}>
+                  {event.status || 'pending'}
                 </Badge>
               </div>
             </CardHeader>
@@ -252,34 +252,34 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <Calendar className="h-4 w-4" />
-                    {formatDate(event.fields.Date)}
+                    {formatDate(event.date)}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <Clock className="h-4 w-4" />
-                    {formatTime(event.fields.Time)}
+                    {formatTime(event.time)}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <MapPin className="h-4 w-4" />
-                    {event.fields.Location}
+                    {event.location}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <Users className="h-4 w-4" />
-                    {event.fields['Expected Attendees']} expected attendees
+                    {event.expected_attendees} expected attendees
                   </div>
                 </div>
                 
                 <div className="space-y-3">
                   <div className="text-sm">
-                    <span className="font-medium text-gray-700">Category:</span> {event.fields.Category}
+                    <span className="font-medium text-gray-700">Category:</span> {event.category}
                   </div>
                   <div className="text-sm">
-                    <span className="font-medium text-gray-700">Price:</span> {event.fields.Price}
+                    <span className="font-medium text-gray-700">Price:</span> {event.price}
                   </div>
                   <div className="text-sm">
-                    <span className="font-medium text-gray-700">Host:</span> {event.fields['Host Organization']}
+                    <span className="font-medium text-gray-700">Host:</span> {event.host_organization}
                   </div>
                   <div className="text-sm">
-                    <span className="font-medium text-gray-700">Submitted:</span> {formatDate(event.fields['Submitted At'])}
+                    <span className="font-medium text-gray-700">Submitted:</span> {formatDate(event.submitted_at)}
                   </div>
                 </div>
               </div>
@@ -292,7 +292,7 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
                   className="border-gray-300"
                 >
                   <a 
-                    href={event.fields['Event URL']} 
+                    href={event.event_url} 
                     target="_blank" 
                     rel="noopener noreferrer"
                   >
@@ -303,11 +303,11 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
 
                 <EditEventDialog event={event} onEventUpdated={handleEventUpdated} />
 
-                {event.fields.Status === 'Pending Review' && (
+                {event.status === 'pending' && (
                   <>
                     <Button
                       size="sm"
-                      onClick={() => handleStatusUpdate(event.id, 'Approved')}
+                      onClick={() => handleStatusUpdate(event.id, 'approved')}
                       disabled={updatingStatus === event.id}
                       className="bg-green-600 hover:bg-green-700 text-white"
                     >
@@ -317,7 +317,7 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
                     <Button
                       size="sm"
                       variant="destructive"
-                      onClick={() => handleStatusUpdate(event.id, 'Rejected')}
+                      onClick={() => handleStatusUpdate(event.id, 'rejected')}
                       disabled={updatingStatus === event.id}
                     >
                       <X className="mr-2 h-4 w-4" />

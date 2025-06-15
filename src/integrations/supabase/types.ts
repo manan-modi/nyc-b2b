@@ -75,6 +75,69 @@ export type Database = {
         }
         Relationships: []
       }
+      events: {
+        Row: {
+          category: string
+          created_at: string
+          date: string
+          description: string
+          display_order: number | null
+          event_url: string
+          expected_attendees: number
+          featured: boolean | null
+          host_organization: string
+          id: string
+          image_url: string | null
+          location: string
+          price: string
+          status: string | null
+          submitted_at: string
+          time: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          date: string
+          description: string
+          display_order?: number | null
+          event_url: string
+          expected_attendees?: number
+          featured?: boolean | null
+          host_organization: string
+          id?: string
+          image_url?: string | null
+          location: string
+          price: string
+          status?: string | null
+          submitted_at?: string
+          time: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          date?: string
+          description?: string
+          display_order?: number | null
+          event_url?: string
+          expected_attendees?: number
+          featured?: boolean | null
+          host_organization?: string
+          id?: string
+          image_url?: string | null
+          location?: string
+          price?: string
+          status?: string | null
+          submitted_at?: string
+          time?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           company: string
