@@ -1,4 +1,5 @@
 
+import { Helmet } from "react-helmet-async";
 import { BlogArticle } from "@/lib/blogService";
 
 interface SEOHeadProps {
@@ -20,7 +21,7 @@ export const SEOHead = ({
   const imageUrl = article?.featured_image || `${baseUrl}/lovable-uploads/00d2fcf3-063b-4181-8a1d-a84bd811f817.png`;
 
   return (
-    <>
+    <Helmet>
       <title>{pageTitle}</title>
       <meta name="description" content={pageDescription} />
       {article?.meta_keywords && (
@@ -55,6 +56,6 @@ export const SEOHead = ({
       <meta name="twitter:title" content={pageTitle} />
       <meta name="twitter:description" content={pageDescription} />
       <meta name="twitter:image" content={imageUrl} />
-    </>
+    </Helmet>
   );
 };

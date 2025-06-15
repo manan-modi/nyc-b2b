@@ -1,4 +1,5 @@
 
+import { Helmet } from "react-helmet-async";
 import { BlogArticle } from "@/lib/blogService";
 
 interface StructuredDataProps {
@@ -39,11 +40,13 @@ export const StructuredData = ({ article, baseUrl = "https://nycb2b.com" }: Stru
   };
 
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify(structuredData, null, 2)
-      }}
-    />
+    <Helmet>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData, null, 2)
+        }}
+      />
+    </Helmet>
   );
 };

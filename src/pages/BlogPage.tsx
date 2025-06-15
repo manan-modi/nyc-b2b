@@ -1,7 +1,5 @@
-
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -75,10 +73,8 @@ const BlogPage = () => {
   if (slug && singleArticle) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        <Helmet>
-          <SEOHead article={singleArticle} />
-          <StructuredData article={singleArticle} />
-        </Helmet>
+        <SEOHead article={singleArticle} />
+        <StructuredData article={singleArticle} />
         
         <Navigation onJoinCommunityClick={() => window.open('https://nycb2b.beehiiv.com', '_blank')} />
         
@@ -200,9 +196,7 @@ const BlogPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <Helmet>
-        <SEOHead />
-      </Helmet>
+      <SEOHead />
       
       <Navigation onJoinCommunityClick={() => window.open('https://nycb2b.beehiiv.com', '_blank')} />
       
