@@ -9,6 +9,72 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      blog_articles: {
+        Row: {
+          author_name: string
+          author_role: string | null
+          category: string | null
+          content: string
+          created_at: string
+          excerpt: string | null
+          featured: boolean | null
+          featured_image: string | null
+          id: string
+          meta_description: string | null
+          meta_keywords: string[] | null
+          published_date: string | null
+          read_time: number | null
+          slug: string
+          status: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          views: number | null
+        }
+        Insert: {
+          author_name: string
+          author_role?: string | null
+          category?: string | null
+          content: string
+          created_at?: string
+          excerpt?: string | null
+          featured?: boolean | null
+          featured_image?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_keywords?: string[] | null
+          published_date?: string | null
+          read_time?: number | null
+          slug: string
+          status?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          views?: number | null
+        }
+        Update: {
+          author_name?: string
+          author_role?: string | null
+          category?: string | null
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          featured?: boolean | null
+          featured_image?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_keywords?: string[] | null
+          published_date?: string | null
+          read_time?: number | null
+          slug?: string
+          status?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          views?: number | null
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           company: string
@@ -74,7 +140,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_slug: {
+        Args: { title: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

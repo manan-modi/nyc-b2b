@@ -1,124 +1,194 @@
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BookOpen, Clock, Search, ArrowRight, TrendingUp, Users, DollarSign, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { BookOpen, Clock, ArrowRight, TrendingUp, Users, DollarSign, Eye, Calendar, User } from "lucide-react";
+import { fetchPublishedArticles, fetchArticleBySlug, incrementViews, type BlogArticle } from "@/lib/blogService";
 import { Navigation } from "@/components/Navigation";
 
 const BlogPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const { slug } = useParams();
+  const [articles, setArticles] = useState<BlogArticle[]>([]);
+  const [singleArticle, setSingleArticle] = useState<BlogArticle | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock blog posts with SEO-friendly URLs
-  const blogPosts = [
-    {
-      id: 1,
-      title: "From Idea to $10M ARR: A NYC Fintech Journey",
-      slug: "from-idea-to-10m-arr-nyc-fintech-journey",
-      excerpt: "Sarah Martinez shares how she built her fintech startup from her Brooklyn apartment to serving 50,000+ customers across the tri-state area.",
-      content: "Full article content would go here...",
-      author: "Sarah Martinez",
-      authorRole: "CEO, PayFlow",
-      readTime: "8 min read",
-      category: "Founder Stories",
-      publishedDate: "2024-12-15",
-      tags: ["fintech", "fundraising", "growth", "nyc-startups"],
-      featuredImage: "/api/placeholder/800/400",
-      metaDescription: "Learn how Sarah Martinez built her fintech startup from idea to $10M ARR in NYC's competitive startup ecosystem.",
-      views: 2847,
-      featured: true
-    },
-    {
-      id: 2,
-      title: "NYC Tech Funding Report Q4 2024: $2.3B Raised",
-      slug: "nyc-tech-funding-report-q4-2024",
-      excerpt: "Comprehensive analysis of funding trends, top investors, and emerging sectors in NYC's startup ecosystem this quarter.",
-      content: "Full article content would go here...",
-      author: "NYC B2B Team",
-      authorRole: "Research Team",
-      readTime: "12 min read",
-      category: "Market Reports",
-      publishedDate: "2024-12-10",
-      tags: ["funding", "market-analysis", "investors", "data"],
-      featuredImage: "/api/placeholder/800/400",
-      metaDescription: "Complete Q4 2024 NYC tech funding analysis - $2.3B raised across 156 deals. See which sectors and stages dominated.",
-      views: 4321,
-      featured: true
-    },
-    {
-      id: 3,
-      title: "The Complete Guide to Hiring in NYC Startups",
-      slug: "complete-guide-hiring-nyc-startups",
-      excerpt: "Best practices for building your team in the competitive New York market, from sourcing talent to competitive compensation packages.",
-      content: "Full article content would go here...",
-      author: "Marcus Chen",
-      authorRole: "Head of Talent, TechFlow",
-      readTime: "15 min read",
-      category: "Hiring & Talent",
-      publishedDate: "2024-12-08",
-      tags: ["hiring", "talent", "compensation", "team-building"],
-      featuredImage: "/api/placeholder/800/400",
-      metaDescription: "Master hiring in NYC's competitive startup scene with our complete guide covering sourcing, interviewing, and retention strategies.",
-      views: 1923,
-      featured: false
-    },
-    {
-      id: 4,
-      title: "5 NYC Unicorn Founders Share Their Biggest Mistakes",
-      slug: "nyc-unicorn-founders-biggest-mistakes",
-      excerpt: "Honest insights from founders who've built billion-dollar companies about what they wish they knew earlier in their journey.",
-      content: "Full article content would go here...",
-      author: "Jessica Wong",
-      authorRole: "Senior Editor",
-      readTime: "10 min read",
-      category: "Founder Stories",
-      publishedDate: "2024-12-06",
-      tags: ["mistakes", "lessons-learned", "unicorns", "founder-advice"],
-      featuredImage: "/api/placeholder/800/400",
-      metaDescription: "Learn from NYC unicorn founders' biggest mistakes. Exclusive insights from billion-dollar company builders.",
-      views: 3156,
-      featured: false
+  useEffect(() => {
+    loadContent();
+  }, [slug]);
+
+  const loadContent = async () => {
+    try {
+      setLoading(true);
+      if (slug) {
+        // Load single article
+        const article = await fetchArticle(slug);
+        setSingleArticle(article);
+        if (article) {
+          incrementViews(article.id);
+        }
+      } else {
+        // Load all published articles
+        const data = await fetchPublishedArticles();
+        setArticles(data);
+      }
+    } catch (error) {
+      console.error('Failed to load content:', error);
+      setError('Failed to load content');
+    } finally {
+      setLoading(false);
     }
-  ];
-
-  const categories = [
-    "Founder Stories",
-    "Market Reports", 
-    "Hiring & Talent",
-    "Fundraising",
-    "Product Strategy",
-    "Growth Marketing"
-  ];
-
-  const filteredPosts = blogPosts.filter(post => {
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = !selectedCategory || post.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  const featuredPosts = filteredPosts.filter(post => post.featured);
-  const regularPosts = filteredPosts.filter(post => !post.featured);
+  };
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      "Founder Stories": "bg-purple-100 text-purple-800",
-      "Market Reports": "bg-blue-100 text-blue-800", 
-      "Hiring & Talent": "bg-green-100 text-green-800",
-      "Fundraising": "bg-orange-100 text-orange-800",
-      "Product Strategy": "bg-pink-100 text-pink-800",
-      "Growth Marketing": "bg-yellow-100 text-yellow-800"
+      "Founder Story": "bg-purple-100 text-purple-800",
+      "Market Report": "bg-blue-100 text-blue-800",
+      "Guide": "bg-orange-100 text-orange-800",
+      "Insights": "bg-green-100 text-green-800",
+      "Industry Trends": "bg-pink-100 text-pink-800",
+      "Operations": "bg-yellow-100 text-yellow-800",
+      "Analysis": "bg-indigo-100 text-indigo-800",
+      "Team Building": "bg-red-100 text-red-800"
     };
     return colors[category] || "bg-gray-100 text-gray-800";
   };
 
-  const generateBlogUrl = (slug: string) => {
-    return `/blog/${slug}`;
+  const formatDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    } catch {
+      return dateString;
+    }
   };
+
+  // Single article view
+  if (slug && singleArticle) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <Navigation onJoinCommunityClick={() => window.open('https://nycb2b.beehiiv.com', '_blank')} />
+        
+        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Article Header */}
+          <header className="mb-8">
+            {singleArticle.category && (
+              <Badge className={`${getCategoryColor(singleArticle.category)} mb-4`}>
+                {singleArticle.category}
+              </Badge>
+            )}
+            
+            <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
+              {singleArticle.title}
+            </h1>
+            
+            {singleArticle.excerpt && (
+              <p className="text-xl text-gray-600 mb-6">
+                {singleArticle.excerpt}
+              </p>
+            )}
+            
+            <div className="flex items-center gap-6 text-sm text-gray-500 mb-8">
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                {singleArticle.author_name}
+                {singleArticle.author_role && ` • ${singleArticle.author_role}`}
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                {formatDate(singleArticle.published_date || singleArticle.created_at)}
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                {singleArticle.read_time} min read
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Eye className="h-4 w-4" />
+                {singleArticle.views || 0} views
+              </div>
+            </div>
+          </header>
+
+          {/* Featured Image */}
+          {singleArticle.featured_image && (
+            <div className="mb-8">
+              <img 
+                src={singleArticle.featured_image} 
+                alt={singleArticle.title}
+                className="w-full rounded-lg shadow-lg"
+              />
+            </div>
+          )}
+
+          {/* Article Content */}
+          <div className="prose prose-lg max-w-none">
+            <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+              {singleArticle.content}
+            </div>
+          </div>
+
+          {/* Tags */}
+          {singleArticle.tags && singleArticle.tags.length > 0 && (
+            <div className="mt-8 pt-8 border-t border-gray-200">
+              <div className="flex flex-wrap gap-2">
+                {singleArticle.tags.map((tag, index) => (
+                  <Badge key={index} variant="secondary">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Back to Blog */}
+          <div className="mt-12 pt-8 border-t border-gray-200">
+            <Button variant="outline" asChild>
+              <a href="/blog">← Back to All Articles</a>
+            </Button>
+          </div>
+        </article>
+      </div>
+    );
+  }
+
+  // Article listing view
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <Navigation onJoinCommunityClick={() => window.open('https://nycb2b.beehiiv.com', '_blank')} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading articles...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <Navigation onJoinCommunityClick={() => window.open('https://nycb2b.beehiiv.com', '_blank')} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center">
+            <p className="text-red-600">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const featuredArticles = articles.filter(article => article.featured).slice(0, 2);
+  const regularArticles = articles.filter(article => !article.featured);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -129,19 +199,61 @@ const BlogPage = () => {
         <div className="text-center mb-12">
           <div className="flex justify-center items-center gap-2 mb-4">
             <BookOpen className="h-8 w-8 text-purple-600" />
-            <h1 className="text-4xl font-bold text-gray-900">NYC Startup Insights</h1>
+            <h1 className="text-4xl font-bold text-gray-900">NYC Startup Resources</h1>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Deep insights, founder stories, and market intelligence from NYC's thriving startup ecosystem.
+            Insights, guides, and stories from NYC's startup ecosystem. Learn from founders who've been there.
           </p>
         </div>
 
-        {/* Stats */}
-        <div className="bg-white/50 backdrop-blur-sm rounded-lg p-8 mb-12">
+        {/* Featured Posts */}
+        {featuredArticles.length > 0 && (
+          <div className="mb-16">
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">Featured Stories</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {featuredArticles.map((article) => (
+                <Card key={article.id} className="hover:shadow-lg transition-shadow duration-300 border-0 bg-white/70 backdrop-blur-sm">
+                  <CardHeader>
+                    <div className="flex items-center justify-between mb-2">
+                      {article.category && (
+                        <Badge className={getCategoryColor(article.category)}>
+                          {article.category}
+                        </Badge>
+                      )}
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Clock className="h-4 w-4" />
+                        {article.read_time} min read
+                      </div>
+                    </div>
+                    <CardTitle className="text-2xl leading-tight">{article.title}</CardTitle>
+                    <CardDescription className="text-base">
+                      {article.excerpt}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm text-gray-600">
+                        By {article.author_name} • {formatDate(article.published_date || article.created_at)}
+                      </div>
+                      <Button variant="ghost" className="text-purple-600 hover:text-purple-700" asChild>
+                        <a href={`/blog/${article.slug}`}>
+                          Read Article <ArrowRight className="ml-2 h-4 w-4" />
+                        </a>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Stats Section */}
+        <div className="bg-white/50 backdrop-blur-sm rounded-lg p-8 mb-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div className="flex flex-col items-center">
               <TrendingUp className="h-8 w-8 text-blue-600 mb-2" />
-              <div className="text-2xl font-bold text-gray-900">150+</div>  
+              <div className="text-2xl font-bold text-gray-900">{articles.length}+</div>
               <div className="text-gray-600">Articles Published</div>
             </div>
             <div className="flex flex-col items-center">
@@ -152,75 +264,44 @@ const BlogPage = () => {
             <div className="flex flex-col items-center">
               <DollarSign className="h-8 w-8 text-purple-600 mb-2" />
               <div className="text-2xl font-bold text-gray-900">$2B+</div>
-              <div className="text-gray-600">Funding Coverage</div>
+              <div className="text-gray-600">Combined Funding Covered</div>
             </div>
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white/70 backdrop-blur-sm rounded-lg p-6 mb-8 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search articles..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Categories" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map(category => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Featured Posts */}
-        {featuredPosts.length > 0 && (
-          <div className="mb-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">Featured Articles</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {featuredPosts.map((post) => (
-                <Card key={post.id} className="hover:shadow-lg transition-all duration-300 border-0 bg-white/70 backdrop-blur-sm group cursor-pointer">
+        {/* All Posts */}
+        {regularArticles.length > 0 && (
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">Latest Articles</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {regularArticles.map((article) => (
+                <Card key={article.id} className="hover:shadow-lg transition-shadow duration-300 border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
                     <div className="flex items-center justify-between mb-2">
-                      <Badge className={getCategoryColor(post.category)}>
-                        {post.category}
-                      </Badge>
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          {new Date(post.publishedDate).toLocaleDateString()}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          {post.readTime}
-                        </div>
+                      {article.category && (
+                        <Badge className={getCategoryColor(article.category)}>
+                          {article.category}
+                        </Badge>
+                      )}
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Clock className="h-4 w-4" />
+                        {article.read_time} min read
                       </div>
                     </div>
-                    <CardTitle className="text-2xl leading-tight group-hover:text-purple-600 transition-colors">
-                      {post.title}
-                    </CardTitle>
-                    <CardDescription className="text-base">
-                      {post.excerpt}
+                    <CardTitle className="text-lg leading-tight">{article.title}</CardTitle>
+                    <CardDescription className="text-sm">
+                      {article.excerpt}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center justify-between">
-                      <div className="text-sm text-gray-600">
-                        By {post.author} • {post.views.toLocaleString()} views
+                      <div className="text-xs text-gray-600">
+                        By {article.author_name} • {formatDate(article.published_date || article.created_at)}
                       </div>
-                      <Button variant="ghost" className="text-purple-600 hover:text-purple-700 group-hover:translate-x-1 transition-all">
-                        Read Article <ArrowRight className="ml-2 h-4 w-4" />
+                      <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 p-0" asChild>
+                        <a href={`/blog/${article.slug}`}>
+                          Read <ArrowRight className="ml-1 h-3 w-3" />
+                        </a>
                       </Button>
                     </div>
                   </CardContent>
@@ -230,43 +311,13 @@ const BlogPage = () => {
           </div>
         )}
 
-        {/* Regular Posts Grid */}
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">Latest Articles</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {regularPosts.map((post) => (
-              <Card key={post.id} className="hover:shadow-lg transition-all duration-300 border-0 bg-white/70 backdrop-blur-sm group cursor-pointer">
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-2">
-                    <Badge className={getCategoryColor(post.category)}>
-                      {post.category}
-                    </Badge>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <Clock className="h-4 w-4" />
-                      {post.readTime}
-                    </div>
-                  </div>
-                  <CardTitle className="text-lg leading-tight group-hover:text-purple-600 transition-colors">
-                    {post.title}
-                  </CardTitle>
-                  <CardDescription className="text-sm">
-                    {post.excerpt}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between">
-                    <div className="text-xs text-gray-600">
-                      By {post.author} • {new Date(post.publishedDate).toLocaleDateString()}
-                    </div>
-                    <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 p-0">
-                      Read <ArrowRight className="ml-1 h-3 w-3" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+        {articles.length === 0 && (
+          <div className="text-center py-12">
+            <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No articles published yet</h3>
+            <p className="text-gray-600">Check back soon for fresh startup insights and stories.</p>
           </div>
-        </div>
+        )}
 
         {/* Newsletter CTA */}
         <div className="mt-16 text-center">
@@ -274,10 +325,12 @@ const BlogPage = () => {
             <CardContent className="py-12">
               <h2 className="text-3xl font-bold mb-4">Never Miss an Insight</h2>
               <p className="text-xl mb-6 opacity-90">
-                Get our weekly newsletter with the latest startup insights, funding news, and founder stories.
+                Get our weekly newsletter with the latest startup insights, funding news, and founder stories delivered to your inbox.
               </p>
-              <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
-                Subscribe to Newsletter
+              <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100" asChild>
+                <a href="https://nycb2b.beehiiv.com" target="_blank" rel="noopener noreferrer">
+                  Subscribe to Newsletter
+                </a>
               </Button>
             </CardContent>
           </Card>

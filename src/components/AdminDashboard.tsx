@@ -4,10 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { Check, X, Calendar, MapPin, Users, ExternalLink, Clock, LogOut, GripVertical, Star } from "lucide-react";
+import { Check, X, Calendar, MapPin, Users, ExternalLink, Clock, LogOut, GripVertical, Star, BookOpen, Eye, Edit } from "lucide-react";
 import { fetchAllEvents, updateEventStatus, updateEventOrder, Event } from "@/lib/eventStorage";
+import { fetchAllArticles, updateArticleStatus, type BlogArticle } from "@/lib/blogService";
 import { logout } from "@/lib/auth";
 import { EditEventDialog } from "./EditEventDialog";
+import { CreateArticleDialog } from "./CreateArticleDialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DndContext,
   closestCenter,
@@ -101,6 +104,7 @@ const SortableEventItem = ({
 
 const AdminDashboard = () => {
   const [events, setEvents] = useState<Event[]>([]);
+  const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
   const [updatingOrder, setUpdatingOrder] = useState<string | null>(null);
@@ -113,18 +117,22 @@ const AdminDashboard = () => {
   );
 
   useEffect(() => {
-    loadEvents();
+    loadData();
   }, []);
 
-  const loadEvents = async () => {
+  const loadData = async () => {
     try {
-      const data = await fetchAllEvents();
-      setEvents(data);
+      const [eventsData, articlesData] = await Promise.all([
+        fetchAllEvents(),
+        fetchAllArticles()
+      ]);
+      setEvents(eventsData);
+      setArticles(articlesData);
     } catch (error) {
-      console.error('Failed to load events:', error);
+      console.error('Failed to load data:', error);
       toast({
-        title: "Failed to Load Events",
-        description: "There was an error loading the events. Please refresh the page.",
+        title: "Failed to Load Data",
+        description: "There was an error loading the data. Please refresh the page.",
         variant: "destructive",
       });
     } finally {
@@ -244,10 +252,39 @@ const AdminDashboard = () => {
     ));
   };
 
+  const handleArticleStatusUpdate = async (articleId: string, status: 'draft' | 'published') => {
+    setUpdatingStatus(articleId);
+    try {
+      await updateArticleStatus(articleId, status);
+      
+      setArticles(articles.map(article => 
+        article.id === articleId 
+          ? { ...article, status, published_date: status === 'published' ? new Date().toISOString() : article.published_date }
+          : article
+      ));
+
+      toast({
+        title: `Article ${status === 'published' ? 'Published' : 'Drafted'}`,
+        description: `The article has been ${status === 'published' ? 'published' : 'moved to draft'} successfully.`,
+      });
+    } catch (error) {
+      console.error('Failed to update article status:', error);
+      toast({
+        title: "Update Failed",
+        description: "There was an error updating the article status. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdatingStatus(null);
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Approved': return 'bg-green-100 text-green-700';
+      case 'Approved': 
+      case 'published': return 'bg-green-100 text-green-700';
       case 'Rejected': return 'bg-red-100 text-red-700';
+      case 'draft': return 'bg-gray-100 text-gray-700';
       default: return 'bg-yellow-100 text-yellow-700';
     }
   };
@@ -281,7 +318,7 @@ const AdminDashboard = () => {
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading events...</p>
+          <p className="text-gray-600">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -294,12 +331,9 @@ const AdminDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8 flex justify-between items-start">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Event Admin Dashboard</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
             <p className="text-gray-600">
-              Review and manage submitted events, control display order
-            </p>
-            <p className="text-sm text-green-600 mt-1">
-              ✨ Auto-scraping enabled! Event details are automatically extracted from URLs.
+              Manage events, blog articles, and website content
             </p>
           </div>
           <div className="flex gap-3">
@@ -314,187 +348,368 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-2xl font-bold text-gray-900">
-                {events.filter(e => e.fields.Status === 'Pending Review').length}
-              </div>
-              <div className="text-sm text-gray-600">Pending Review</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-2xl font-bold text-green-600">
-                {events.filter(e => e.fields.Status === 'Approved').length}
-              </div>
-              <div className="text-sm text-gray-600">Approved</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-2xl font-bold text-red-600">
-                {events.filter(e => e.fields.Status === 'Rejected').length}
-              </div>
-              <div className="text-sm text-gray-600">Rejected</div>
-            </CardContent>
-          </Card>
-        </div>
+        <Tabs defaultValue="events" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="events">Events</TabsTrigger>
+            <TabsTrigger value="blog">Blog Articles</TabsTrigger>
+          </TabsList>
 
-        {/* Homepage Event Order Section with Drag & Drop */}
-        <div className="mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Homepage Event Display Order</CardTitle>
-              <CardDescription>
-                Drag and drop to reorder events. Events at the top will appear first on the homepage.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext
-                  items={approvedEvents.slice(0, 6).map(event => event.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="space-y-4">
-                    {approvedEvents.slice(0, 6).map((event, index) => (
-                      <SortableEventItem
-                        key={event.id}
-                        event={event}
-                        index={index}
-                        onToggleFeatured={handleToggleFeatured}
-                        updatingOrder={updatingOrder}
-                      />
-                    ))}
+          <TabsContent value="events" className="space-y-6">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-2xl font-bold text-gray-900">
+                    {events.filter(e => e.fields.Status === 'Pending Review').length}
                   </div>
-                </SortableContext>
-              </DndContext>
-            </CardContent>
-          </Card>
-        </div>
+                  <div className="text-sm text-gray-600">Pending Review</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-2xl font-bold text-green-600">
+                    {events.filter(e => e.fields.Status === 'Approved').length}
+                  </div>
+                  <div className="text-sm text-gray-600">Approved</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-2xl font-bold text-red-600">
+                    {events.filter(e => e.fields.Status === 'Rejected').length}
+                  </div>
+                  <div className="text-sm text-gray-600">Rejected</div>
+                </CardContent>
+              </Card>
+            </div>
 
-        {/* All Events */}
-        <div className="space-y-6">
-          {events.map((event) => (
-            <Card key={event.id} className="overflow-hidden">
-              <CardHeader className="pb-4">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <CardTitle className="text-xl">{event.fields['Event Title']}</CardTitle>
-                      {event.fields.Featured && (
-                        <Badge className="bg-yellow-100 text-yellow-700">
-                          <Star className="h-3 w-3 mr-1" />
-                          Featured
-                        </Badge>
+            {/* Homepage Event Order Section with Drag & Drop */}
+            <div className="mb-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Homepage Event Display Order</CardTitle>
+                  <CardDescription>
+                    Drag and drop to reorder events. Events at the top will appear first on the homepage.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={approvedEvents.slice(0, 6).map(event => event.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="space-y-4">
+                        {approvedEvents.slice(0, 6).map((event, index) => (
+                          <SortableEventItem
+                            key={event.id}
+                            event={event}
+                            index={index}
+                            onToggleFeatured={handleToggleFeatured}
+                            updatingOrder={updatingOrder}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* All Events */}
+            <div className="space-y-6">
+              {events.map((event) => (
+                <Card key={event.id} className="overflow-hidden">
+                  <CardHeader className="pb-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <CardTitle className="text-xl">{event.fields['Event Title']}</CardTitle>
+                          {event.fields.Featured && (
+                            <Badge className="bg-yellow-100 text-yellow-700">
+                              <Star className="h-3 w-3 mr-1" />
+                              Featured
+                            </Badge>
+                          )}
+                        </div>
+                        <CardDescription className="text-base">
+                          {event.fields['Event Description']}
+                        </CardDescription>
+                      </div>
+                      <Badge className={getStatusColor(event.fields.Status)}>
+                        {event.fields.Status}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Calendar className="h-4 w-4" />
+                          {formatDate(event.fields.Date)}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Clock className="h-4 w-4" />
+                          {formatTime(event.fields.Time)}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <MapPin className="h-4 w-4" />
+                          {event.fields.Location}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Users className="h-4 w-4" />
+                          {event.fields['Expected Attendees']} expected attendees
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div className="text-sm">
+                          <span className="font-medium text-gray-700">Category:</span> {event.fields.Category}
+                        </div>
+                        <div className="text-sm">
+                          <span className="font-medium text-gray-700">Price:</span> {event.fields.Price}
+                        </div>
+                        <div className="text-sm">
+                          <span className="font-medium text-gray-700">Host:</span> {event.fields['Host Organization']}
+                        </div>
+                        <div className="text-sm">
+                          <span className="font-medium text-gray-700">Submitted:</span> {formatDate(event.fields['Submitted At'])}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-3 items-center">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        asChild
+                        className="border-gray-300"
+                      >
+                        <a 
+                          href={event.fields['Event URL']} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                        >
+                          View Event Page
+                          <ExternalLink className="ml-2 h-4 w-4" />
+                        </a>
+                      </Button>
+
+                      <EditEventDialog event={event} onEventUpdated={handleEventUpdated} />
+
+                      {event.fields.Status === 'Pending Review' && (
+                        <>
+                          <Button
+                            size="sm"
+                            onClick={() => handleStatusUpdate(event.id, 'Approved')}
+                            disabled={updatingStatus === event.id}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            <Check className="mr-2 h-4 w-4" />
+                            {updatingStatus === event.id ? 'Approving...' : 'Approve'}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleStatusUpdate(event.id, 'Rejected')}
+                            disabled={updatingStatus === event.id}
+                          >
+                            <X className="mr-2 h-4 w-4" />
+                            {updatingStatus === event.id ? 'Rejecting...' : 'Reject'}
+                          </Button>
+                        </>
                       )}
                     </div>
-                    <CardDescription className="text-base">
-                      {event.fields['Event Description']}
-                    </CardDescription>
-                  </div>
-                  <Badge className={getStatusColor(event.fields.Status)}>
-                    {event.fields.Status}
-                  </Badge>
+                  </CardContent>
+                </Card>
+              ))}
+
+              {events.length === 0 && (
+                <div className="text-center py-12">
+                  <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No events submitted yet</h3>
+                  <p className="text-gray-600">Events will appear here once users start submitting them.</p>
                 </div>
-              </CardHeader>
-              
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Calendar className="h-4 w-4" />
-                      {formatDate(event.fields.Date)}
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Clock className="h-4 w-4" />
-                      {formatTime(event.fields.Time)}
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <MapPin className="h-4 w-4" />
-                      {event.fields.Location}
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Users className="h-4 w-4" />
-                      {event.fields['Expected Attendees']} expected attendees
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="text-sm">
-                      <span className="font-medium text-gray-700">Category:</span> {event.fields.Category}
-                    </div>
-                    <div className="text-sm">
-                      <span className="font-medium text-gray-700">Price:</span> {event.fields.Price}
-                    </div>
-                    <div className="text-sm">
-                      <span className="font-medium text-gray-700">Host:</span> {event.fields['Host Organization']}
-                    </div>
-                    <div className="text-sm">
-                      <span className="font-medium text-gray-700">Submitted:</span> {formatDate(event.fields['Submitted At'])}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-3 items-center">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    asChild
-                    className="border-gray-300"
-                  >
-                    <a 
-                      href={event.fields['Event URL']} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                    >
-                      View Event Page
-                      <ExternalLink className="ml-2 h-4 w-4" />
-                    </a>
-                  </Button>
-
-                  <EditEventDialog event={event} onEventUpdated={handleEventUpdated} />
-
-                  {event.fields.Status === 'Pending Review' && (
-                    <>
-                      <Button
-                        size="sm"
-                        onClick={() => handleStatusUpdate(event.id, 'Approved')}
-                        disabled={updatingStatus === event.id}
-                        className="bg-green-600 hover:bg-green-700 text-white"
-                      >
-                        <Check className="mr-2 h-4 w-4" />
-                        {updatingStatus === event.id ? 'Approving...' : 'Approve'}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleStatusUpdate(event.id, 'Rejected')}
-                        disabled={updatingStatus === event.id}
-                      >
-                        <X className="mr-2 h-4 w-4" />
-                        {updatingStatus === event.id ? 'Rejecting...' : 'Reject'}
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-
-          {events.length === 0 && (
-            <div className="text-center py-12">
-              <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No events submitted yet</h3>
-              <p className="text-gray-600">Events will appear here once users start submitting them.</p>
+              )}
             </div>
-          )}
-        </div>
+          </TabsContent>
+
+          <TabsContent value="blog" className="space-y-6">
+            {/* Blog Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-2xl font-bold text-gray-900">
+                    {articles.filter(a => a.status === 'draft').length}
+                  </div>
+                  <div className="text-sm text-gray-600">Drafts</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-2xl font-bold text-green-600">
+                    {articles.filter(a => a.status === 'published').length}
+                  </div>
+                  <div className="text-sm text-gray-600">Published</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-2xl font-bold text-purple-600">
+                    {articles.filter(a => a.featured).length}
+                  </div>
+                  <div className="text-sm text-gray-600">Featured</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {articles.reduce((sum, a) => sum + (a.views || 0), 0)}
+                  </div>
+                  <div className="text-sm text-gray-600">Total Views</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Create Article Button */}
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">Blog Articles</h2>
+              <CreateArticleDialog onArticleCreated={loadData} />
+            </div>
+
+            {/* Blog Articles List */}
+            <div className="space-y-6">
+              {articles.map((article) => (
+                <Card key={article.id} className="overflow-hidden">
+                  <CardHeader className="pb-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <CardTitle className="text-xl">{article.title}</CardTitle>
+                          {article.featured && (
+                            <Badge className="bg-yellow-100 text-yellow-700">
+                              <Star className="h-3 w-3 mr-1" />
+                              Featured
+                            </Badge>
+                          )}
+                        </div>
+                        <CardDescription className="text-base">
+                          {article.excerpt}
+                        </CardDescription>
+                        <div className="mt-2 text-sm text-gray-500">
+                          Slug: /blog/{article.slug}
+                        </div>
+                      </div>
+                      <Badge className={getStatusColor(article.status)}>
+                        {article.status}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <BookOpen className="h-4 w-4" />
+                          By {article.author_name} {article.author_role && `(${article.author_role})`}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Calendar className="h-4 w-4" />
+                          Created: {formatDate(article.created_at)}
+                        </div>
+                        {article.published_date && (
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Calendar className="h-4 w-4" />
+                            Published: {formatDate(article.published_date)}
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Clock className="h-4 w-4" />
+                          {article.read_time} min read
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        {article.category && (
+                          <div className="text-sm">
+                            <span className="font-medium text-gray-700">Category:</span> {article.category}
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Eye className="h-4 w-4" />
+                          {article.views || 0} views
+                        </div>
+                        {article.tags && article.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {article.tags.map((tag, index) => (
+                              <Badge key={index} variant="outline" className="text-xs">
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-3 items-center">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        asChild
+                        className="border-gray-300"
+                      >
+                        <a 
+                          href={`/blog/${article.slug}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                        >
+                          View Article
+                          <ExternalLink className="ml-2 h-4 w-4" />
+                        </a>
+                      </Button>
+
+                      {article.status === 'draft' && (
+                        <Button
+                          size="sm"
+                          onClick={() => handleArticleStatusUpdate(article.id, 'published')}
+                          disabled={updatingStatus === article.id}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          <Check className="mr-2 h-4 w-4" />
+                          {updatingStatus === article.id ? 'Publishing...' : 'Publish'}
+                        </Button>
+                      )}
+
+                      {article.status === 'published' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleArticleStatusUpdate(article.id, 'draft')}
+                          disabled={updatingStatus === article.id}
+                        >
+                          <Edit className="mr-2 h-4 w-4" />
+                          {updatingStatus === article.id ? 'Moving to Draft...' : 'Move to Draft'}
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+
+              {articles.length === 0 && (
+                <div className="text-center py-12">
+                  <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No articles yet</h3>
+                  <p className="text-gray-600">Create your first blog article to get started.</p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

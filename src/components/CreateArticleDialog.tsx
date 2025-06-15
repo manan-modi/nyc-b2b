@@ -1,0 +1,267 @@
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "@/hooks/use-toast";
+import { Plus, X } from "lucide-react";
+import { createArticle, type BlogArticleInsert } from "@/lib/blogService";
+
+interface CreateArticleDialogProps {
+  onArticleCreated: () => void;
+}
+
+export const CreateArticleDialog = ({ onArticleCreated }: CreateArticleDialogProps) => {
+  const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+    excerpt: '',
+    meta_description: '',
+    meta_keywords: '',
+    featured_image: '',
+    author_name: '',
+    author_role: '',
+    category: '',
+    tags: '',
+    featured: false,
+    status: 'draft' as 'draft' | 'published'
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const articleData: BlogArticleInsert = {
+        title: formData.title,
+        content: formData.content,
+        excerpt: formData.excerpt || undefined,
+        meta_description: formData.meta_description || undefined,
+        meta_keywords: formData.meta_keywords ? formData.meta_keywords.split(',').map(k => k.trim()) : undefined,
+        featured_image: formData.featured_image || undefined,
+        author_name: formData.author_name,
+        author_role: formData.author_role || undefined,
+        category: formData.category || undefined,
+        tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : undefined,
+        featured: formData.featured,
+        status: formData.status,
+        published_date: formData.status === 'published' ? new Date().toISOString() : undefined
+      };
+
+      await createArticle(articleData);
+      
+      toast({
+        title: "Article Created",
+        description: `Article "${formData.title}" has been created successfully.`,
+      });
+
+      // Reset form
+      setFormData({
+        title: '',
+        content: '',
+        excerpt: '',
+        meta_description: '',
+        meta_keywords: '',
+        featured_image: '',
+        author_name: '',
+        author_role: '',
+        category: '',
+        tags: '',
+        featured: false,
+        status: 'draft'
+      });
+
+      setOpen(false);
+      onArticleCreated();
+    } catch (error) {
+      console.error('Failed to create article:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create article. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="bg-purple-600 hover:bg-purple-700">
+          <Plus className="h-4 w-4 mr-2" />
+          Create Article
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Create New Blog Article</DialogTitle>
+          <DialogDescription>
+            Create an SEO-optimized blog article with automatic URL generation.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Title *</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="Enter article title"
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="category">Category</Label>
+              <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Founder Story">Founder Story</SelectItem>
+                  <SelectItem value="Market Report">Market Report</SelectItem>
+                  <SelectItem value="Guide">Guide</SelectItem>
+                  <SelectItem value="Insights">Insights</SelectItem>
+                  <SelectItem value="Industry Trends">Industry Trends</SelectItem>
+                  <SelectItem value="Operations">Operations</SelectItem>
+                  <SelectItem value="Analysis">Analysis</SelectItem>
+                  <SelectItem value="Team Building">Team Building</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="excerpt">Excerpt</Label>
+            <Textarea
+              id="excerpt"
+              value={formData.excerpt}
+              onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
+              placeholder="Brief description of the article"
+              rows={2}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="content">Content *</Label>
+            <Textarea
+              id="content"
+              value={formData.content}
+              onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+              placeholder="Write your article content here..."
+              rows={8}
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="author_name">Author Name *</Label>
+              <Input
+                id="author_name"
+                value={formData.author_name}
+                onChange={(e) => setFormData(prev => ({ ...prev, author_name: e.target.value }))}
+                placeholder="Author name"
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="author_role">Author Role</Label>
+              <Input
+                id="author_role"
+                value={formData.author_role}
+                onChange={(e) => setFormData(prev => ({ ...prev, author_role: e.target.value }))}
+                placeholder="Author role/title"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="featured_image">Featured Image URL</Label>
+            <Input
+              id="featured_image"
+              value={formData.featured_image}
+              onChange={(e) => setFormData(prev => ({ ...prev, featured_image: e.target.value }))}
+              placeholder="https://example.com/image.jpg"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="meta_description">Meta Description (SEO)</Label>
+            <Textarea
+              id="meta_description"
+              value={formData.meta_description}
+              onChange={(e) => setFormData(prev => ({ ...prev, meta_description: e.target.value }))}
+              placeholder="SEO meta description (150-160 characters)"
+              rows={2}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="meta_keywords">Meta Keywords (SEO)</Label>
+            <Input
+              id="meta_keywords"
+              value={formData.meta_keywords}
+              onChange={(e) => setFormData(prev => ({ ...prev, meta_keywords: e.target.value }))}
+              placeholder="keyword1, keyword2, keyword3"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="tags">Tags</Label>
+            <Input
+              id="tags"
+              value={formData.tags}
+              onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
+              placeholder="tag1, tag2, tag3"
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="featured"
+                checked={formData.featured}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, featured: checked }))}
+              />
+              <Label htmlFor="featured">Featured Article</Label>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <Select value={formData.status} onValueChange={(value: 'draft' | 'published') => setFormData(prev => ({ ...prev, status: value }))}>
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="published">Published</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-4">
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Creating...' : 'Create Article'}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
