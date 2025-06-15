@@ -2,14 +2,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GripVertical, Star } from "lucide-react";
-import { Event } from "@/lib/eventService";
+import { EventSubmission } from "@/lib/eventService";
 import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 interface SortableEventItemProps {
-  event: Event;
+  event: EventSubmission;
   index: number;
   onToggleFeatured: (eventId: string) => void;
   updatingOrder: string | null;

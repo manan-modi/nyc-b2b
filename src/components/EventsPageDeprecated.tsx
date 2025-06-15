@@ -1,25 +1,18 @@
-
-/*
- * DEPRECATED: This file has been deprecated and replaced by src/pages/EventsPage.tsx
- * This file is kept for reference only and should not be used in new development.
- * The new EventsPage component provides the same functionality with cleaner implementation.
- */
-
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, Calendar, MapPin, Clock, ExternalLink, Users } from "lucide-react";
-import { fetchApprovedEvents, Event } from "@/lib/eventService";
-import { SimpleSubmitEventDialog } from "./SimpleSubmitEventDialog";
-import { SEOHead } from "./SEOHead";
-import { Navigation } from "./Navigation";
-import { Footer } from "./Footer";
+import { fetchApprovedEvents, EventSubmission } from "@/lib/eventService";
+import { SimpleSubmitEventDialog } from "@/components/SimpleSubmitEventDialog";
+import { SEOHead } from "@/components/SEOHead";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 
 const EventsPage = () => {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<EventSubmission[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<EventSubmission[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,18 +36,20 @@ const EventsPage = () => {
   };
 
   useEffect(() => {
+    const lowercasedSearchTerm = searchTerm.toLowerCase();
     const filtered = events.filter(event =>
-      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.location.toLowerCase().includes(searchTerm.toLowerCase())
+      (event.title?.toLowerCase().includes(lowercasedSearchTerm)) ||
+      (event.description?.toLowerCase().includes(lowercasedSearchTerm)) ||
+      (event.category?.toLowerCase().includes(lowercasedSearchTerm)) ||
+      (event.location?.toLowerCase().includes(lowercasedSearchTerm))
     );
     setFilteredEvents(filtered);
   }, [searchTerm, events]);
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return "Date TBD";
     try {
-      return new Date(dateString).toLocaleDateString('en-US', {
+      return new Date(`${dateString}T00:00:00`).toLocaleDateString('en-US', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
@@ -65,7 +60,8 @@ const EventsPage = () => {
     }
   };
 
-  const formatTime = (timeString: string) => {
+  const formatTime = (timeString: string | null | undefined) => {
+    if (!timeString) return "Time TBD";
     try {
       return new Date(`1970-01-01T${timeString}`).toLocaleTimeString('en-US', {
         hour: 'numeric',
