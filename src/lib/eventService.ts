@@ -17,7 +17,7 @@ export interface EventSubmission {
   image_url?: string;
 }
 
-// Legacy Event interface for backwards compatibility
+// Updated Event interface to include admin properties
 export interface Event {
   id: string;
   title: string;
@@ -32,6 +32,10 @@ export interface Event {
   expected_attendees: string;
   image_url?: string;
   featured?: boolean;
+  // Admin properties
+  status?: 'pending' | 'approved' | 'rejected';
+  submitted_at?: string;
+  display_order?: number;
 }
 
 export interface SubmitEventData {
@@ -110,7 +114,7 @@ export const fetchApprovedEventSubmissions = async (): Promise<EventSubmission[]
   return (data || []) as EventSubmission[];
 };
 
-// Legacy function for backwards compatibility
+// Updated function for backwards compatibility
 export const fetchApprovedEvents = async (): Promise<Event[]> => {
   const submissions = await fetchApprovedEventSubmissions();
   
@@ -130,7 +134,10 @@ export const fetchApprovedEvents = async (): Promise<Event[]> => {
       host_organization: 'TBA', // Default host
       expected_attendees: 'TBA', // Default attendees
       image_url: submission.image_url,
-      featured: false
+      featured: false,
+      status: submission.status,
+      submitted_at: submission.submitted_at,
+      display_order: 0
     }));
 };
 
@@ -166,18 +173,87 @@ export const updateEventSubmissionDetails = async (recordId: string, updates: Pa
   return data as EventSubmission;
 };
 
-// Legacy functions for backwards compatibility
-export const updateEventStatus = async (eventId: string, status: string) => {
-  // Placeholder for backwards compatibility
-  console.warn('updateEventStatus is deprecated - use updateEventSubmissionStatus instead');
+// Updated legacy functions for backwards compatibility
+export const updateEventStatus = async (eventId: string, status: 'approved' | 'rejected'): Promise<Event> => {
+  const submission = await updateEventSubmissionStatus(eventId, status);
+  
+  // Convert to Event format
+  return {
+    id: submission.id,
+    title: submission.title || '',
+    description: submission.description || '',
+    event_url: submission.event_url,
+    date: submission.date || '',
+    time: submission.time || '',
+    location: submission.location || '',
+    category: 'Networking',
+    price: 'Free',
+    host_organization: 'TBA',
+    expected_attendees: 'TBA',
+    image_url: submission.image_url,
+    featured: false,
+    status: submission.status,
+    submitted_at: submission.submitted_at,
+    display_order: 0
+  };
 };
 
-export const updateEventOrder = async (eventId: string, order: number) => {
-  // Placeholder for backwards compatibility
-  console.warn('updateEventOrder is deprecated');
+export const updateEventOrder = async (eventId: string, order: number): Promise<Event> => {
+  // For now, just return the event with updated order (placeholder implementation)
+  const submissions = await fetchAllEventSubmissions();
+  const submission = submissions.find(s => s.id === eventId);
+  
+  if (!submission) {
+    throw new Error('Event not found');
+  }
+
+  return {
+    id: submission.id,
+    title: submission.title || '',
+    description: submission.description || '',
+    event_url: submission.event_url,
+    date: submission.date || '',
+    time: submission.time || '',
+    location: submission.location || '',
+    category: 'Networking',
+    price: 'Free',
+    host_organization: 'TBA',
+    expected_attendees: 'TBA',
+    image_url: submission.image_url,
+    featured: false,
+    status: submission.status,
+    submitted_at: submission.submitted_at,
+    display_order: order
+  };
 };
 
-export const updateEventDetails = async (eventId: string, updates: any) => {
-  // Placeholder for backwards compatibility
-  console.warn('updateEventDetails is deprecated - use updateEventSubmissionDetails instead');
+export const updateEventDetails = async (eventId: string, updates: any): Promise<Event> => {
+  const submission = await updateEventSubmissionDetails(eventId, {
+    title: updates.title,
+    description: updates.description,
+    event_url: updates.event_url,
+    date: updates.date,
+    time: updates.time,
+    location: updates.location,
+    image_url: updates.image_url
+  });
+
+  return {
+    id: submission.id,
+    title: submission.title || updates.title,
+    description: submission.description || updates.description,
+    event_url: submission.event_url,
+    date: submission.date || updates.date,
+    time: submission.time || updates.time,
+    location: submission.location || updates.location,
+    category: updates.category || 'Networking',
+    price: updates.price || 'Free',
+    host_organization: updates.host_organization || 'TBA',
+    expected_attendees: updates.expected_attendees || 'TBA',
+    image_url: submission.image_url,
+    featured: updates.featured || false,
+    status: submission.status,
+    submitted_at: submission.submitted_at,
+    display_order: 0
+  };
 };

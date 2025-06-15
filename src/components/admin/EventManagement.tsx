@@ -76,11 +76,11 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
   const handleStatusUpdate = async (recordId: string, status: 'approved' | 'rejected') => {
     setUpdatingStatus(recordId);
     try {
-      await updateEventStatus(recordId, status);
+      const updatedEvent = await updateEventStatus(recordId, status);
       
       setEvents(events.map(event => 
         event.id === recordId 
-          ? { ...event, status }
+          ? updatedEvent
           : event
       ));
 
@@ -100,14 +100,14 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
     }
   };
 
-  const handleOrderUpdate = async (recordId: string, newOrder: number, featured: boolean = false) => {
+  const handleOrderUpdate = async (recordId: string, newOrder: number) => {
     setUpdatingOrder(recordId);
     try {
-      await updateEventOrder(recordId, newOrder, featured);
+      const updatedEvent = await updateEventOrder(recordId, newOrder);
       
       setEvents(events.map(event => 
         event.id === recordId 
-          ? { ...event, display_order: newOrder, featured }
+          ? updatedEvent
           : event
       ));
 
@@ -132,8 +132,7 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
     if (!currentEvent) return;
     
     const currentOrder = currentEvent.display_order || 0;
-    const currentFeatured = currentEvent.featured || false;
-    handleOrderUpdate(eventId, currentOrder, !currentFeatured);
+    handleOrderUpdate(eventId, currentOrder);
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -153,7 +152,7 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
       
       const updatePromises = reorderedEvents.map((event, index) => {
         const newOrder = reorderedEvents.length - index;
-        return handleOrderUpdate(event.id, newOrder, event.featured || false);
+        return handleOrderUpdate(event.id, newOrder);
       });
 
       try {
@@ -279,7 +278,7 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
                     <span className="font-medium text-gray-700">Host:</span> {event.host_organization}
                   </div>
                   <div className="text-sm">
-                    <span className="font-medium text-gray-700">Submitted:</span> {formatDate(event.submitted_at)}
+                    <span className="font-medium text-gray-700">Submitted:</span> {formatDate(event.submitted_at || '')}
                   </div>
                 </div>
               </div>
