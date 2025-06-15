@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export interface Event {
@@ -37,8 +36,8 @@ export interface SubmitEventData {
 }
 
 export const submitEventToStorage = async (eventData: SubmitEventData): Promise<Event> => {
-  console.log('=== STARTING EVENT SUBMISSION ===');
-  console.log('Raw event data received:', eventData);
+  console.log('=== STARTING SIMPLE EVENT SUBMISSION ===');
+  console.log('Event URL:', eventData.eventUrl);
   
   // Basic validation
   if (!eventData.eventUrl?.trim()) {
@@ -52,88 +51,56 @@ export const submitEventToStorage = async (eventData: SubmitEventData): Promise<
     throw new Error('Please enter a valid URL starting with http:// or https://');
   }
 
-  // Prepare the minimal data for database insertion
-  const insertData = {
-    title: eventData.eventTitle?.trim() || "Event Submission (Title pending review)",
-    description: eventData.eventDescription?.trim() || "Event details will be updated by admin after review",
+  // Use the most minimal data possible
+  const eventRecord = {
+    title: eventData.eventTitle || "Event Submission",
+    description: eventData.eventDescription || "Pending admin review",
     event_url: eventData.eventUrl.trim(),
     date: eventData.date || new Date().toISOString().split('T')[0],
     time: eventData.time || "18:00",
-    location: eventData.location?.trim() || "Location TBD",
+    location: eventData.location || "TBD",
     category: eventData.category || "Networking",
-    price: eventData.price?.trim() || "TBD",
-    host_organization: eventData.hostOrganization?.trim() || "Host TBD",
+    price: eventData.price || "TBD",
+    host_organization: eventData.hostOrganization || "TBD",
     expected_attendees: eventData.expectedAttendees || 50,
-    image_url: eventData.imageUrl?.trim() || null,
-    status: 'pending' as const
+    image_url: eventData.imageUrl || null,
+    status: 'pending'
   };
 
-  console.log('=== PREPARED DATA FOR INSERT ===');
-  console.log('Insert data:', insertData);
+  console.log('=== ATTEMPTING SUPABASE INSERT ===');
+  console.log('Data to insert:', eventRecord);
 
   try {
-    console.log('=== ATTEMPTING DATABASE INSERT ===');
-    
-    // Try the insert with comprehensive error handling
+    // Try simple insert first
     const { data, error } = await supabase
       .from('events')
-      .insert(insertData)
+      .insert([eventRecord])
       .select()
       .single();
 
-    console.log('=== DATABASE RESPONSE ===');
-    console.log('Data:', data);
-    console.log('Error:', error);
+    console.log('Insert response - Data:', data);
+    console.log('Insert response - Error:', error);
 
     if (error) {
-      console.error('=== DATABASE ERROR DETAILS ===');
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
-      console.error('Error details:', error.details);
-      console.error('Error hint:', error.hint);
-      
-      // Handle specific error types
-      if (error.code === '42501') {
-        // Permission denied error - try a different approach
-        console.log('=== TRYING ALTERNATIVE INSERT METHOD ===');
-        
-        // Try using upsert instead
-        const { data: upsertData, error: upsertError } = await supabase
-          .from('events')
-          .upsert(insertData, { onConflict: 'event_url' })
-          .select()
-          .single();
-
-        if (upsertError) {
-          console.error('Upsert also failed:', upsertError);
-          throw new Error('Unable to submit event. Please contact support.');
-        }
-
-        return upsertData as Event;
-      } else if (error.code === '23505') {
-        throw new Error('An event with this URL already exists.');
-      } else {
-        throw new Error(`Submission failed: ${error.message}`);
-      }
+      console.error('=== INSERT FAILED ===', error);
+      throw new Error(`Database error: ${error.message}`);
     }
 
     if (!data) {
-      throw new Error('Event submission failed - no data returned from database');
+      throw new Error('No data returned from insert');
     }
 
-    console.log('=== SUCCESS ===');
-    console.log('Event submitted successfully:', data);
+    console.log('=== EVENT SUBMISSION SUCCESS ===');
     return data as Event;
 
   } catch (error) {
-    console.error('=== SUBMISSION ERROR ===');
-    console.error('Error details:', error);
+    console.error('=== SUBMISSION ERROR ===', error);
     
     if (error instanceof Error) {
       throw error;
-    } else {
-      throw new Error('Unknown error occurred during event submission');
     }
+    
+    throw new Error('Unknown error occurred during submission');
   }
 };
 

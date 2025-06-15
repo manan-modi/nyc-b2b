@@ -39,30 +39,29 @@ export const SimpleSubmitEventDialog = () => {
     setIsSubmitting(true);
     
     try {
-      console.log('=== CREATING EVENT DATA ===');
+      console.log('=== PREPARING EVENT DATA ===');
       
-      // Create minimal event data for submission
+      // Create the simplest possible event submission
       const eventData: SubmitEventData = {
         eventTitle: "Event Submission",
-        eventDescription: "Event details will be updated by admin after review",
+        eventDescription: "Pending admin review",
         eventUrl: data.eventUrl.trim(),
         date: new Date().toISOString().split('T')[0],
         time: "18:00",
-        location: "Location TBD",
+        location: "TBD",
         category: "Networking",
         price: "TBD",
-        hostOrganization: "Host TBD",
+        hostOrganization: "TBD",
         expectedAttendees: 50,
         imageUrl: "",
       };
 
-      console.log('=== SUBMITTING TO SERVICE ===');
-      console.log('Event data to submit:', eventData);
-
+      console.log('=== CALLING SUBMIT SERVICE ===');
+      
       const result = await submitEventToStorage(eventData);
 
-      console.log('=== SUBMISSION SUCCESS ===');
-      console.log('Submitted event result:', result);
+      console.log('=== SUBMISSION COMPLETE ===');
+      console.log('Result:', result);
 
       toast({
         title: "Event Submitted Successfully!",
@@ -73,7 +72,7 @@ export const SimpleSubmitEventDialog = () => {
       setOpen(false);
       
     } catch (error) {
-      console.error('=== SUBMISSION ERROR ===');
+      console.error('=== FORM SUBMISSION ERROR ===');
       console.error('Error details:', error);
       
       let errorMessage = "There was an error submitting your event. Please try again.";
