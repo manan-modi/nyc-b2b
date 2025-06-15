@@ -75,69 +75,6 @@ export type Database = {
         }
         Relationships: []
       }
-      event_submissions: {
-        Row: {
-          category: string | null
-          created_at: string
-          date: string | null
-          description: string | null
-          display_order: number | null
-          event_url: string
-          expected_attendees: string | null
-          featured: boolean | null
-          host_organization: string | null
-          id: string
-          image_url: string | null
-          location: string | null
-          price: string | null
-          status: string
-          submitted_at: string
-          time: string | null
-          title: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          category?: string | null
-          created_at?: string
-          date?: string | null
-          description?: string | null
-          display_order?: number | null
-          event_url: string
-          expected_attendees?: string | null
-          featured?: boolean | null
-          host_organization?: string | null
-          id?: string
-          image_url?: string | null
-          location?: string | null
-          price?: string | null
-          status?: string
-          submitted_at?: string
-          time?: string | null
-          title?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          category?: string | null
-          created_at?: string
-          date?: string | null
-          description?: string | null
-          display_order?: number | null
-          event_url?: string
-          expected_attendees?: string | null
-          featured?: boolean | null
-          host_organization?: string | null
-          id?: string
-          image_url?: string | null
-          location?: string | null
-          price?: string | null
-          status?: string
-          submitted_at?: string
-          time?: string | null
-          title?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       jobs: {
         Row: {
           company: string

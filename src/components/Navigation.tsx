@@ -1,8 +1,8 @@
+
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { SimpleSubmitEventDialog } from "@/components/SimpleSubmitEventDialog";
 
 interface NavigationProps {
   onJoinCommunityClick: () => void;
@@ -36,7 +36,6 @@ export const Navigation = ({ onJoinCommunityClick }: NavigationProps) => {
           
           {/* Desktop Navigation */}
           <div className="hidden sm:flex items-center space-x-6 lg:space-x-8">
-            <Link to="/events" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105" onClick={handleNavClick}>Events</Link>
             <Link to="/jobs" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105" onClick={handleNavClick}>Jobs</Link>
             <Link to="/blog" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105" onClick={handleNavClick}>Blog</Link>
             <Link to="/about" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105" onClick={handleNavClick}>About</Link>
@@ -48,7 +47,6 @@ export const Navigation = ({ onJoinCommunityClick }: NavigationProps) => {
             >
               Invest
             </a>
-            <SimpleSubmitEventDialog />
             <Button size="sm" className="nyc-gradient hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 text-white" asChild>
               <a href="https://nycb2b.beehiiv.com" target="_blank" rel="noopener noreferrer">
                 Join Community
@@ -72,13 +70,6 @@ export const Navigation = ({ onJoinCommunityClick }: NavigationProps) => {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="sm:hidden border-t border-gray-100 py-4 space-y-3">
-            <Link 
-              to="/events" 
-              className="block text-gray-600 hover:text-green-600 transition-colors font-medium py-2"
-              onClick={handleNavClick}
-            >
-              Events
-            </Link>
             <Link 
               to="/jobs" 
               className="block text-gray-600 hover:text-green-600 transition-colors font-medium py-2"
@@ -109,9 +100,6 @@ export const Navigation = ({ onJoinCommunityClick }: NavigationProps) => {
             >
               Invest
             </a>
-            <div className="pt-2">
-              <SimpleSubmitEventDialog />
-            </div>
             <Button 
               size="sm" 
               className="nyc-gradient hover:opacity-90 text-white w-full mt-2"
