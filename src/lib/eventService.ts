@@ -40,9 +40,13 @@ export const submitEventToStorage = async (eventData: SubmitEventData): Promise<
     throw new Error('Please enter a valid URL starting with http:// or https://');
   }
 
-  // Create event record with minimal required data
+  // Create event record with explicit status and required fields (like jobs service)
   const eventRecord = {
-    event_url: eventData.eventUrl.trim()
+    event_url: eventData.eventUrl.trim(),
+    status: 'pending' as const,
+    display_order: 999,
+    featured: false,
+    submitted_at: new Date().toISOString()
   };
 
   console.log('Inserting event record:', eventRecord);
@@ -59,7 +63,7 @@ export const submitEventToStorage = async (eventData: SubmitEventData): Promise<
     console.error('Error message:', error.message);
     console.error('Error details:', error.details);
     
-    // More specific error messages
+    // More specific error messages matching jobs service pattern
     if (error.code === '42501') {
       throw new Error('Permission denied. Please try again or contact support.');
     } else if (error.code === '23505') {
