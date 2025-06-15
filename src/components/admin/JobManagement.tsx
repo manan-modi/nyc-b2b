@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +6,7 @@ import { toast } from "@/hooks/use-toast";
 import {  Check, X, Calendar, ExternalLink, Briefcase } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { JobsStatsCards } from "./JobsStatsCards";
+import { EditJobDialog } from "./EditJobDialog";
 
 interface Job {
   id: string;
@@ -21,6 +21,7 @@ interface Job {
   industry: string | null;
   company_size: string | null;
   funding_stage: string | null;
+  company_logo: string | null;
   status: string | null;
   posted_date: string | null;
   created_at: string;
@@ -92,6 +93,20 @@ export const JobManagement = ({ jobs, setJobs }: JobManagementProps) => {
       });
     } finally {
       setUpdatingStatus(null);
+    }
+  };
+
+  const reloadJobs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setJobs(data || []);
+    } catch (error) {
+      console.error('Failed to reload jobs:', error);
     }
   };
 
@@ -194,6 +209,8 @@ export const JobManagement = ({ jobs, setJobs }: JobManagementProps) => {
                     <ExternalLink className="ml-2 h-4 w-4" />
                   </a>
                 </Button>
+
+                <EditJobDialog job={job} onJobUpdated={reloadJobs} />
 
                 {job.status === 'pending' && (
                   <>

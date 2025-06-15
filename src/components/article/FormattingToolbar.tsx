@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Bold, Italic, List, ListOrdered, Edit } from "lucide-react";
+import { Bold, Italic, List, ListOrdered, Link, Quote, Code, Hash, Type } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 interface FormattingToolbarProps {
@@ -9,20 +9,20 @@ interface FormattingToolbarProps {
 
 export const FormattingToolbar = ({ onInsertFormat }: FormattingToolbarProps) => {
   const formatButtons = [
-    { label: "Bold", format: "**text**", icon: Bold },
-    { label: "Italic", format: "*text*", icon: Italic },
-    { label: "Header 1", format: "# ", icon: Edit },
-    { label: "Header 2", format: "## ", icon: Edit },
-    { label: "Header 3", format: "### ", icon: Edit },
-    { label: "Bullet List", format: "* ", icon: List },
-    { label: "Numbered List", format: "1. ", icon: ListOrdered },
-    { label: "Link", format: "[text](URL)", icon: Edit },
-    { label: "Quote", format: "> ", icon: Edit },
-    { label: "Code", format: "`code`", icon: Edit },
+    { label: "Bold (Ctrl+B)", format: "**text**", icon: Bold, shortLabel: "B" },
+    { label: "Italic (Ctrl+I)", format: "*text*", icon: Italic, shortLabel: "I" },
+    { label: "Heading 1", format: "# ", icon: Hash, shortLabel: "H1" },
+    { label: "Heading 2", format: "## ", icon: Hash, shortLabel: "H2" },
+    { label: "Heading 3", format: "### ", icon: Hash, shortLabel: "H3" },
+    { label: "Bullet List", format: "* ", icon: List, shortLabel: "•" },
+    { label: "Numbered List", format: "1. ", icon: ListOrdered, shortLabel: "1." },
+    { label: "Link (Ctrl+K)", format: "[text](URL)", icon: Link, shortLabel: "Link" },
+    { label: "Quote", format: "> ", icon: Quote, shortLabel: "\"" },
+    { label: "Code", format: "`code`", icon: Code, shortLabel: "<>" },
   ];
 
   return (
-    <div className="flex flex-wrap gap-1 p-2 border rounded-md bg-gray-50">
+    <div className="flex flex-wrap gap-1 p-3 border rounded-md bg-gray-50">
       {formatButtons.map((button, index) => {
         const Icon = button.icon;
         return (
@@ -32,12 +32,13 @@ export const FormattingToolbar = ({ onInsertFormat }: FormattingToolbarProps) =>
               variant="ghost"
               size="sm"
               onClick={() => onInsertFormat(button.format)}
-              className="h-8 w-8 p-0"
+              className="h-9 px-3 flex items-center gap-1 hover:bg-gray-200"
               title={button.label}
             >
               <Icon className="h-4 w-4" />
+              <span className="text-xs font-medium">{button.shortLabel}</span>
             </Button>
-            {(index === 1 || index === 4) && <Separator orientation="vertical" className="h-6 mx-1" />}
+            {(index === 1 || index === 4 || index === 6) && <Separator orientation="vertical" className="h-6 mx-1" />}
           </div>
         );
       })}
