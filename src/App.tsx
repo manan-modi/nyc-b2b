@@ -10,10 +10,10 @@ import JobsPage from "./pages/JobsPage";
 import BlogPage from "./pages/BlogPage";
 import SitemapPage from "./pages/SitemapPage";
 import NotFound from "./pages/NotFound";
-import { AboutPage } from "./components/AboutPage";
-import { AdminLogin } from "./components/AdminLogin";
+import AboutPage from "./components/AboutPage";
+import AdminLogin from "./components/AdminLogin";
 import { AdminDashboard } from "./components/AdminDashboard";
-import { ProtectedRoute } from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 

@@ -121,7 +121,11 @@ export const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="blog">
-            <BlogManagement articles={articles} setArticles={setArticles} />
+            <BlogManagement 
+              articles={articles} 
+              setArticles={setArticles} 
+              onReloadData={loadData}
+            />
           </TabsContent>
         </Tabs>
       </div>

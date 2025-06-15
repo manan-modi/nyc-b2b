@@ -1,7 +1,6 @@
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { Heart } from "lucide-react";
 import { useState } from "react";
-import Autoplay from "embla-carousel-autoplay";
 
 export const SocialProofSection = () => {
   const [showHearts, setShowHearts] = useState(false);
@@ -70,13 +69,6 @@ export const SocialProofSection = () => {
               <div className="absolute right-0 top-0 bottom-0 w-4 sm:w-8 bg-gradient-to-l from-white via-white/60 to-transparent z-10 pointer-events-none"></div>
               
               <Carousel
-                plugins={[
-                  Autoplay({
-                    delay: 1300,
-                    stopOnInteraction: false,
-                    stopOnMouseEnter: true,
-                  }),
-                ]}
                 opts={{
                   align: "start",
                   loop: true,
