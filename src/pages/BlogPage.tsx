@@ -1,12 +1,15 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Clock, ArrowRight, TrendingUp, Users, DollarSign, Eye, Calendar, User } from "lucide-react";
 import { fetchPublishedArticles, fetchArticleBySlug, incrementViews, type BlogArticle } from "@/lib/blogService";
 import { Navigation } from "@/components/Navigation";
+import { SEOHead } from "@/components/SEOHead";
+import { StructuredData } from "@/components/StructuredData";
 
 const BlogPage = () => {
   const { slug } = useParams();
@@ -72,6 +75,11 @@ const BlogPage = () => {
   if (slug && singleArticle) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <Helmet>
+          <SEOHead article={singleArticle} />
+          <StructuredData article={singleArticle} />
+        </Helmet>
+        
         <Navigation onJoinCommunityClick={() => window.open('https://nycb2b.beehiiv.com', '_blank')} />
         
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -192,6 +200,10 @@ const BlogPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <Helmet>
+        <SEOHead />
+      </Helmet>
+      
       <Navigation onJoinCommunityClick={() => window.open('https://nycb2b.beehiiv.com', '_blank')} />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
