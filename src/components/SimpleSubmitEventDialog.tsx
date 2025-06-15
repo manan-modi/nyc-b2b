@@ -25,18 +25,40 @@ export const SimpleSubmitEventDialog = () => {
   });
 
   const onSubmit = async (data: SimpleSubmitData) => {
+    console.log('Simple submit form data:', data);
     setIsSubmitting(true);
     
     try {
+      if (!data.eventUrl) {
+        throw new Error('Event URL is required');
+      }
+
       toast({
         title: "Processing Event...",
         description: "Your event is being submitted for review.",
       });
 
-      // Scrape event data from the URL
-      const scrapedData = await scrapeEventData(data.eventUrl);
+      // Try to scrape event data from the URL, but provide fallbacks
+      let scrapedData;
+      try {
+        scrapedData = await scrapeEventData(data.eventUrl);
+      } catch (scrapeError) {
+        console.warn('Event scraping failed, using defaults:', scrapeError);
+        scrapedData = {
+          title: null,
+          description: null,
+          date: null,
+          time: null,
+          location: null,
+          category: null,
+          price: null,
+          hostOrganization: null,
+          expectedAttendees: null,
+          imageUrl: null,
+        };
+      }
 
-      // Create event data with scraped info
+      // Create event data with scraped info or defaults
       const fullEventData: SubmitEventData = {
         eventTitle: scrapedData.title || "Event Title (To be updated by admin)",
         eventDescription: scrapedData.description || "Event description will be updated by admin after review",
@@ -51,6 +73,7 @@ export const SimpleSubmitEventDialog = () => {
         imageUrl: scrapedData.imageUrl || "",
       };
 
+      console.log('Submitting processed event data:', fullEventData);
       await submitEventToStorage(fullEventData);
 
       toast({
@@ -64,7 +87,7 @@ export const SimpleSubmitEventDialog = () => {
       console.error('Error submitting event:', error);
       toast({
         title: "Submission Failed",
-        description: "There was an error submitting your event. Please try again.",
+        description: error instanceof Error ? error.message : "There was an error submitting your event. Please try again.",
         variant: "destructive",
       });
     } finally {

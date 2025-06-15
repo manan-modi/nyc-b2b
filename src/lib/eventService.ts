@@ -37,6 +37,8 @@ export interface SubmitEventData {
 }
 
 export const submitEventToStorage = async (eventData: SubmitEventData): Promise<Event> => {
+  console.log('Submitting event data:', eventData);
+  
   const { data, error } = await supabase
     .from('events')
     .insert([{
@@ -50,7 +52,7 @@ export const submitEventToStorage = async (eventData: SubmitEventData): Promise<
       price: eventData.price,
       host_organization: eventData.hostOrganization,
       expected_attendees: eventData.expectedAttendees,
-      image_url: eventData.imageUrl || '',
+      image_url: eventData.imageUrl || null,
       status: 'pending',
       display_order: 999,
       featured: false,
@@ -60,13 +62,16 @@ export const submitEventToStorage = async (eventData: SubmitEventData): Promise<
 
   if (error) {
     console.error('Error submitting event:', error);
-    throw error;
+    throw new Error(`Failed to submit event: ${error.message}`);
   }
 
+  console.log('Event submitted successfully:', data);
   return data as Event;
 };
 
 export const fetchApprovedEvents = async (): Promise<Event[]> => {
+  console.log('Fetching approved events...');
+  
   const { data, error } = await supabase
     .from('events')
     .select('*')
@@ -76,13 +81,16 @@ export const fetchApprovedEvents = async (): Promise<Event[]> => {
 
   if (error) {
     console.error('Error fetching approved events:', error);
-    throw error;
+    throw new Error(`Failed to fetch events: ${error.message}`);
   }
 
+  console.log('Fetched approved events:', data?.length || 0);
   return (data || []) as Event[];
 };
 
 export const fetchAllEvents = async (): Promise<Event[]> => {
+  console.log('Fetching all events...');
+  
   const { data, error } = await supabase
     .from('events')
     .select('*')
@@ -90,13 +98,16 @@ export const fetchAllEvents = async (): Promise<Event[]> => {
 
   if (error) {
     console.error('Error fetching all events:', error);
-    throw error;
+    throw new Error(`Failed to fetch all events: ${error.message}`);
   }
 
+  console.log('Fetched all events:', data?.length || 0);
   return (data || []) as Event[];
 };
 
 export const updateEventStatus = async (recordId: string, status: 'approved' | 'rejected'): Promise<Event> => {
+  console.log(`Updating event ${recordId} status to ${status}`);
+  
   const { data, error } = await supabase
     .from('events')
     .update({ status })
@@ -106,13 +117,16 @@ export const updateEventStatus = async (recordId: string, status: 'approved' | '
 
   if (error) {
     console.error('Error updating event status:', error);
-    throw error;
+    throw new Error(`Failed to update event status: ${error.message}`);
   }
 
+  console.log('Event status updated successfully:', data);
   return data as Event;
 };
 
 export const updateEventDetails = async (recordId: string, updates: Partial<Omit<Event, 'id' | 'created_at' | 'updated_at'>>): Promise<Event> => {
+  console.log(`Updating event ${recordId} details:`, updates);
+  
   const { data, error } = await supabase
     .from('events')
     .update(updates)
@@ -122,13 +136,16 @@ export const updateEventDetails = async (recordId: string, updates: Partial<Omit
 
   if (error) {
     console.error('Error updating event details:', error);
-    throw error;
+    throw new Error(`Failed to update event details: ${error.message}`);
   }
 
+  console.log('Event details updated successfully:', data);
   return data as Event;
 };
 
 export const updateEventOrder = async (recordId: string, displayOrder: number, featured: boolean = false): Promise<Event> => {
+  console.log(`Updating event ${recordId} order to ${displayOrder}, featured: ${featured}`);
+  
   const { data, error } = await supabase
     .from('events')
     .update({ 
@@ -141,8 +158,9 @@ export const updateEventOrder = async (recordId: string, displayOrder: number, f
 
   if (error) {
     console.error('Error updating event order:', error);
-    throw error;
+    throw new Error(`Failed to update event order: ${error.message}`);
   }
 
+  console.log('Event order updated successfully:', data);
   return data as Event;
 };

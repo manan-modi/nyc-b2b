@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Calendar, Clock, MapPin, Users, DollarSign, Building } from "lucide-react";
-import { submitEventToStorage, SubmitEventData } from "@/lib/eventStorage";
+import { submitEventToStorage, SubmitEventData } from "@/lib/eventService";
 
 export const EnhancedSubmitEventDialog = () => {
   const [open, setOpen] = useState(false);
@@ -33,9 +32,15 @@ export const EnhancedSubmitEventDialog = () => {
   const categories = ["Networking", "Finance", "AI/ML", "Workshop", "Community", "Blockchain", "SaaS", "Marketing", "Sales"];
 
   const onSubmit = async (data: SubmitEventData) => {
+    console.log('Form submitted with data:', data);
     setIsSubmitting(true);
     
     try {
+      // Validate required fields
+      if (!data.eventTitle || !data.eventDescription || !data.eventUrl || !data.date || !data.time || !data.location || !data.category || !data.price || !data.hostOrganization) {
+        throw new Error('Please fill in all required fields');
+      }
+
       await submitEventToStorage(data);
 
       toast({
@@ -49,7 +54,7 @@ export const EnhancedSubmitEventDialog = () => {
       console.error('Error submitting event:', error);
       toast({
         title: "Submission Failed",
-        description: "There was an error submitting your event. Please try again.",
+        description: error instanceof Error ? error.message : "There was an error submitting your event. Please try again.",
         variant: "destructive",
       });
     } finally {
