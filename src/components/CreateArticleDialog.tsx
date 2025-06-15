@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -169,7 +168,7 @@ export const CreateArticleDialog = ({ onArticleCreated }: CreateArticleDialogPro
                     * Bullet point or - Bullet point<br />
                     1. Numbered list<br />
                     [Link text](URL)<br />
-                    > Block quote<br />
+                    {`> Block quote`}<br />
                     `Inline code`
                   </span>
                 </div>
@@ -185,7 +184,7 @@ export const CreateArticleDialog = ({ onArticleCreated }: CreateArticleDialogPro
               className="font-mono text-sm"
             />
             <div className="text-xs text-gray-500 mt-1">
-              Supports: **bold**, *italic*, # headers, * bullets, [links](URL), > quotes, `code`
+              Supports: **bold**, *italic*, # headers, * bullets, [links](URL), {`> quotes`}, `code`
             </div>
           </div>
 
