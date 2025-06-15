@@ -20,15 +20,6 @@ export const SimpleSubmitEventDialog = () => {
   });
 
   const onSubmit = async (data: SubmitEventData) => {
-    if (!data.eventUrl?.trim()) {
-      toast({
-        title: "URL Required",
-        description: "Please enter a valid event URL.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsSubmitting(true);
     
     try {

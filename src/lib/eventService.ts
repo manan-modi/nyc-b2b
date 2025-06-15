@@ -29,7 +29,6 @@ export interface SubmitEventData {
 export const submitEventToStorage = async (eventData: SubmitEventData): Promise<Event> => {
   console.log('Submitting event:', eventData);
   
-  // Validate URL format
   if (!eventData.eventUrl?.trim()) {
     throw new Error('Event URL is required');
   }
@@ -40,7 +39,7 @@ export const submitEventToStorage = async (eventData: SubmitEventData): Promise<
     throw new Error('Please enter a valid URL starting with http:// or https://');
   }
 
-  // Create event record with minimal required data - matching jobs submission pattern
+  // Create event record exactly like jobs submission - minimal data with status pending
   const eventRecord = {
     title: "Event Submission",
     description: "Event submitted for review",
@@ -54,6 +53,8 @@ export const submitEventToStorage = async (eventData: SubmitEventData): Promise<
     expected_attendees: 50,
     status: 'pending' as const
   };
+
+  console.log('Inserting event record:', eventRecord);
 
   const { data, error } = await supabase
     .from('events')
