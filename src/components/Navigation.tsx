@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
@@ -12,11 +11,16 @@ interface NavigationProps {
 export const Navigation = ({ onJoinCommunityClick }: NavigationProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const handleNavClick = () => {
+    window.scrollTo(0, 0);
+    setMobileMenuOpen(false);
+  };
+
   return (
     <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 sm:h-20">
-          <Link to="/" className="flex items-center space-x-3 sm:space-x-4 hover:opacity-80 transition-opacity">
+          <Link to="/" className="flex items-center space-x-3 sm:space-x-4 hover:opacity-80 transition-opacity" onClick={handleNavClick}>
             <div className="relative">
               <img 
                 src="/lovable-uploads/00d2fcf3-063b-4181-8a1d-a84bd811f817.png"
@@ -32,10 +36,10 @@ export const Navigation = ({ onJoinCommunityClick }: NavigationProps) => {
           
           {/* Desktop Navigation */}
           <div className="hidden sm:flex items-center space-x-6 lg:space-x-8">
-            <Link to="/events" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">Events</Link>
-            <Link to="/jobs" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">Jobs</Link>
-            <Link to="/blog" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">Blog</Link>
-            <Link to="/about" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105">About</Link>
+            <Link to="/events" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105" onClick={handleNavClick}>Events</Link>
+            <Link to="/jobs" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105" onClick={handleNavClick}>Jobs</Link>
+            <Link to="/blog" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105" onClick={handleNavClick}>Blog</Link>
+            <Link to="/about" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105" onClick={handleNavClick}>About</Link>
             <a 
               href="https://venture.angellist.com/nyc-ventures/syndicate" 
               target="_blank" 
@@ -71,28 +75,28 @@ export const Navigation = ({ onJoinCommunityClick }: NavigationProps) => {
             <Link 
               to="/events" 
               className="block text-gray-600 hover:text-green-600 transition-colors font-medium py-2"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={handleNavClick}
             >
               Events
             </Link>
             <Link 
               to="/jobs" 
               className="block text-gray-600 hover:text-green-600 transition-colors font-medium py-2"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={handleNavClick}
             >
               Jobs
             </Link>
             <Link 
               to="/blog" 
               className="block text-gray-600 hover:text-green-600 transition-colors font-medium py-2"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={handleNavClick}
             >
               Blog
             </Link>
             <Link 
               to="/about" 
               className="block text-gray-600 hover:text-green-600 transition-colors font-medium py-2"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={handleNavClick}
             >
               About
             </Link>
