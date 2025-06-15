@@ -1,31 +1,25 @@
 
-import { SEOHead } from "@/components/SEOHead";
 import { Navigation } from "@/components/Navigation";
-import { HeroSection } from "@/components/HeroSection";
+import { HeroSection } from "@/components/HeroSection";  
 import { SocialProofSection } from "@/components/SocialProofSection";
+import { EventsSection } from "@/components/EventsSection";
 import { CTASection } from "@/components/CTASection";
 import { Footer } from "@/components/Footer";
 
 const Index = () => {
   const handleJoinCommunityClick = () => {
-    window.open('https://nycb2b.beehiiv.com', '_blank');
+    document.getElementById('email-signup')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <>
-      <SEOHead 
-        title="NYC B2B - The Ultimate B2B Community in New York City"
-        description="Join NYC's premier B2B community. Access curated job opportunities, connect with industry leaders, and accelerate your career in the heart of NYC's business district."
-      />
-      
-      <div className="min-h-screen bg-white">
-        <Navigation onJoinCommunityClick={handleJoinCommunityClick} />
-        <HeroSection />
-        <SocialProofSection />
-        <CTASection />
-        <Footer />
-      </div>
-    </>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-yellow-50/30">
+      <Navigation onJoinCommunityClick={handleJoinCommunityClick} />
+      <HeroSection />
+      <SocialProofSection />
+      <EventsSection />
+      <CTASection />
+      <Footer />
+    </div>
   );
 };
 
