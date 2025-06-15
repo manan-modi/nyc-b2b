@@ -11,50 +11,106 @@ export const RichTextRenderer = ({ content, className = "" }: RichTextRendererPr
   const formatContent = (text: string) => {
     let formatted = text;
     
-    // Headers (maintain SEO hierarchy)
-    formatted = formatted.replace(/^### (.*$)/gim, '<h3 class="text-xl font-semibold text-gray-900 mt-8 mb-4">$1</h3>');
-    formatted = formatted.replace(/^## (.*$)/gim, '<h2 class="text-2xl font-bold text-gray-900 mt-10 mb-6">$1</h2>');
-    formatted = formatted.replace(/^# (.*$)/gim, '<h1 class="text-3xl font-bold text-gray-900 mt-12 mb-8">$1</h1>');
+    // Headers (maintain SEO hierarchy) - fix to handle headers at start of line or after newlines
+    formatted = formatted.replace(/(^|\n)### (.*?)($|\n)/gim, '$1<h3 class="text-xl font-semibold text-gray-900 mt-8 mb-4">$2</h3>$3');
+    formatted = formatted.replace(/(^|\n)## (.*?)($|\n)/gim, '$1<h2 class="text-2xl font-bold text-gray-900 mt-10 mb-6">$2</h2>$3');
+    formatted = formatted.replace(/(^|\n)# (.*?)($|\n)/gim, '$1<h1 class="text-3xl font-bold text-gray-900 mt-12 mb-8">$2</h1>$3');
     
-    // Bold text
-    formatted = formatted.replace(/\*\*(.*?)\*\*/gim, '<strong class="font-semibold text-gray-900">$1</strong>');
-    formatted = formatted.replace(/__(.*?)__/gim, '<strong class="font-semibold text-gray-900">$1</strong>');
+    // Bold text - improved to handle edge cases
+    formatted = formatted.replace(/\*\*(.*?)\*\*/gm, '<strong class="font-semibold text-gray-900">$1</strong>');
+    formatted = formatted.replace(/__(.*?)__/gm, '<strong class="font-semibold text-gray-900">$1</strong>');
     
-    // Italic text
-    formatted = formatted.replace(/\*(.*?)\*/gim, '<em class="italic">$1</em>');
-    formatted = formatted.replace(/_(.*?)_/gim, '<em class="italic">$1</em>');
+    // Italic text - improved to handle edge cases
+    formatted = formatted.replace(/(?<!\*)\*([^*]+?)\*(?!\*)/gm, '<em class="italic">$1</em>');
+    formatted = formatted.replace(/(?<!_)_([^_]+?)_(?!_)/gm, '<em class="italic">$1</em>');
     
-    // Bullet points
-    formatted = formatted.replace(/^\* (.*$)/gim, '<li class="ml-4 mb-2">$1</li>');
-    formatted = formatted.replace(/^- (.*$)/gim, '<li class="ml-4 mb-2">$1</li>');
+    // Code blocks (inline) - fix to handle backticks properly
+    formatted = formatted.replace(/`([^`]+)`/gm, '<code class="bg-gray-100 px-2 py-1 rounded text-sm font-mono text-purple-600">$1</code>');
     
-    // Numbered lists
-    formatted = formatted.replace(/^\d+\. (.*$)/gim, '<li class="ml-4 mb-2">$1</li>');
+    // Links (SEO-friendly with proper attributes) - improved regex
+    formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/gm, '<a href="$2" class="text-purple-600 hover:text-purple-700 underline font-medium" target="_blank" rel="noopener noreferrer">$1</a>');
     
-    // Wrap consecutive list items in ul/ol tags
-    formatted = formatted.replace(/(<li class="ml-4 mb-2">.*<\/li>\s*)+/gim, (match) => {
-      return `<ul class="list-disc pl-6 mb-6 space-y-2">${match}</ul>`;
-    });
+    // Block quotes - fix to handle line start properly
+    formatted = formatted.replace(/(^|\n)> (.*?)($|\n)/gm, '$1<blockquote class="border-l-4 border-purple-200 pl-6 py-4 my-6 bg-gray-50 text-gray-700 italic">$2</blockquote>$3');
     
-    // Links (SEO-friendly with proper attributes)
-    formatted = formatted.replace(/\[([^\]]+)\]\(([^\)]+)\)/gim, '<a href="$2" class="text-purple-600 hover:text-purple-700 underline font-medium" target="_blank" rel="noopener noreferrer">$1</a>');
+    // Process lists properly
+    // Split into lines for better list processing
+    const lines = formatted.split('\n');
+    const processedLines = [];
+    let inUnorderedList = false;
+    let inOrderedList = false;
     
-    // Block quotes
-    formatted = formatted.replace(/^> (.*$)/gim, '<blockquote class="border-l-4 border-purple-200 pl-6 py-4 my-6 bg-gray-50 text-gray-700 italic">$1</blockquote>');
-    
-    // Code blocks (inline)
-    formatted = formatted.replace(/`([^`]+)`/gim, '<code class="bg-gray-100 px-2 py-1 rounded text-sm font-mono text-purple-600">$1</code>');
-    
-    // Line breaks
-    formatted = formatted.replace(/\n\n/gim, '</p><p class="mb-6 leading-relaxed">');
-    formatted = formatted.replace(/\n/gim, '<br>');
-    
-    // Wrap in paragraph tags if not already wrapped
-    if (!formatted.startsWith('<')) {
-      formatted = `<p class="mb-6 leading-relaxed">${formatted}</p>`;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const trimmedLine = line.trim();
+      
+      // Check for unordered list items (*, -, •)
+      const unorderedMatch = trimmedLine.match(/^[\*\-•] (.+)$/);
+      // Check for ordered list items (1., 2., etc.)
+      const orderedMatch = trimmedLine.match(/^(\d+)\. (.+)$/);
+      
+      if (unorderedMatch) {
+        if (!inUnorderedList) {
+          if (inOrderedList) {
+            processedLines.push('</ol>');
+            inOrderedList = false;
+          }
+          processedLines.push('<ul class="list-disc pl-6 mb-6 space-y-2">');
+          inUnorderedList = true;
+        }
+        processedLines.push(`<li class="mb-2">${unorderedMatch[1]}</li>`);
+      } else if (orderedMatch) {
+        if (!inOrderedList) {
+          if (inUnorderedList) {
+            processedLines.push('</ul>');
+            inUnorderedList = false;
+          }
+          processedLines.push('<ol class="list-decimal pl-6 mb-6 space-y-2">');
+          inOrderedList = true;
+        }
+        processedLines.push(`<li class="mb-2">${orderedMatch[2]}</li>`);
+      } else {
+        // Not a list item, close any open lists
+        if (inUnorderedList) {
+          processedLines.push('</ul>');
+          inUnorderedList = false;
+        }
+        if (inOrderedList) {
+          processedLines.push('</ol>');
+          inOrderedList = false;
+        }
+        processedLines.push(line);
+      }
     }
     
-    return formatted;
+    // Close any remaining open lists
+    if (inUnorderedList) {
+      processedLines.push('</ul>');
+    }
+    if (inOrderedList) {
+      processedLines.push('</ol>');
+    }
+    
+    formatted = processedLines.join('\n');
+    
+    // Handle line breaks and paragraphs
+    // Split by double newlines for paragraphs
+    const paragraphs = formatted.split(/\n\s*\n/);
+    const processedParagraphs = paragraphs.map(para => {
+      const trimmed = para.trim();
+      if (!trimmed) return '';
+      
+      // Don't wrap if already contains block elements
+      if (trimmed.match(/^<(h[1-6]|ul|ol|li|blockquote|div)/i)) {
+        return trimmed;
+      }
+      
+      // Convert single newlines to <br> within paragraphs
+      const withBreaks = trimmed.replace(/\n/g, '<br>');
+      return `<p class="mb-6 leading-relaxed">${withBreaks}</p>`;
+    });
+    
+    return processedParagraphs.filter(p => p).join('\n\n');
   };
 
   const formattedContent = formatContent(content);
