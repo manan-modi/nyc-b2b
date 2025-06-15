@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import { Check, X, ExternalLink, Edit, Save, Cancel } from "lucide-react";
+import { Check, X, ExternalLink, Edit, Save, XCircle } from "lucide-react";
 import { EventSubmission, updateEventSubmissionStatus, updateEventSubmissionDetails } from "@/lib/eventService";
 
 interface EventSubmissionManagementProps {
@@ -222,7 +221,7 @@ export const EventSubmissionManagement = ({ submissions, setSubmissions }: Event
                       Save
                     </Button>
                     <Button size="sm" variant="outline" onClick={handleEditCancel}>
-                      <Cancel className="mr-2 h-4 w-4" />
+                      <XCircle className="mr-2 h-4 w-4" />
                       Cancel
                     </Button>
                   </>

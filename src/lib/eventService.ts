@@ -17,6 +17,23 @@ export interface EventSubmission {
   image_url?: string;
 }
 
+// Legacy Event interface for backwards compatibility
+export interface Event {
+  id: string;
+  title: string;
+  description: string;
+  event_url: string;
+  date: string;
+  time: string;
+  location: string;
+  category: string;
+  price: string;
+  host_organization: string;
+  expected_attendees: string;
+  image_url?: string;
+  featured?: boolean;
+}
+
 export interface SubmitEventData {
   eventUrl: string;
 }
@@ -93,6 +110,30 @@ export const fetchApprovedEventSubmissions = async (): Promise<EventSubmission[]
   return (data || []) as EventSubmission[];
 };
 
+// Legacy function for backwards compatibility
+export const fetchApprovedEvents = async (): Promise<Event[]> => {
+  const submissions = await fetchApprovedEventSubmissions();
+  
+  // Convert EventSubmissions to Events for backward compatibility
+  return submissions
+    .filter(submission => submission.title && submission.description && submission.date && submission.time && submission.location)
+    .map(submission => ({
+      id: submission.id,
+      title: submission.title!,
+      description: submission.description!,
+      event_url: submission.event_url,
+      date: submission.date!,
+      time: submission.time!,
+      location: submission.location!,
+      category: 'Networking', // Default category
+      price: 'Free', // Default price
+      host_organization: 'TBA', // Default host
+      expected_attendees: 'TBA', // Default attendees
+      image_url: submission.image_url,
+      featured: false
+    }));
+};
+
 export const updateEventSubmissionStatus = async (recordId: string, status: 'approved' | 'rejected'): Promise<EventSubmission> => {
   const { data, error } = await supabase
     .from('event_submissions')
@@ -123,4 +164,20 @@ export const updateEventSubmissionDetails = async (recordId: string, updates: Pa
   }
 
   return data as EventSubmission;
+};
+
+// Legacy functions for backwards compatibility
+export const updateEventStatus = async (eventId: string, status: string) => {
+  // Placeholder for backwards compatibility
+  console.warn('updateEventStatus is deprecated - use updateEventSubmissionStatus instead');
+};
+
+export const updateEventOrder = async (eventId: string, order: number) => {
+  // Placeholder for backwards compatibility
+  console.warn('updateEventOrder is deprecated');
+};
+
+export const updateEventDetails = async (eventId: string, updates: any) => {
+  // Placeholder for backwards compatibility
+  console.warn('updateEventDetails is deprecated - use updateEventSubmissionDetails instead');
 };
