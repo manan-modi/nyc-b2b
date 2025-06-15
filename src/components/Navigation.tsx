@@ -1,127 +1,96 @@
-import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { SimpleSubmitEventDialog } from "@/components/SimpleSubmitEventDialog";
+import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
 
 interface NavigationProps {
   onJoinCommunityClick: () => void;
 }
 
 export const Navigation = ({ onJoinCommunityClick }: NavigationProps) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleNavClick = () => {
-    window.scrollTo(0, 0);
-    setMobileMenuOpen(false);
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
 
+  const navigationItems = [
+    { name: "Home", href: "/" },
+    { name: "Jobs", href: "/jobs" },
+    { name: "Blog", href: "/blog" },
+    { name: "About", href: "/about" }
+  ];
+
   return (
-    <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-50 shadow-sm">
+    <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 sm:h-20">
-          <Link to="/" className="flex items-center space-x-3 sm:space-x-4 hover:opacity-80 transition-opacity" onClick={handleNavClick}>
-            <div className="relative">
-              <img 
-                src="/lovable-uploads/00d2fcf3-063b-4181-8a1d-a84bd811f817.png"
-                alt="NYC B2B Logo"
-                className="h-8 w-8 sm:h-12 sm:w-12 object-contain"
-              />
-            </div>
-            <div>
-              <span className="text-lg sm:text-xl font-bold nyc-gradient-text">NYC B2B</span>
-              <div className="text-xs text-gray-500 font-medium hidden sm:block">Powered by community</div>
-            </div>
-          </Link>
-          
+        <div className="flex justify-between items-center h-16">
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">NYC</span>
+              </div>
+              <span className="text-xl font-bold text-gray-900">NYC B2B</span>
+            </Link>
+          </div>
+
           {/* Desktop Navigation */}
-          <div className="hidden sm:flex items-center space-x-6 lg:space-x-8">
-            <Link to="/events" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105" onClick={handleNavClick}>Events</Link>
-            <Link to="/jobs" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105" onClick={handleNavClick}>Jobs</Link>
-            <Link to="/blog" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105" onClick={handleNavClick}>Blog</Link>
-            <Link to="/about" className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105" onClick={handleNavClick}>About</Link>
-            <a 
-              href="https://venture.angellist.com/nyc-ventures/syndicate" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-gray-600 hover:text-green-600 transition-all duration-200 font-medium hover:scale-105"
-            >
-              Invest
-            </a>
-            <SimpleSubmitEventDialog />
-            <Button size="sm" className="nyc-gradient hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 text-white" asChild>
-              <a href="https://nycb2b.beehiiv.com" target="_blank" rel="noopener noreferrer">
-                Join Community
-              </a>
-            </Button>
-          </div>
-
-          {/* Mobile Navigation */}
-          <div className="sm:hidden">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2"
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="sm:hidden border-t border-gray-100 py-4 space-y-3">
-            <Link 
-              to="/events" 
-              className="block text-gray-600 hover:text-green-600 transition-colors font-medium py-2"
-              onClick={handleNavClick}
-            >
-              Events
-            </Link>
-            <Link 
-              to="/jobs" 
-              className="block text-gray-600 hover:text-green-600 transition-colors font-medium py-2"
-              onClick={handleNavClick}
-            >
-              Jobs
-            </Link>
-            <Link 
-              to="/blog" 
-              className="block text-gray-600 hover:text-green-600 transition-colors font-medium py-2"
-              onClick={handleNavClick}
-            >
-              Blog
-            </Link>
-            <Link 
-              to="/about" 
-              className="block text-gray-600 hover:text-green-600 transition-colors font-medium py-2"
-              onClick={handleNavClick}
-            >
-              About
-            </Link>
-            <a 
-              href="https://venture.angellist.com/nyc-ventures/syndicate" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="block text-gray-600 hover:text-green-600 transition-colors font-medium py-2"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Invest
-            </a>
-            <div className="pt-2">
-              <SimpleSubmitEventDialog />
-            </div>
+          <div className="hidden md:flex items-center space-x-8">
+            {navigationItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className="text-gray-600 hover:text-green-600 px-3 py-2 text-sm font-medium transition-colors duration-200"
+              >
+                {item.name}
+              </Link>
+            ))}
             <Button 
-              size="sm" 
-              className="nyc-gradient hover:opacity-90 text-white w-full mt-2"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onJoinCommunityClick();
-              }}
+              onClick={onJoinCommunityClick}
+              className="nyc-gradient hover:opacity-90 text-white shadow-lg hover:shadow-xl transition-all duration-200"
             >
               Join Community
             </Button>
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <button
+              onClick={toggleMenu}
+              className="text-gray-600 hover:text-gray-900 focus:outline-none focus:text-gray-900 p-2"
+            >
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200 bg-white">
+              {navigationItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
+              <div className="px-3 py-2">
+                <Button 
+                  onClick={() => {
+                    onJoinCommunityClick();
+                    setIsMenuOpen(false);
+                  }}
+                  className="w-full nyc-gradient hover:opacity-90 text-white"
+                >
+                  Join Community
+                </Button>
+              </div>
+            </div>
           </div>
         )}
       </div>
