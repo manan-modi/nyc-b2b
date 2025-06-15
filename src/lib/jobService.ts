@@ -16,7 +16,7 @@ export interface Job {
   company_size?: string;
   funding_stage?: string;
   company_logo?: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: string | null;
   posted_date?: string;
   created_at: string;
   updated_at: string;

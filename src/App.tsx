@@ -31,7 +31,6 @@ function App() {
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/sitemap" element={<SitemapPage />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
               <Route 
                 path="/admin" 
                 element={

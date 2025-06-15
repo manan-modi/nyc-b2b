@@ -20,9 +20,9 @@ const Index = () => {
       
       <div className="min-h-screen bg-white">
         <Navigation onJoinCommunityClick={handleJoinCommunityClick} />
-        <HeroSection onJoinCommunityClick={handleJoinCommunityClick} />
+        <HeroSection />
         <SocialProofSection />
-        <CTASection onJoinCommunityClick={handleJoinCommunityClick} />
+        <CTASection />
         <Footer />
       </div>
     </>
