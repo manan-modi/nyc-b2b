@@ -1,4 +1,3 @@
-
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { Heart } from "lucide-react";
 import { useState } from "react";
@@ -67,8 +66,8 @@ export const SocialProofSection = () => {
           <div className="mb-8">
             <p className="text-base sm:text-lg font-semibold text-gray-700 mb-6 sm:mb-8">Founders backed by</p>
             <div className="relative">
-              <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
-              <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
+              <div className="absolute left-0 top-0 bottom-0 w-4 sm:w-8 bg-gradient-to-r from-white via-white/60 to-transparent z-10 pointer-events-none"></div>
+              <div className="absolute right-0 top-0 bottom-0 w-4 sm:w-8 bg-gradient-to-l from-white via-white/60 to-transparent z-10 pointer-events-none"></div>
               
               <Carousel
                 plugins={[
@@ -113,7 +112,6 @@ export const SocialProofSection = () => {
         </div>
       </div>
 
-      {/* Custom CSS for heart animations */}
       <style>{`
         @keyframes heartFountain {
           0% {
