@@ -46,7 +46,7 @@ export const submitEventUrl = async (eventData: SubmitEventData): Promise<EventS
     status: 'pending' as const
   };
 
-  console.log('Inserting event submission:', eventRecord);
+  console.log('Inserting event submission to event_submissions table:', eventRecord);
 
   const { data, error } = await supabase
     .from('event_submissions')
@@ -56,6 +56,12 @@ export const submitEventUrl = async (eventData: SubmitEventData): Promise<EventS
 
   if (error) {
     console.error('Database error:', error);
+    console.error('Error details:', {
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      code: error.code
+    });
     throw new Error(
       "Failed to submit event: " + 
       (error.message || JSON.stringify(error) || "Unknown error")
@@ -66,7 +72,7 @@ export const submitEventUrl = async (eventData: SubmitEventData): Promise<EventS
     throw new Error('No data returned from database');
   }
 
-  console.log('Event URL submitted successfully:', data);
+  console.log('Event URL submitted successfully to event_submissions:', data);
   return data as EventSubmission;
 };
 
