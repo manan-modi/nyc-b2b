@@ -63,7 +63,7 @@ export const submitEventToStorage = async (eventData: SubmitEventData): Promise<
     throw error;
   }
 
-  return data;
+  return data as Event;
 };
 
 export const fetchApprovedEvents = async (): Promise<Event[]> => {
@@ -79,7 +79,7 @@ export const fetchApprovedEvents = async (): Promise<Event[]> => {
     throw error;
   }
 
-  return data || [];
+  return (data || []) as Event[];
 };
 
 export const fetchAllEvents = async (): Promise<Event[]> => {
@@ -93,7 +93,7 @@ export const fetchAllEvents = async (): Promise<Event[]> => {
     throw error;
   }
 
-  return data || [];
+  return (data || []) as Event[];
 };
 
 export const updateEventStatus = async (recordId: string, status: 'approved' | 'rejected'): Promise<Event> => {
@@ -109,7 +109,7 @@ export const updateEventStatus = async (recordId: string, status: 'approved' | '
     throw error;
   }
 
-  return data;
+  return data as Event;
 };
 
 export const updateEventDetails = async (recordId: string, updates: Partial<Omit<Event, 'id' | 'created_at' | 'updated_at'>>): Promise<Event> => {
@@ -125,7 +125,7 @@ export const updateEventDetails = async (recordId: string, updates: Partial<Omit
     throw error;
   }
 
-  return data;
+  return data as Event;
 };
 
 export const updateEventOrder = async (recordId: string, displayOrder: number, featured: boolean = false): Promise<Event> => {
@@ -144,5 +144,5 @@ export const updateEventOrder = async (recordId: string, displayOrder: number, f
     throw error;
   }
 
-  return data;
+  return data as Event;
 };

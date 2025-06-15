@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
 import { Edit, Calendar, Clock, MapPin, Users, DollarSign, Building } from "lucide-react";
-import { Event, updateEventDetails } from "@/lib/eventStorage";
+import { Event, updateEventDetails } from "@/lib/eventService";
 
 interface EditEventDialogProps {
   event: Event;
@@ -23,17 +23,17 @@ export const EditEventDialog = ({ event, onEventUpdated }: EditEventDialogProps)
 
   const form = useForm({
     defaultValues: {
-      eventTitle: event.fields['Event Title'],
-      eventDescription: event.fields['Event Description'],
-      eventUrl: event.fields['Event URL'],
-      date: event.fields.Date,
-      time: event.fields.Time,
-      location: event.fields.Location,
-      category: event.fields.Category,
-      price: event.fields.Price,
-      hostOrganization: event.fields['Host Organization'],
-      expectedAttendees: event.fields['Expected Attendees'],
-      imageUrl: event.fields['Image URL'] || '',
+      eventTitle: event.title,
+      eventDescription: event.description,
+      eventUrl: event.event_url,
+      date: event.date,
+      time: event.time,
+      location: event.location,
+      category: event.category,
+      price: event.price,
+      hostOrganization: event.host_organization,
+      expectedAttendees: event.expected_attendees,
+      imageUrl: event.image_url || '',
     },
   });
 
@@ -42,17 +42,17 @@ export const EditEventDialog = ({ event, onEventUpdated }: EditEventDialogProps)
     
     try {
       const updatedEvent = await updateEventDetails(event.id, {
-        'Event Title': data.eventTitle,
-        'Event Description': data.eventDescription,
-        'Event URL': data.eventUrl,
-        'Date': data.date,
-        'Time': data.time,
-        'Location': data.location,
-        'Category': data.category,
-        'Price': data.price,
-        'Host Organization': data.hostOrganization,
-        'Expected Attendees': parseInt(data.expectedAttendees),
-        'Image URL': data.imageUrl,
+        title: data.eventTitle,
+        description: data.eventDescription,
+        event_url: data.eventUrl,
+        date: data.date,
+        time: data.time,
+        location: data.location,
+        category: data.category,
+        price: data.price,
+        host_organization: data.hostOrganization,
+        expected_attendees: parseInt(data.expectedAttendees),
+        image_url: data.imageUrl,
       });
 
       onEventUpdated(updatedEvent);
