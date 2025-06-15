@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import { Check, Calendar, Clock, BookOpen, Eye, Edit, ExternalLink } from "lucide-react";
 import { BlogArticle, updateArticleStatus } from "@/lib/blogService";
 import { CreateArticleDialog } from "../CreateArticleDialog";
+import { EditArticleDialog } from "../EditArticleDialog";
 import { BlogStatsCards } from "./BlogStatsCards";
 
 interface BlogManagementProps {
@@ -162,6 +163,11 @@ export const BlogManagement = ({ articles, setArticles, onReloadData }: BlogMana
                     <ExternalLink className="ml-2 h-4 w-4" />
                   </a>
                 </Button>
+
+                <EditArticleDialog 
+                  article={article} 
+                  onArticleUpdated={onReloadData}
+                />
 
                 {article.status === 'draft' && (
                   <Button

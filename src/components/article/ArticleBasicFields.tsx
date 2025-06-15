@@ -4,6 +4,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FormattingGuideTooltip } from "./FormattingGuideTooltip";
+import { FormattingToolbar } from "./FormattingToolbar";
+import { useRef } from "react";
 
 interface ArticleBasicFieldsProps {
   formData: {
@@ -20,6 +22,50 @@ interface ArticleBasicFieldsProps {
 }
 
 export const ArticleBasicFields = ({ formData, onFormDataChange }: ArticleBasicFieldsProps) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleFormatInsert = (format: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = formData.content.substring(start, end);
+    
+    let newText = format;
+    
+    // Handle different format types
+    if (format.includes('text')) {
+      newText = format.replace('text', selectedText || 'text');
+    } else if (format.includes('URL')) {
+      newText = format.replace('URL', 'https://');
+      if (selectedText) {
+        newText = newText.replace('text', selectedText);
+      }
+    } else {
+      // For formats like headers, bullets, etc., add them at the beginning of line
+      if (selectedText) {
+        newText = format + selectedText;
+      } else {
+        newText = format;
+      }
+    }
+
+    const newContent = 
+      formData.content.substring(0, start) + 
+      newText + 
+      formData.content.substring(end);
+
+    onFormDataChange('content', newContent);
+
+    // Set cursor position after the inserted text
+    setTimeout(() => {
+      const newPosition = start + newText.length;
+      textarea.setSelectionRange(newPosition, newPosition);
+      textarea.focus();
+    }, 0);
+  };
+
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -70,7 +116,11 @@ export const ArticleBasicFields = ({ formData, onFormDataChange }: ArticleBasicF
           <Label htmlFor="content">Content *</Label>
           <FormattingGuideTooltip />
         </div>
+        
+        <FormattingToolbar onInsertFormat={handleFormatInsert} />
+        
         <Textarea
+          ref={textareaRef}
           id="content"
           value={formData.content}
           onChange={(e) => onFormDataChange('content', e.target.value)}
