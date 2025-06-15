@@ -110,11 +110,24 @@ export const updateArticleStatus = async (id: string, status: 'draft' | 'publish
 };
 
 export const incrementViews = async (id: string) => {
-  const { error } = await supabase.rpc('increment', {
-    table_name: 'blog_articles',
-    row_id: id,
-    column_name: 'views'
-  });
+  // Get current views and increment by 1
+  const { data: currentData, error: fetchError } = await supabase
+    .from('blog_articles')
+    .select('views')
+    .eq('id', id)
+    .single();
+
+  if (fetchError) {
+    console.error('Failed to fetch current views:', fetchError);
+    return;
+  }
+
+  const currentViews = currentData?.views || 0;
+  
+  const { error } = await supabase
+    .from('blog_articles')
+    .update({ views: currentViews + 1 })
+    .eq('id', id);
 
   if (error) console.error('Failed to increment views:', error);
 };

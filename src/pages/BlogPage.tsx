@@ -24,7 +24,7 @@ const BlogPage = () => {
       setLoading(true);
       if (slug) {
         // Load single article
-        const article = await fetchArticle(slug);
+        const article = await fetchArticleBySlug(slug);
         setSingleArticle(article);
         if (article) {
           incrementViews(article.id);
