@@ -21,9 +21,11 @@ export const SimpleSubmitEventDialog = () => {
 
   const onSubmit = async (data: SubmitEventData) => {
     console.log('=== FORM SUBMISSION STARTED ===');
-    console.log('Form data:', data);
+    console.log('Form data received:', data);
     
+    // Basic client-side validation
     if (!data.eventUrl?.trim()) {
+      console.log('Client validation failed: empty URL');
       toast({
         title: "URL Required",
         description: "Please enter a valid event URL.",
@@ -35,29 +37,33 @@ export const SimpleSubmitEventDialog = () => {
     setIsSubmitting(true);
     
     try {
-      console.log('=== CALLING SUBMIT SERVICE ===');
+      console.log('=== CALLING SERVICE FUNCTION ===');
       
       const result = await submitEventToStorage(data);
 
-      console.log('=== SUBMISSION COMPLETE ===');
-      console.log('Result:', result);
+      console.log('=== SERVICE CALL SUCCESS ===');
+      console.log('Service result:', result);
 
       toast({
         title: "Event Submitted Successfully!",
         description: "Your event has been submitted for review and will be processed within 24-48 hours.",
+        variant: "default",
       });
 
+      // Reset form and close dialog
       form.reset();
       setOpen(false);
       
     } catch (error) {
       console.error('=== FORM SUBMISSION ERROR ===');
+      console.error('Error type:', typeof error);
       console.error('Error details:', error);
       
       let errorMessage = "There was an error submitting your event. Please try again.";
       
       if (error instanceof Error) {
         errorMessage = error.message;
+        console.error('Error message extracted:', errorMessage);
       }
 
       toast({
@@ -66,6 +72,7 @@ export const SimpleSubmitEventDialog = () => {
         variant: "destructive",
       });
     } finally {
+      console.log('=== CLEANING UP ===');
       setIsSubmitting(false);
     }
   };
@@ -108,6 +115,7 @@ export const SimpleSubmitEventDialog = () => {
                       placeholder="https://lu.ma/your-event or any other event platform URL" 
                       {...field} 
                       className="text-base"
+                      disabled={isSubmitting}
                     />
                   </FormControl>
                   <FormMessage />
@@ -127,7 +135,12 @@ export const SimpleSubmitEventDialog = () => {
             </div>
 
             <div className="flex justify-end gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setOpen(false)}
+                disabled={isSubmitting}
+              >
                 Cancel
               </Button>
               <Button 

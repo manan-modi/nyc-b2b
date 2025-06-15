@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { SimpleSubmitEventDialog } from "./SimpleSubmitEventDialog";
+import { EventSubmissionTest } from "./EventSubmissionTest";
 import EventCard from "./EventCard";
 import EventFilters from "./EventFilters";
 import { fetchApprovedEvents, Event } from "@/lib/eventService";
@@ -101,7 +102,14 @@ const EventsPage = () => {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
             Discover and connect at the best B2B events happening in New York City
           </p>
-          <SimpleSubmitEventDialog />
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <SimpleSubmitEventDialog />
+          </div>
+        </div>
+
+        {/* Temporary Test Component - Remove this after testing */}
+        <div className="mb-8">
+          <EventSubmissionTest />
         </div>
 
         {/* Filters */}
