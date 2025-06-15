@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export interface EventSubmission {
@@ -27,21 +26,34 @@ export interface SubmitEventData {
 }
 
 export const submitEventUrl = async (eventData: SubmitEventData): Promise<EventSubmission> => {
-  const { data, error } = await supabase
-    .from('event_submissions')
-    .insert([{
-      event_url: eventData.eventUrl,
-      status: 'pending' as const,
-    }])
-    .select()
-    .single();
+  console.log('Attempting to submit event:', eventData);
+  
+  try {
+    const { data, error } = await supabase
+      .from('event_submissions')
+      .insert({
+        event_url: eventData.eventUrl,
+        status: 'pending'
+      })
+      .select()
+      .single();
 
-  if (error) {
-    console.error('Error submitting event:', error);
-    throw new Error('Failed to submit event');
+    if (error) {
+      console.error('Supabase error details:', error);
+      throw new Error(`Database error: ${error.message}`);
+    }
+
+    if (!data) {
+      console.error('No data returned from insert');
+      throw new Error('No data returned from submission');
+    }
+
+    console.log('Event submitted successfully:', data);
+    return data as EventSubmission;
+  } catch (error) {
+    console.error('Event submission failed:', error);
+    throw error;
   }
-
-  return data as EventSubmission;
 };
 
 export const fetchAllEventSubmissions = async (): Promise<EventSubmission[]> => {

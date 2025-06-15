@@ -24,10 +24,12 @@ export const SubmitEventDialog = () => {
   });
 
   const onSubmit = async (data: SubmitEventFormData) => {
+    console.log('Form submitted with data:', data);
     setIsSubmitting(true);
     
     try {
-      await submitEventUrl({ eventUrl: data.eventUrl });
+      const result = await submitEventUrl({ eventUrl: data.eventUrl });
+      console.log('Submission successful:', result);
       
       toast({
         title: "Event Submitted!",
@@ -37,10 +39,16 @@ export const SubmitEventDialog = () => {
       form.reset();
       setOpen(false);
     } catch (error) {
-      console.error('Error submitting event:', error);
+      console.error('Submission error caught in component:', error);
+      
+      let errorMessage = "There was an error submitting your event. Please try again.";
+      if (error instanceof Error) {
+        errorMessage = `Submission failed: ${error.message}`;
+      }
+      
       toast({
         title: "Submission Failed",
-        description: "There was an error submitting your event. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
