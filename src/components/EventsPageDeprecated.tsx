@@ -1,3 +1,4 @@
+
 /*
  * DEPRECATED: This file has been deprecated and replaced by src/pages/EventsPage.tsx
  * This file is kept for reference only and should not be used in new development.
@@ -13,7 +14,6 @@ import { Search, Calendar, MapPin, Clock, ExternalLink, Users } from "lucide-rea
 import { fetchApprovedEvents, Event } from "@/lib/eventService";
 import { SimpleSubmitEventDialog } from "./SimpleSubmitEventDialog";
 import { SEOHead } from "./SEOHead";
-import { StructuredData } from "./StructuredData";
 import { Navigation } from "./Navigation";
 import { Footer } from "./Footer";
 
@@ -77,37 +77,14 @@ const EventsPage = () => {
     }
   };
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": "NYC B2B Events - Professional Networking Events",
-    "description": "Discover the best B2B networking events, conferences, and meetups in New York City. Connect with fellow professionals and grow your network.",
-    "url": `${window.location.origin}/events`,
-    "mainEntity": {
-      "@type": "ItemList",
-      "itemListElement": filteredEvents.map((event, index) => ({
-        "@type": "Event",
-        "position": index + 1,
-        "name": event.title,
-        "description": event.description,
-        "startDate": `${event.date}T${event.time}`,
-        "location": {
-          "@type": "Place",
-          "name": event.location
-        },
-        "organizer": {
-          "@type": "Organization",
-          "name": event.host_organization
-        },
-        "url": event.event_url
-      }))
-    }
+  const handleJoinCommunity = () => {
+    window.open('https://nycb2b.beehiiv.com', '_blank');
   };
 
   if (loading) {
     return (
       <>
-        <Navigation />
+        <Navigation onJoinCommunityClick={handleJoinCommunity} />
         <div className="min-h-screen bg-white flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
@@ -123,12 +100,10 @@ const EventsPage = () => {
       <SEOHead 
         title="NYC B2B Events - Professional Networking Events"
         description="Discover the best B2B networking events, conferences, and meetups in New York City. Connect with fellow professionals and grow your network."
-        canonical="/events"
       />
-      <StructuredData data={structuredData} />
       
       <div className="min-h-screen bg-white">
-        <Navigation />
+        <Navigation onJoinCommunityClick={handleJoinCommunity} />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center mb-12">
