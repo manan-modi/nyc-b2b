@@ -2,7 +2,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Building2, Users, Target, Heart, Mail, MessageCircle, TrendingUp, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
-import { SimpleSubmitEventDialog } from "./SimpleSubmitEventDialog";
 import { Navigation } from "@/components/Navigation";
 
 const AboutPage = () => {
