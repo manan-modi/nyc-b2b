@@ -25,6 +25,7 @@ interface Job {
   industry: string | null;
   company_size: string | null;
   funding_stage: string | null;
+  company_logo: string | null;
   status: string | null;
   posted_date: string | null;
   created_at: string;
