@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
-import EventsPage from "./components/EventsPage";
+import EventsPage from "./pages/EventsPage";
 import AboutPage from "./components/AboutPage";
 import JobsPage from "./pages/JobsPage";
 import BlogPage from "./pages/BlogPage";

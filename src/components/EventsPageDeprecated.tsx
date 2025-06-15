@@ -1,3 +1,8 @@
+/*
+ * DEPRECATED: This file has been deprecated and replaced by src/pages/EventsPage.tsx
+ * This file is kept for reference only and should not be used in new development.
+ * The new EventsPage component provides the same functionality with cleaner implementation.
+ */
 
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
