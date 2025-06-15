@@ -22,21 +22,11 @@ export interface Event {
 }
 
 export interface SubmitEventData {
-  eventTitle: string;
-  eventDescription: string;
   eventUrl: string;
-  date: string;
-  time: string;
-  location: string;
-  category: string;
-  price: string;
-  hostOrganization: string;
-  expectedAttendees: number;
-  imageUrl?: string;
 }
 
 export const submitEventToStorage = async (eventData: SubmitEventData): Promise<Event> => {
-  console.log('=== STARTING SIMPLE EVENT SUBMISSION ===');
+  console.log('=== STARTING EVENT SUBMISSION ===');
   console.log('Event URL:', eventData.eventUrl);
   
   // Basic validation
@@ -51,57 +41,41 @@ export const submitEventToStorage = async (eventData: SubmitEventData): Promise<
     throw new Error('Please enter a valid URL starting with http:// or https://');
   }
 
-  // Use the most minimal data possible
+  // Create minimal event record with only required fields
   const eventRecord = {
-    title: eventData.eventTitle || "Event Submission",
-    description: eventData.eventDescription || "Pending admin review",
+    title: "Event Submission",
+    description: "Event submitted for review",
     event_url: eventData.eventUrl.trim(),
-    date: eventData.date || new Date().toISOString().split('T')[0],
-    time: eventData.time || "18:00",
-    location: eventData.location || "TBD",
-    category: eventData.category || "Networking",
-    price: eventData.price || "TBD",
-    host_organization: eventData.hostOrganization || "TBD",
-    expected_attendees: eventData.expectedAttendees || 50,
-    image_url: eventData.imageUrl || null,
-    status: 'pending'
+    date: new Date().toISOString().split('T')[0],
+    time: "18:00",
+    location: "TBD",
+    category: "Networking",
+    price: "TBD",
+    host_organization: "TBD",
+    expected_attendees: 50,
+    status: 'pending' as const
   };
 
-  console.log('=== ATTEMPTING SUPABASE INSERT ===');
-  console.log('Data to insert:', eventRecord);
+  console.log('=== INSERTING EVENT ===');
+  console.log('Event data:', eventRecord);
 
-  try {
-    // Try simple insert first
-    const { data, error } = await supabase
-      .from('events')
-      .insert([eventRecord])
-      .select()
-      .single();
+  const { data, error } = await supabase
+    .from('events')
+    .insert([eventRecord])
+    .select()
+    .single();
 
-    console.log('Insert response - Data:', data);
-    console.log('Insert response - Error:', error);
-
-    if (error) {
-      console.error('=== INSERT FAILED ===', error);
-      throw new Error(`Database error: ${error.message}`);
-    }
-
-    if (!data) {
-      throw new Error('No data returned from insert');
-    }
-
-    console.log('=== EVENT SUBMISSION SUCCESS ===');
-    return data as Event;
-
-  } catch (error) {
-    console.error('=== SUBMISSION ERROR ===', error);
-    
-    if (error instanceof Error) {
-      throw error;
-    }
-    
-    throw new Error('Unknown error occurred during submission');
+  if (error) {
+    console.error('=== INSERT ERROR ===', error);
+    throw new Error(`Failed to submit event: ${error.message}`);
   }
+
+  if (!data) {
+    throw new Error('No data returned from submission');
+  }
+
+  console.log('=== SUBMISSION SUCCESS ===', data);
+  return data as Event;
 };
 
 export const fetchApprovedEvents = async (): Promise<Event[]> => {

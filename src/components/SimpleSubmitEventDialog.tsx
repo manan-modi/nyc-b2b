@@ -9,21 +9,17 @@ import { toast } from "@/hooks/use-toast";
 import { Plus, Link } from "lucide-react";
 import { submitEventToStorage, SubmitEventData } from "@/lib/eventService";
 
-interface SimpleSubmitData {
-  eventUrl: string;
-}
-
 export const SimpleSubmitEventDialog = () => {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<SimpleSubmitData>({
+  const form = useForm<SubmitEventData>({
     defaultValues: {
       eventUrl: "",
     },
   });
 
-  const onSubmit = async (data: SimpleSubmitData) => {
+  const onSubmit = async (data: SubmitEventData) => {
     console.log('=== FORM SUBMISSION STARTED ===');
     console.log('Form data:', data);
     
@@ -39,26 +35,9 @@ export const SimpleSubmitEventDialog = () => {
     setIsSubmitting(true);
     
     try {
-      console.log('=== PREPARING EVENT DATA ===');
-      
-      // Create the simplest possible event submission
-      const eventData: SubmitEventData = {
-        eventTitle: "Event Submission",
-        eventDescription: "Pending admin review",
-        eventUrl: data.eventUrl.trim(),
-        date: new Date().toISOString().split('T')[0],
-        time: "18:00",
-        location: "TBD",
-        category: "Networking",
-        price: "TBD",
-        hostOrganization: "TBD",
-        expectedAttendees: 50,
-        imageUrl: "",
-      };
-
       console.log('=== CALLING SUBMIT SERVICE ===');
       
-      const result = await submitEventToStorage(eventData);
+      const result = await submitEventToStorage(data);
 
       console.log('=== SUBMISSION COMPLETE ===');
       console.log('Result:', result);
