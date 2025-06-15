@@ -1,9 +1,10 @@
+
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Clock, ArrowRight, TrendingUp, Users, DollarSign, Eye, Calendar, User } from "lucide-react";
+import { BookOpen, Clock, ArrowRight, Users, Mail, MessageCircle, Eye, Calendar, User } from "lucide-react";
 import { fetchPublishedArticles, fetchArticleBySlug, incrementViews, type BlogArticle } from "@/lib/blogService";
 import { Navigation } from "@/components/Navigation";
 import { SEOHead } from "@/components/SEOHead";
@@ -254,23 +255,23 @@ const BlogPage = () => {
           </div>
         )}
 
-        {/* Stats Section */}
+        {/* Community Stats Section */}
         <div className="bg-white/50 backdrop-blur-sm rounded-lg p-8 mb-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div className="flex flex-col items-center">
-              <TrendingUp className="h-8 w-8 text-blue-600 mb-2" />
-              <div className="text-2xl font-bold text-gray-900">{articles.length}+</div>
-              <div className="text-gray-600">Articles Published</div>
+              <Mail className="h-8 w-8 text-green-600 mb-2" />
+              <div className="text-2xl font-bold text-gray-900">8,500+</div>
+              <div className="text-gray-600">Newsletter Subscribers</div>
             </div>
             <div className="flex flex-col items-center">
-              <Users className="h-8 w-8 text-green-600 mb-2" />
-              <div className="text-2xl font-bold text-gray-900">25k+</div>
-              <div className="text-gray-600">Monthly Readers</div>
+              <MessageCircle className="h-8 w-8 text-blue-600 mb-2" />
+              <div className="text-2xl font-bold text-gray-900">1,500+</div>
+              <div className="text-gray-600">Active WhatsApp Members</div>
             </div>
             <div className="flex flex-col items-center">
-              <DollarSign className="h-8 w-8 text-purple-600 mb-2" />
-              <div className="text-2xl font-bold text-gray-900">$2B+</div>
-              <div className="text-gray-600">Combined Funding Covered</div>
+              <Users className="h-8 w-8 text-purple-600 mb-2" />
+              <div className="text-2xl font-bold text-gray-900">60%</div>
+              <div className="text-gray-600">Newsletter Open Rate</div>
             </div>
           </div>
         </div>
