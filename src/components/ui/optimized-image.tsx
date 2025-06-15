@@ -38,7 +38,7 @@ export const OptimizedImage = ({
     square: "aspect-square",
     video: "aspect-video", 
     portrait: "aspect-[3/4]",
-    landscape: "aspect-[2/1]"
+    landscape: "aspect-[4/3]"
   };
 
   const handleLoad = () => {

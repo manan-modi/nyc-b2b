@@ -11,14 +11,14 @@ interface SEOHeadProps {
 
 export const SEOHead = ({ 
   article, 
-  title = "NYC B2B - Connect, Build, Scale", 
-  description = "NYC's premier B2B community. Discover exclusive events, job opportunities, and resources. Join 5,000+ founders and innovators.",
+  title = "NYC B2B - Join NYC's #1 B2B startup community", 
+  description = "Join NYC's #1 B2B startup community. Discover exclusive events, job opportunities, and resources. Join 5,000+ founders and innovators.",
   baseUrl = "https://nycb2b.com"
 }: SEOHeadProps) => {
   const pageTitle = article ? `${article.title} | NYC B2B` : title;
   const pageDescription = article ? (article.meta_description || article.excerpt) : description;
   const pageUrl = article ? `${baseUrl}/blog/${article.slug}` : baseUrl;
-  const imageUrl = article?.featured_image || `${baseUrl}/lovable-uploads/00d2fcf3-063b-4181-8a1d-a84bd811f817.png`;
+  const imageUrl = article?.featured_image || `${baseUrl}/lovable-uploads/4ce54989-5124-4e46-a3ab-aa1434b9fffd.png`;
 
   return (
     <Helmet>
