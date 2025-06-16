@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -21,18 +20,11 @@ export const HeroSection = () => {
     }
 
     try {
-      // Subscribe to Beehiiv using your actual API token
-      const response = await fetch('https://api.beehiiv.com/v2/publications/pub_255e23a2-96f2-406a-8d8b-f3c978f4620f/subscriptions', {
+      // Subscribe to Beehiiv using the Beehiiv public API endpoint
+      const response = await fetch('/api/subscribe', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer 255e23a2-96f2-406a-8d8b-f3c978f4620f'
-        },
-        body: JSON.stringify({
-          email: email,
-          reactivate_existing: true,
-          send_welcome_email: true
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
       });
 
       if (response.ok) {

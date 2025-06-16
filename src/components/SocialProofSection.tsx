@@ -64,7 +64,7 @@ export const SocialProofSection = () => {
           </p>
           
           <div className="mb-8">
-            <p className="text-base sm:text-lg font-semibold text-gray-700 mb-6 sm:mb-8">Founders backed by</p>
+            <p className="text-base sm:text-lg font-semibold text-gray-700 mb-6 sm:mb-8">We've hosted founders backed by</p>
             <div className="relative">
               <div className="absolute left-0 top-0 bottom-0 w-4 sm:w-8 bg-gradient-to-r from-white via-white/60 to-transparent z-10 pointer-events-none"></div>
               <div className="absolute right-0 top-0 bottom-0 w-4 sm:w-8 bg-gradient-to-l from-white via-white/60 to-transparent z-10 pointer-events-none"></div>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface RichTextRendererProps {
@@ -104,7 +103,10 @@ export const RichTextRenderer = ({ content, className = "" }: RichTextRendererPr
       if (trimmed.match(/^<(h[1-6]|ul|ol|li|blockquote|div)/i)) {
         return trimmed;
       }
-      
+      // Don't wrap if it's a list item or inside a list
+      if (trimmed.startsWith('<li') || trimmed.startsWith('</ul>') || trimmed.startsWith('</ol>') || trimmed.startsWith('<ul') || trimmed.startsWith('<ol')) {
+        return trimmed;
+      }
       // Convert single newlines to <br> within paragraphs
       const withBreaks = trimmed.replace(/\n/g, '<br>');
       return `<p class="mb-6 leading-relaxed">${withBreaks}</p>`;
