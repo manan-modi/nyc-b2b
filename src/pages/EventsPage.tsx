@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import { SEOHead } from "@/components/SEOHead";
 import { StructuredData } from "@/components/StructuredData";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { EventCard } from "@/components/EventCard";
 
 const EventsPage = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -47,28 +47,25 @@ const EventsPage = () => {
     setFilteredEvents(filtered);
   }, [searchTerm, events]);
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'Date TBD';
+  const formatDateHeader = (dateString: string) => {
+    if (dateString === "TBD") return "Date TBD";
     try {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
+      const date = new Date(dateString);
+      const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
+      const day = date.getUTCDate().toString().padStart(2, "0");
+      return `${month}/${day}`;
     } catch {
       return dateString;
     }
   };
 
-  const formatTime = (timeString: string | null) => {
-    if (!timeString) return 'Time TBD';
+  const formatTimeEST = (timeString: string | null) => {
+    if (!timeString) return "Time TBD";
     try {
-      return new Date(`1970-01-01T${timeString}`).toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      });
+      const [hour, minute] = timeString.split(":");
+      const date = new Date();
+      date.setHours(Number(hour), Number(minute), 0, 0);
+      return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "America/New_York" }) + " EST";
     } catch {
       return timeString;
     }
@@ -100,6 +97,18 @@ const EventsPage = () => {
       }))
     }
   };
+
+  // Group events by date
+  const groupEventsByDate = (events: Event[]) => {
+    return events.reduce((groups, event) => {
+      const date = event.date || "TBD";
+      if (!groups[date]) groups[date] = [];
+      groups[date].push(event);
+      return groups;
+    }, {} as Record<string, Event[]>);
+  };
+
+  const groupedEvents = groupEventsByDate(filteredEvents);
 
   if (loading) {
     return (
@@ -177,74 +186,16 @@ const EventsPage = () => {
               </div>
 
               {/* Events Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {filteredEvents.map((event) => (
-                  <Card key={event.id} className="overflow-hidden hover:shadow-lg transition-all duration-200 border-2 border-gray-100">
-                    <CardHeader className="pb-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <Badge variant="secondary" className="bg-green-100 text-green-700">
-                          {event.category || 'Networking'}
-                        </Badge>
-                        {event.featured && (
-                          <Badge className="bg-yellow-100 text-yellow-700">
-                            Featured
-                          </Badge>
-                        )}
-                      </div>
-                      <CardTitle className="text-xl mb-2 line-clamp-2">
-                        {event.title || 'Event Details Coming Soon'}
-                      </CardTitle>
-                      <CardDescription className="text-base line-clamp-3">
-                        {event.description || 'Event details will be updated soon. Click to view on the event platform.'}
-                      </CardDescription>
-                    </CardHeader>
-                    
-                    <CardContent>
-                      <div className="space-y-3 mb-6">
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Calendar className="h-4 w-4 text-green-600" />
-                          {formatDate(event.date)}
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Clock className="h-4 w-4 text-green-600" />
-                          {formatTime(event.time)}
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <MapPin className="h-4 w-4 text-green-600" />
-                          {event.location || 'Location TBD'}
-                        </div>
-                        {event.expected_attendees && (
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Users className="h-4 w-4 text-green-600" />
-                            {event.expected_attendees} expected attendees
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex justify-between items-center">
-                        <div className="text-sm">
-                          <p className="text-gray-600">
-                            <span className="font-medium">Host:</span> {event.host_organization || 'TBD'}
-                          </p>
-                          <p className="text-gray-600">
-                            <span className="font-medium">Price:</span> {event.price || 'TBD'}
-                          </p>
-                        </div>
-                        
-                        <Button asChild className="nyc-gradient hover:opacity-90 text-white">
-                          <a 
-                            href={event.event_url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2"
-                          >
-                            View Event
-                            <ExternalLink className="h-4 w-4" />
-                          </a>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+              <div>
+                {Object.entries(groupedEvents).map(([date, events]) => (
+                  <div key={date}>
+                    <div className="text-xl font-bold text-gray-700 mb-4 mt-8">
+                      {formatDateHeader(date)}
+                    </div>
+                    {events.map(event => (
+                      <EventCard key={event.id} event={{ ...event, time: formatTimeEST(event.time) }} isAdmin={false} />
+                    ))}
+                  </div>
                 ))}
               </div>
 
