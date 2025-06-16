@@ -8,7 +8,7 @@ import { toast } from "@/hooks/use-toast";
 export const HeroSection = () => {
   const [email, setEmail] = useState("");
 
-  const handleEmailSignup = async (e: React.FormEvent) => {
+  const handleEmailSignup = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
       toast({
@@ -19,46 +19,15 @@ export const HeroSection = () => {
       return;
     }
 
-    try {
-      // Subscribe to Beehiiv using the Beehiiv public API endpoint
-      const response = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-
-      if (response.ok) {
-        toast({
-          title: "Successfully subscribed!",
-          description: "Welcome to the NYC B2B community. Check your email for confirmation.",
-        });
-        setEmail("");
-      } else {
-        const errorData = await response.json();
-        console.error('Beehiiv API error:', errorData);
-        
-        // Fallback to manual subscription
-        const subscriptionUrl = `https://nycb2b.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`;
-        window.open(subscriptionUrl, '_blank');
-        
-        toast({
-          title: "Redirecting to subscription!",
-          description: "Complete your subscription on the new page that opened.",
-        });
-        setEmail("");
-      }
-    } catch (error) {
-      console.error('Beehiiv API error:', error);
-      // Fallback to manual subscription
-      const subscriptionUrl = `https://nycb2b.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`;
-      window.open(subscriptionUrl, '_blank');
-      
-      toast({
-        title: "Redirecting to subscription!",
-        description: "Complete your subscription on the new page that opened.",
-      });
-      setEmail("");
-    }
+    // Redirect to Beehiiv subscribe page with email pre-filled
+    const subscriptionUrl = `https://nycb2b.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`;
+    window.open(subscriptionUrl, '_blank');
+    
+    toast({
+      title: "Redirecting to subscription!",
+      description: "Complete your subscription on the new page that opened.",
+    });
+    setEmail("");
   };
 
   return (
