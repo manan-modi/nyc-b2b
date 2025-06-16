@@ -1,4 +1,3 @@
-
 import { Helmet } from "react-helmet-async";
 import { BlogArticle } from "@/lib/blogService";
 
@@ -18,7 +17,7 @@ export const SEOHead = ({
   const pageTitle = article ? `${article.title} | NYC B2B` : title;
   const pageDescription = article ? (article.meta_description || article.excerpt) : description;
   const pageUrl = article ? `${baseUrl}/blog/${article.slug}` : baseUrl;
-  const imageUrl = article?.featured_image || `${baseUrl}/lovable-uploads/4ce54989-5124-4e46-a3ab-aa1434b9fffd.png`;
+  const imageUrl = article?.featured_image || `${baseUrl}/lovable-uploads/nyc-b2b-og.png`;
 
   return (
     <Helmet>
