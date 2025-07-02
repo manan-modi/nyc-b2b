@@ -180,7 +180,8 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
     ));
   };
 
-  const approvedEvents = events.filter(e => e.status === 'approved').sort((a, b) => (b.display_order || 0) - (a.display_order || 0));
+  // Only show featured and approved events in homepage order section
+  const featuredEvents = events.filter(e => e.status === 'approved' && e.featured).sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
 
   return (
     <div className="space-y-6">
@@ -192,7 +193,7 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
           <CardHeader>
             <CardTitle>Homepage Event Display Order</CardTitle>
             <CardDescription>
-              Drag and drop to reorder events. Events at the top will appear first on the homepage.
+              Drag and drop to reorder featured events. Only featured events will appear on the homepage.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -202,11 +203,11 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
               onDragEnd={handleDragEnd}
             >
               <SortableContext
-                items={approvedEvents.slice(0, 6).map(event => event.id)}
+                items={featuredEvents.map(event => event.id)}
                 strategy={verticalListSortingStrategy}
               >
                 <div className="space-y-4">
-                  {approvedEvents.slice(0, 6).map((event, index) => (
+                  {featuredEvents.map((event, index) => (
                     <SortableEventItem
                       key={event.id}
                       event={event}
@@ -305,6 +306,18 @@ export const EventManagement = ({ events, setEvents }: EventManagementProps) => 
                 </Button>
 
                 <EditEventDialog event={event} onEventUpdated={handleEventUpdated} />
+
+                {/* Explicit Feature/Unfeature Button */}
+                <Button
+                  size="sm"
+                  variant={event.featured ? "destructive" : "default"}
+                  className={event.featured ? "bg-yellow-100 text-yellow-700 border-yellow-300 hover:bg-yellow-200" : "bg-green-600 text-white hover:bg-green-700"}
+                  onClick={() => handleToggleFeatured(event.id)}
+                  disabled={updatingOrder === event.id}
+                >
+                  <Star className="h-4 w-4 mr-1" />
+                  {event.featured ? "Remove from Homepage" : "Feature on Homepage"}
+                </Button>
 
                 {event.status === 'pending' && (
                   <>

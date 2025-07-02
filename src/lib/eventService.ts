@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export interface Event {
@@ -87,6 +86,7 @@ export const fetchApprovedEvents = async (): Promise<Event[]> => {
     .from('events')
     .select('*')
     .eq('status', 'approved')
+    .eq('featured', true)
     .order('display_order', { ascending: true })
     .order('date', { ascending: true });
 
